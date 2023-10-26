@@ -5,6 +5,13 @@ pragma solidity 0.8.8;
 error UnderAge(string personName);
 error HasCreatedWill(string personName);
 
+/**
+ * @title BlockchainWill
+ * @author Mário Viana
+ * @dev This contract allows people to create wills on the blockchain
+ * @notice This contract is not audited, it's only for a basic simulation so use at your own risk
+ * @custom:experimental This is an experimental contract
+ */
 contract BlockchainWill {
     // ====== Structs ======
     struct Will {
@@ -24,7 +31,6 @@ contract BlockchainWill {
     // ====== Storage Variables ======
     mapping(string => Will) public userCitizenshipCardIdToWill;
     mapping(string => bool) public personHasCreatedWill;
-    Will[] public wills;
     Will[] public publicWills;
 
     // ====== Public Functions ======
@@ -41,10 +47,6 @@ contract BlockchainWill {
         string memory _secondWitnessCitizenshipCardId,
         uint _secondWitnessBirthdate
     ) public {
-        // TODO: Add verification to check if Testator as already created a will by checking it's citizenship card id. Or just simply replace the values????
-        //Better return the HasCreatedWill error if the person has already created a will, then the frontend can display a message to the user to redo the will
-
-        // TODO: Add method to replace the will of a person if he has already created one
         if (personHasCreatedWill[_testatorCitizenshipCardId]) {
             revert HasCreatedWill(_author);
         }
@@ -89,26 +91,46 @@ contract BlockchainWill {
         }
     }
 
-    function getWills() public view returns (Will[] memory) {
-        return wills;
-    }
-
-    function getWillsLength() public view returns (uint) {
-        return wills.length;
-    }
-
+    /**
+     * @dev Returns the public wills length
+     * @notice Returns the public wills length
+     * @return uint Length of the public wills
+     */
     function getPublicWillsLength() public view returns (uint) {
         return publicWills.length;
     }
 
+    /**
+     * @dev Returns the public wills
+     * @return Will[] Array of public wills
+     */
     function getPublicWills() public view returns (Will[] memory) {
         return publicWills;
     }
 
+    /**
+     * @dev Returns the will of a person
+     * @param _testatorCitizenshipCardId The citizenship card id of the testator
+     * @return Will The will of the person
+     */
+    function getWill(
+        string memory _testatorCitizenshipCardId
+    ) public view returns (Will memory) {
+        require(
+            personHasCreatedWill[_testatorCitizenshipCardId],
+            "This person has not created a will"
+        );
+        return userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
+    }
+
+    /**
+     * @dev Allows the testator to redo his will
+     * @param _testatorCitizenshipCardId The citizenship card id of the testator
+     */
     function redoWill(string memory _testatorCitizenshipCardId) public {
         require(
             personHasCreatedWill[_testatorCitizenshipCardId],
-            "No will exists for this person"
+            "This person has not created a will"
         );
 
         personHasCreatedWill[_testatorCitizenshipCardId] = false; // Allow the person to redo the will
@@ -116,9 +138,11 @@ contract BlockchainWill {
 
     // ====== Private Functions ======
 
-    /// @dev Checks if the person is an adult
-    /// @param birthdate Birthdate of the person in seconds since the Unix epoch
-    /// @return True if the person is an adult, false otherwise
+    /**
+     * @dev Checks if the person is an adult
+     * @param birthdate Birthdate of the person in seconds since the Unix epoch
+     * @return True if the person is an adult, false otherwise
+     */
     function isAdult(uint256 birthdate) private view returns (bool) {
         uint256 currentTime = block.timestamp; // Current timestamp in seconds since the Unix epoch
         uint256 secondsInYear = 31536000; // 60 * 60 * 24 * 365
