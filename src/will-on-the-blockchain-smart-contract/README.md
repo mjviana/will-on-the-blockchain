@@ -6,8 +6,6 @@ This project is designed to enable the secure storage of wills on a blockchain u
 
 ## Table of Contents
 
-- [Will Storage on Blockchain](#will-storage-on-blockchain)
-  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Getting Started](#getting-started)
@@ -30,4 +28,4 @@ git clone https://github.com/your-username/will-storage-on-blockchain.git
 ```
 
 > **NOTE**  
-> Additional documentation, including detailed usage instructions, and deployment guides, will be added to this repository in the near future. I will try to actively enhancing the documentation to make it more user-friendly and informative. In the meantime, if you have any questions or sugestions, please feel free to reach out to me by creating an issue in this repository or contacting me at [mj.viana1993@hotmail.com].
+> Additional documentation, including detailed usage instructions, and deployment guides, will be added to this repository in the near future. I will try to actively enhancing the documentation to make it more user-friendly and informative. In the meantime, if you have any questions or sugestions, please feel free to reach out to me by creating an issue in this repository or contacting me at mj.viana1993@hotmail.com.
