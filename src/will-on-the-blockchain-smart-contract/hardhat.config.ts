@@ -1,5 +1,8 @@
 import {HardhatUserConfig} from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-ethers";
+import "hardhat-deploy";
+import "hardhat-deploy-ethers";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -11,6 +14,9 @@ const config: HardhatUserConfig = {
         version: "0.8.8",
       },
     ],
+  },
+  namedAccounts: {
+    deployer: 0,
   },
 };
 
