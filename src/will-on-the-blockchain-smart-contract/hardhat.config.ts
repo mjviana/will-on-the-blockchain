@@ -3,6 +3,13 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ethers";
 import "hardhat-deploy";
 import "hardhat-deploy-ethers";
+import {nodeUrl, accounts} from "./utils/network";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load environment variables from .env file
+
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
+const PRIVATE_KEY_SEPOLIA = process.env.PRIVATE_KEY_SEPOLIA;
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -14,6 +21,17 @@ const config: HardhatUserConfig = {
         version: "0.8.8",
       },
     ],
+  },
+  networks: {
+    sepolia: {
+      url: nodeUrl("sepolia"),
+      accounts: PRIVATE_KEY_SEPOLIA ? [PRIVATE_KEY_SEPOLIA] : [],
+      chainId: 11155111,
+    },
+  },
+  etherscan: {
+    // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
+    apiKey: ETHERSCAN_API_KEY,
   },
   namedAccounts: {
     deployer: 0,
