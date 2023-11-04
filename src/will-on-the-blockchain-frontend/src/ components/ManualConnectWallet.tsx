@@ -1,24 +1,41 @@
 import {useMoralis} from "react-moralis";
 import {useEffect} from "react";
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Tag,
+  TagLabel,
+  TagRightIcon,
+} from "@chakra-ui/react";
+import {TfiWallet} from "react-icons/tfi";
+import {SettingsIcon} from "@chakra-ui/icons";
+import {BiExit} from "react-icons/bi";
 
 function ManualConnectWallet() {
   const {
     enableWeb3,
-    account,
     isWeb3Enabled,
+    isWeb3EnableLoading,
+    account,
     Moralis,
     deactivateWeb3,
-    isWeb3EnableLoading,
   } = useMoralis();
 
   useEffect(() => {
     if (isWeb3Enabled) return;
-    if (window !== undefined) {
+    if (typeof window !== "undefined") {
       if (window.localStorage.getItem("connected")) {
         enableWeb3();
       }
     }
-  }, [isWeb3Enabled]);
+  }, [isWeb3Enabled, Moralis, deactivateWeb3, enableWeb3]);
+  // no dependecy array: run anytime something re-renders
+  // CAREFUL with this!! Because then you can get circular render
+  // blank dependency array, run once on load / rerender
+  // dependencies in the array, run anytime something in there changes
 
   useEffect(() => {
     Moralis.onAccountChanged((account) => {
@@ -29,17 +46,39 @@ function ManualConnectWallet() {
         console.log("Null account found");
       }
     });
-  }, []);
+  }, [isWeb3Enabled, Moralis, deactivateWeb3]);
 
   return (
-    <div>
+    <>
       {account ? (
         <div>
-          Connected to {account.slice(0, 6)}...
-          {account.slice(account.length - 4)}
+          <Menu>
+            <MenuButton
+              borderRadius="full"
+              colorScheme="green"
+              as={Button}
+              leftIcon={<TfiWallet />}
+              rightIcon={<SettingsIcon />}
+            >
+              {account.slice(0, 2)}...
+              {account.slice(account.length - 4)}
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                icon={<BiExit />}
+                onClick={() => {
+                  deactivateWeb3();
+                  window.localStorage.removeItem("connected");
+                }}
+              >
+                Disconnect Wallet
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </div>
       ) : (
-        <button
+        <Button
+          leftIcon={<TfiWallet />}
           onClick={async () => {
             // await walletModal.connect()
             const ret = await enableWeb3();
@@ -52,12 +91,12 @@ function ManualConnectWallet() {
             }
           }}
           disabled={isWeb3EnableLoading}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto"
+          aria-label={"Connect wallet"}
         >
-          Connect
-        </button>
+          Connect Wallet
+        </Button>
       )}
-    </div>
+    </>
   );
 }
 

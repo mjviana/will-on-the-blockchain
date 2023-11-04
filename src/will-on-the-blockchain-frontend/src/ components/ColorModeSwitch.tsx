@@ -20,7 +20,7 @@ const ColorModeSwitch = () => {
       alignItems="center"
       icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
       onClick={toggleColorMode}
-      aria-label={""}
+      aria-label={"Color mode switch"}
     ></IconButton>
 
     // <div style={{display: "flex", alignItems: "center"}}>

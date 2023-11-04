@@ -6,7 +6,12 @@ body {
   /* Customize the button styles here */
   background-color: red;
   color: white;
-  border: 1px solid black;
+
+  /* background: var(--chakra-colors-whiteAlpha-200);
+  color: var(--chakra-colors-whiteAlpha-900); */
+  border-radius: 0.375rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .custom-connect-button-wrapper button:hover {
@@ -30,4 +35,9 @@ body {
 .custom-connect-button-wrapper button:hover span svg {
   /* Customize the svg "X" in the button to close the wallets modal here */
   color: white;
+}
+
+span.sc-fnykZs.hjXSSb {
+  font-size: 16px;
+  color: red;
 }

@@ -1,13 +1,13 @@
 import {Flex, HStack, Link, Spacer} from "@chakra-ui/react";
-import {ConnectButton} from "@web3uikit/web3";
-import {Book} from "@web3uikit/icons";
+import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
+import ManualConnectWallet from "./ManualConnecTWallet";
 
 const Navbar = () => {
   return (
     <>
-      <Flex display="flex" alignItems="center">
-        <Book fontSize="60px" />
+      <Flex paddingLeft={5} paddingRight={5} display="flex" alignItems="center">
+        <BiBookHeart fontSize="60px" />
         <Spacer />
         <Link>Public Wills</Link>
         <Spacer />
@@ -16,10 +16,11 @@ const Navbar = () => {
         <Link>How to</Link>
         <Spacer />
         <HStack justifyContent={"flex-end"}>
-          <div className="custom-connect-button-wrapper">
-            <ConnectButton moralisAuth={false} />
-          </div>
           <ColorModeSwitch />
+          {/* <div className="custom-connect-button-wrapper">
+            <ConnectButton moralisAuth={false} />
+          </div> */}
+          <ManualConnectWallet />
         </HStack>
       </Flex>
 
