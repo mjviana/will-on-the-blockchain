@@ -38,7 +38,7 @@ npm install
 3. Setup harhat.config file
    1. Go to [Alchemy](https://dashboard.alchemy.com/") create a new App, select your test network and copy the RPC endpoint
    2. Add testnet to your metamask ![Alt](assets/add-testnet-to-metamask.png)
-   3. Add selected testnet ETH to your metamask (e.g. If you select Sepolia testnet you can grabe some [here](https://sepoliafaucet.com/))
+   3. Add selected testnet ETH to your metamask (e.g. If you select Sepolia testnet you can grab some [here](https://sepoliafaucet.com/))
    4. Create a `.env` file following the structure of the `.env.example` and change the values according to the testnet that you used in the steps before (don't forget to change `[YOUR_TESTNET]` placeholder :))
    5. Change `hardhat.config.ts` file in order to use the values of .env file that you just created
 4. Create a Etherscan [API KEY](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics) so you can verify the contract after the deploy process. After that update the .env file with that api key.

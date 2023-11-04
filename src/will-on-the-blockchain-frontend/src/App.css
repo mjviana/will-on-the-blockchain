@@ -40,3 +40,16 @@
 .read-the-docs {
   color: #888;
 }
+
+.custom-connect-button-wrapper .ConnectButton {
+  /* Customize the button styles here */
+  background-color: red;
+  color: white;
+  /* Add more styles as needed */
+}
+
+.custom-connect-button-wrapper .ConnectButton span {
+  /* Customize the text inside the button here */
+  font-size: 16px;
+  /* Add more text styles as needed */
+}
