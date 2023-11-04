@@ -1,3 +1,7 @@
+body {
+  padding: 10px;
+}
+
 .custom-connect-button-wrapper button {
   /* Customize the button styles here */
   background-color: red;
