@@ -1,7 +1,7 @@
 import {Flex, HStack, Link, Spacer} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
-import ManualConnectWallet from "./ManualConnecTWallet";
+import ManualConnectWallet from "./ManualConnectWallet";
 
 const Navbar = () => {
   return (

@@ -1,15 +1,6 @@
 import {useMoralis} from "react-moralis";
 import {useEffect} from "react";
-import {
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tag,
-  TagLabel,
-  TagRightIcon,
-} from "@chakra-ui/react";
+import {Button, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react";
 import {TfiWallet} from "react-icons/tfi";
 import {SettingsIcon} from "@chakra-ui/icons";
 import {BiExit} from "react-icons/bi";
