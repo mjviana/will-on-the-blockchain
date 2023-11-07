@@ -1,26 +1,37 @@
 import {ethers, network} from "hardhat";
 import fs from "fs";
-import {HardhatRuntimeEnvironment} from "hardhat/types";
-import {DeployFunction} from "hardhat-deploy/types";
-import {ethers as officalEthers} from "ethers";
 
 const FRONT_END_CONSTANTS_PATH =
   "../will-on-the-blockchain-frontend/src/constants";
+
 const FRONT_END_ADDRESSES_FILE =
-  "../will-on-the-blockchain-frontend/src/constants/contractAddresses.json";
-const FRONT_END_ABI_FILE =
-  "../will-on-the-blockchain-frontend/src/constants/abi.json";
+  FRONT_END_CONSTANTS_PATH + "/contractAddresses.json";
+("../will-on-the-blockchain-frontend/src/constants/contractAddresses.json");
+
+const FRONT_END_ABI_FILE = FRONT_END_CONSTANTS_PATH + "/abi.json";
+
+const FRONT_END_BLOCKCHAIN_WILL_TYPE_PATH =
+  "../will-on-the-blockchain-frontend/src/types";
+
+const FRONT_END_BLOCKCHAIN_WILL_TYPE_FILE =
+  FRONT_END_BLOCKCHAIN_WILL_TYPE_PATH + "/BlockchainWill.ts";
+
+const BLOCKCHAIN_WILL_TYPE_PATH = "./typechain-types";
+const BLOCKCHAIN_WILL_TYPE_PATH_FILE = "./typechain-types/BlockchainWill.ts";
 
 module.exports = async () => {
   if (process.env.UPDATE_FRONTEND) {
     console.log("Writing to frontend...");
     await updateContractAddresses();
     await updateAbi();
+    await updateBlockchainWillType();
     console.log("Frontend written!");
   }
 };
 
 async function updateContractAddresses() {
+  console.log("Updating contract addresses...");
+
   // getting the contract address
   const blockchainWill = await ethers.getContract("BlockchainWill");
   const blockchainWillAddress = await blockchainWill.getAddress();
@@ -66,6 +77,8 @@ async function updateContractAddresses() {
   );
 }
 async function updateAbi() {
+  console.log("Updating abi...");
+
   // getting the contract address
   const blockchainWill = await ethers.getContract("BlockchainWill");
 
@@ -79,4 +92,18 @@ async function updateAbi() {
 
   // write abi to file
   fs.writeFileSync(FRONT_END_ABI_FILE, blockchainWill.interface.formatJson());
+}
+
+async function updateBlockchainWillType() {
+  console.log("Updating BlockchainWill types...");
+  if (!fs.existsSync(FRONT_END_BLOCKCHAIN_WILL_TYPE_PATH)) {
+    console.log("BlockchainWill types files does not exists. Creating them...");
+
+    fs.mkdirSync(FRONT_END_BLOCKCHAIN_WILL_TYPE_PATH, {recursive: true});
+  }
+
+  // copy files from typechain-types/ to frontend/src/types/
+  fs.cpSync(BLOCKCHAIN_WILL_TYPE_PATH, FRONT_END_BLOCKCHAIN_WILL_TYPE_PATH, {
+    recursive: true,
+  });
 }
