@@ -90,4 +90,44 @@ describe("BlockChainWill", function () {
       )
     ).to.be.revertedWithCustomError(blockchainWill, "HasCreatedWill");
   });
+
+  it("should revoke a public will", async function () {
+    await blockchainWill.createWill(
+      testator,
+      will,
+      testatorCitizenshipCardId,
+      testatorBirthdate,
+      true,
+      firstWitnessName,
+      firstWitnessCitizenshipCardId,
+      firstWitnessBirthdate,
+      secondWitnessName,
+      secondWitnessCitizenshipCardId,
+      secondWitnessBirthdate
+    );
+
+    await blockchainWill.revokePublicWill(testatorCitizenshipCardId);
+
+    expect(await blockchainWill.getPublicWillsLength()).to.equal(0);
+  });
+
+  it("should not allow revoke a private will", async function () {
+    await blockchainWill.createWill(
+      testator,
+      will,
+      testatorCitizenshipCardId,
+      testatorBirthdate,
+      false,
+      firstWitnessName,
+      firstWitnessCitizenshipCardId,
+      firstWitnessBirthdate,
+      secondWitnessName,
+      secondWitnessCitizenshipCardId,
+      secondWitnessBirthdate
+    );
+
+    await expect(
+      blockchainWill.revokePublicWill(testatorCitizenshipCardId)
+    ).to.be.revertedWithCustomError(blockchainWill, "PrivateWill");
+  });
 });

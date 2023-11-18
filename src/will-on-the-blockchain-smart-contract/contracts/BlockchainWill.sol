@@ -2,8 +2,10 @@
 pragma solidity 0.8.8;
 
 // ====== Errors ======
-error UnderAge(string personName);
-error HasCreatedWill(string personName);
+error UnderAge(string citizenshipCardId);
+error HasCreatedWill(string citizenshipCardId);
+error HasNotCreatedWill(string citizenshipCardId);
+error PrivateWill();
 
 /**
  * @title BlockchainWill
@@ -25,7 +27,7 @@ contract BlockchainWill {
     struct Person {
         string name;
         string citizenshipCardId;
-        uint birthdate;
+        uint256 birthdate;
     }
 
     // ====== Storage Variables ======
@@ -48,7 +50,7 @@ contract BlockchainWill {
         uint _secondWitnessBirthdate
     ) public {
         if (personHasCreatedWill[_testatorCitizenshipCardId]) {
-            revert HasCreatedWill(_author);
+            revert HasCreatedWill(_testatorCitizenshipCardId);
         }
 
         if (!isAdult(_testatorBirthdate)) {
@@ -92,56 +94,93 @@ contract BlockchainWill {
     }
 
     /**
-     * @dev Returns the public wills length
-     * @notice Returns the public wills length
-     * @return uint Length of the public wills
+     * @dev Returns the public wills length.
+     * @notice Returns the public wills length.
+     * @return uint Length of the public wills.
      */
     function getPublicWillsLength() public view returns (uint) {
         return publicWills.length;
     }
 
     /**
-     * @dev Returns the public wills
-     * @return Will[] Array of public wills
+     * @dev Returns the public wills.
+     * @return Will[] Array of public wills.
      */
     function getPublicWills() public view returns (Will[] memory) {
         return publicWills;
     }
 
     /**
-     * @dev Returns the will of a person
-     * @param _testatorCitizenshipCardId The citizenship card id of the testator
-     * @return Will The will of the person
+     * @dev Returns the will of a person.
+     * @param _testatorCitizenshipCardId The citizenship card id of the testator.
+     * @return Will The will of the person.
      */
     function getWill(
         string memory _testatorCitizenshipCardId
     ) public view returns (Will memory) {
-        require(
-            personHasCreatedWill[_testatorCitizenshipCardId],
-            "This person has not created a will"
-        );
+        if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
+            revert HasNotCreatedWill(_testatorCitizenshipCardId);
+        }
         return userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
     }
 
     /**
-     * @dev Allows the testator to redo his will
-     * @param _testatorCitizenshipCardId The citizenship card id of the testator
+     * @dev Allows the testator to revoke his will if it's public.
+     * @param _testatorCitizenshipCardId The citizenship card id of the testator.
      */
-    function redoWill(string memory _testatorCitizenshipCardId) public {
-        require(
-            personHasCreatedWill[_testatorCitizenshipCardId],
-            "This person has not created a will"
-        );
+    function revokePublicWill(string memory _testatorCitizenshipCardId) public {
+        if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
+            revert HasNotCreatedWill(_testatorCitizenshipCardId);
+        }
 
-        personHasCreatedWill[_testatorCitizenshipCardId] = false; // Allow the person to redo the will
+        if (!userCitizenshipCardIdToWill[_testatorCitizenshipCardId].isPublic) {
+            revert PrivateWill();
+        }
+
+        for (uint i = 0; i < publicWills.length; i++) {
+            // If the testator is found
+            if (
+                keccak256(
+                    abi.encodePacked(publicWills[i].testator.citizenshipCardId)
+                ) == keccak256(abi.encodePacked(_testatorCitizenshipCardId))
+            ) {
+                // Swap with the last element
+                publicWills[i] = publicWills[publicWills.length - 1];
+
+                // Reduce the array length
+                publicWills.pop();
+
+                // Delete the will from the mapping
+                delete userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
+
+                // Set the testator as not having a will
+                personHasCreatedWill[_testatorCitizenshipCardId] = false;
+                break;
+            }
+        }
+    }
+
+    /**
+     * @dev Allows the testator to revoke his will.
+     * @param _testatorCitizenshipCardId The citizenship card id of the testator.
+     */
+    function revokeWill(string memory _testatorCitizenshipCardId) public {
+        if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
+            revert HasNotCreatedWill(_testatorCitizenshipCardId);
+        }
+
+        delete userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
+
+        // Set the testator as not having a will
+        personHasCreatedWill[_testatorCitizenshipCardId] = false;
     }
 
     // ====== Private Functions ======
 
     /**
-     * @dev Checks if the person is an adult
-     * @param birthdate Birthdate of the person in seconds since the Unix epoch
-     * @return True if the person is an adult, false otherwise
+     * @dev Checks if the person is an adult.
+     * @param birthdate Birthdate of the person in seconds since the Unix epoch.
+     * @return True if the person is an adult, false otherwise.
      */
     function isAdult(uint256 birthdate) private view returns (bool) {
         uint256 currentTime = block.timestamp; // Current timestamp in seconds since the Unix epoch
