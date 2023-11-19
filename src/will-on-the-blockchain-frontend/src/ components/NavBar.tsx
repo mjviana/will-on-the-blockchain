@@ -1,7 +1,7 @@
 import {Flex, HStack, Link, Spacer} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
-import ManualConnectWallet from "./ManualConnectWallet";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
 
 const Navbar = () => {
   return (
@@ -20,24 +20,10 @@ const Navbar = () => {
           {/* <div className="custom-connect-button-wrapper">
             <ConnectButton moralisAuth={false} />
           </div> */}
-          <ManualConnectWallet />
+          {/* <ManualConnectWallet /> */}
+          <ConnectButton />;
         </HStack>
       </Flex>
-
-      {/* <HStack justifyContent={"space-between"}>
-        <HStack padding="10px" justifyContent={"flex-start"}>
-          <Book fontSize="60px" />
-          <Link>Public Wills</Link>
-          <Link>Create a Will</Link>
-          <Link>How to</Link>
-        </HStack>
-        <HStack justifyContent={"flex-end"}>
-          <div className="custom-connect-button-wrapper">
-            <ConnectButton moralisAuth={false} />
-          </div>
-          <ColorModeSwitch />
-        </HStack>
-      </HStack> */}
     </>
   );
 };

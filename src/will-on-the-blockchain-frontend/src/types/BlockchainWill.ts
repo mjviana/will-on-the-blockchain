@@ -65,7 +65,8 @@ export interface BlockchainWillInterface extends Interface {
       | "getWill"
       | "personHasCreatedWill"
       | "publicWills"
-      | "redoWill"
+      | "revokePublicWill"
+      | "revokeWill"
       | "userCitizenshipCardIdToWill"
   ): FunctionFragment;
 
@@ -102,7 +103,11 @@ export interface BlockchainWillInterface extends Interface {
     functionFragment: "publicWills",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "redoWill", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "revokePublicWill",
+    values: [string]
+  ): string;
+  encodeFunctionData(functionFragment: "revokeWill", values: [string]): string;
   encodeFunctionData(
     functionFragment: "userCitizenshipCardIdToWill",
     values: [string]
@@ -126,7 +131,11 @@ export interface BlockchainWillInterface extends Interface {
     functionFragment: "publicWills",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "redoWill", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "revokePublicWill",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "revokeWill", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "userCitizenshipCardIdToWill",
     data: BytesLike
@@ -230,7 +239,13 @@ export interface BlockchainWill extends BaseContract {
     "view"
   >;
 
-  redoWill: TypedContractMethod<
+  revokePublicWill: TypedContractMethod<
+    [_testatorCitizenshipCardId: string],
+    [void],
+    "nonpayable"
+  >;
+
+  revokeWill: TypedContractMethod<
     [_testatorCitizenshipCardId: string],
     [void],
     "nonpayable"
@@ -317,7 +332,14 @@ export interface BlockchainWill extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "redoWill"
+    nameOrSignature: "revokePublicWill"
+  ): TypedContractMethod<
+    [_testatorCitizenshipCardId: string],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "revokeWill"
   ): TypedContractMethod<
     [_testatorCitizenshipCardId: string],
     [void],

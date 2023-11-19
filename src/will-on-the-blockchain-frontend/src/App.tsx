@@ -1,6 +1,7 @@
-import {Grid, GridItem, Show} from "@chakra-ui/react";
+import {Grid, GridItem} from "@chakra-ui/react";
 import Navbar from "./ components/NavBar";
 import Wills from "./ components/Wills";
+import CreateWill from "./ components/CreateWill";
 
 function App() {
   return (
@@ -9,22 +10,17 @@ function App() {
         base: `"header" 
                 "main"
                 "footer"`,
-        lg: `"header header"
-              "aside main"
-              "footer footer"`,
+        lg: `"header header header"
+              "main main main"
+              "footer footer footer"`,
       }}
     >
       <GridItem pl="2" area={"header"}>
         <Navbar />
       </GridItem>
-      <Show above="lg">
-        <GridItem pl="2" area={"aside"}>
-          Aside
-        </GridItem>
-      </Show>
       <GridItem pl="2" area={"main"}>
         <Wills />
-        Main
+        <CreateWill />
       </GridItem>
       <GridItem pl="2" area={"footer"}>
         Footer

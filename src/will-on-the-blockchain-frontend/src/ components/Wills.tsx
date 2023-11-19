@@ -1,55 +1,50 @@
-import {useMoralis, useWeb3Contract} from "react-moralis";
 import {abi, contractAddresses} from "../constants";
 import {useEffect, useState} from "react";
 import {BlockchainWill} from "../types";
+import {Address, useContractRead} from "wagmi";
+import {Box, Button} from "@chakra-ui/react";
+import {Text} from "@chakra-ui/react";
 
 interface contractAddressesInterface {
   [key: string]: string[];
 }
 
 const Wills = () => {
-  const {chainId: chainIdHex, isWeb3Enabled} = useMoralis();
   const [wills, setWills] = useState<BlockchainWill.WillStructOutput[]>([]);
-
   const addresses: contractAddressesInterface = contractAddresses;
-  const chainId: string = parseInt(chainIdHex!).toString();
+  const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
 
-  console.log("chainId", chainId);
-  console.log("Addresses", addresses);
-
-  const blockchainWillAddress =
-    chainId in addresses ? addresses[chainId][0] : null;
-
-  console.log("blockchainWillAddress", blockchainWillAddress);
-
-  const {runContractFunction: getPublicWills} = useWeb3Contract({
-    abi,
-    contractAddress: blockchainWillAddress!,
+  const readContract = useContractRead({
+    address: contractAddress,
+    abi: abi,
     functionName: "getPublicWills",
+    onSuccess(data: BlockchainWill.WillStructOutput[]) {
+      console.log("wills", data);
+      updateUI();
+    },
   });
 
   useEffect(() => {
     updateUI();
-  }, [isWeb3Enabled]);
+  }, [readContract.isSuccess]);
 
   async function updateUI() {
-    const wills = (await getPublicWills()) as BlockchainWill.WillStructOutput[];
-    setWills(wills);
+    setWills(readContract.data as BlockchainWill.WillStructOutput[]);
   }
 
   return (
-    <div>
-      {isWeb3Enabled ? (
-        <>
-          Wills:
-          {wills?.map((w, i) => (
-            <h1 key={i}>{w.will}</h1>
-          ))}
-        </>
-      ) : (
-        <p>Web3 is not enabled. Please enable it to view the wills.</p>
-      )}
-    </div>
+    <>
+      <Button onClick={() => readContract.refetch()}> Get Wills</Button>
+      Wills:{" "}
+      {wills?.map((w, i) => (
+        <Box key={i} m={2} bg="blue.900">
+          <h1>
+            {w.testator.name} | Citizenship Id: {w.testator.citizenshipCardId} |
+          </h1>
+          <Text>Will: {w.will}</Text>
+        </Box>
+      ))}
+    </>
   );
 };
 
