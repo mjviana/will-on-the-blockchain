@@ -43,37 +43,36 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import {useDebounce} from "usehooks-ts";
-import {FocusableElement} from "@chakra-ui/react";
 import {BaseError, ContractFunctionExecutionError} from "viem";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
+import CreateWillParams from "../types/CreateWillParams";
+import ContractAddressesInterface from "../types/ContractAddressesInterface";
+import {useCreateWill} from "../hooks/useCreateWill";
 
 const steps = [
-  {title: "First", description: "Author Information"},
-  {title: "Second", description: "First Witness Information"},
-  {title: "Third", description: "Second Witness Information"},
-  {title: "Fourth", description: "Will Information"},
+  {
+    title: "First",
+    description: "Author Information",
+    size: "150",
+    active: true,
+  },
+  {
+    title: "Second",
+    description: "First Witness Information",
+    size: "150",
+    active: false,
+  },
+  {
+    title: "Third",
+    description: "Second Witness Information",
+    size: "150",
+    active: false,
+  },
+  {title: "Fourth", description: "Will Information", size: "50", active: false},
 ];
 
-interface CreateWillParams {
-  authorName: string;
-  will: string;
-  testatorCitizenshipCardId: string;
-  testatorBirthdate: number;
-  isPublic: boolean;
-  firstWitnessName: string;
-  firstWitnessCitizenshipCardId: string;
-  firstWitnessBirthdate: number;
-  secondWitnessName: string;
-  secondWitnessCitizenshipCardId: string;
-  secondWitnessBirthdate: number;
-}
-
-interface contractAddressesInterface {
-  [key: string]: string[];
-}
-
 const CreateWill = () => {
-  const addresses: contractAddressesInterface = contractAddresses;
+  const addresses: ContractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
 
   const defaultWillParams: CreateWillParams = {
@@ -93,50 +92,31 @@ const CreateWill = () => {
   const [will, setWill] = useState<CreateWillParams>(defaultWillParams);
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
   const [revokeMode, setRevokeMode] = useState(false);
-  const {activeStep} = useSteps({
+  const {activeStep, setActiveStep} = useSteps({
     index: 1,
     count: steps.length,
   });
+  const [willSteps, setWillSteps] = useState(steps);
   const {
     isOpen: isRevokeWillAlertOpen,
     onOpen: openRevokeWillAlertDialog,
     onClose,
   } = useDisclosure();
-  const cancelRef = useRef<FocusableElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
   const toast = useToast();
 
-  // usePrepareContractWrite hook fetches the parameters required for sending a contract write transaction.
   const {
-    config: prepareCreateWillConfig,
-    error: prepareCreateWillError,
-    isError: isPrepareCreateWillError,
-    refetch: refetchPrepareCreateWill,
-  } = usePrepareContractWrite({
-    address: contractAddress,
-    abi: abi,
-    functionName: "createWill",
-    enabled: Boolean(isWillCompleted()), // Enable the hook only when the debouncedWill is not null and all the fields are filled.
-    args: debouncedWill ? debouncedWill : [],
-    gas: 3100000n,
-    onError: onPrepareCreateWillError,
-  });
-
-  // useContractWrite hook performs the actual contract write transaction.
-  const {
-    data: writeCreateWillData,
-    write: writeCreateWill,
-    reset: resetWriteCreateWill,
-  } = useContractWrite(prepareCreateWillConfig);
-
-  // useWaitForTransaction hook provides the ability to show feedback on the status of the transaction to the user.
-  const {
-    isLoading: isTransactionCreateWillLoading,
-    isSuccess: isTransanctionCreateWillSuccess,
-    isError: isTransactionCreateWillError,
-    error: transactionCreateWillError,
-  } = useWaitForTransaction({
-    hash: writeCreateWillData?.hash,
-  });
+    prepareCreateWillError,
+    isPrepareCreateWillError,
+    refetchPrepareCreateWill,
+    writeCreateWillData,
+    writeCreateWill,
+    resetWriteCreateWill,
+    isTransactionCreateWillLoading,
+    isTransanctionCreateWillSuccess,
+    isTransactionCreateWillError,
+    transactionCreateWillError,
+  } = useCreateWill(contractAddress, debouncedWill, isWillCompleted());
 
   // usePrepareContractWrite hook fetches the parameters required for sending a contract write transaction.
   const {
@@ -382,6 +362,8 @@ const CreateWill = () => {
       ...will,
       secondWitnessName: event.target.value,
     });
+
+    setActiveStep(2);
   }
 
   function setSecondWitnessCitizenshipId(
@@ -444,6 +426,30 @@ const CreateWill = () => {
     onClose();
   }
 
+  function toggleAuthorAccordionButton(): void {
+    setWillSteps(
+      willSteps.map((step) =>
+        step.title === "First" ? {...step, active: !step.active} : step
+      )
+    );
+  }
+
+  function toggleFirstWitnessButton(): void {
+    setWillSteps(
+      willSteps.map((step) =>
+        step.title === "Second" ? {...step, active: !step.active} : step
+      )
+    );
+  }
+
+  function toggleSecondWitnessButton(): void {
+    setWillSteps(
+      willSteps.map((step) =>
+        step.title === "Third" ? {...step, active: !step.active} : step
+      )
+    );
+  }
+
   return (
     <>
       <Stack direction="row">
@@ -454,7 +460,7 @@ const CreateWill = () => {
           gap="0"
           h={300}
         >
-          {steps.map((step, index) => (
+          {willSteps.map((step, index) => (
             <Step key={index}>
               <StepIndicator>
                 <StepStatus
@@ -463,12 +469,10 @@ const CreateWill = () => {
                   active={<StepNumber />}
                 />
               </StepIndicator>
-
-              <Box flexShrink="0">
+              <Box h={step.active ? step.size : "55px"} flexShrink="0">
                 <StepTitle>{step.title}</StepTitle>
                 <StepDescription>{step.description}</StepDescription>
               </Box>
-
               <StepSeparator />
             </Step>
           ))}
@@ -477,7 +481,7 @@ const CreateWill = () => {
         <Stack p={10} w="100%" direction="column">
           <Accordion defaultIndex={[0]} allowMultiple>
             <AccordionItem>
-              <AccordionButton>
+              <AccordionButton onClick={toggleAuthorAccordionButton}>
                 <Box as="span" flex="1" textAlign="left">
                   <Heading as="h6" size="sm">
                     Author
@@ -504,7 +508,7 @@ const CreateWill = () => {
               </AccordionPanel>
             </AccordionItem>
             <AccordionItem>
-              <AccordionButton>
+              <AccordionButton onClick={toggleFirstWitnessButton}>
                 <Box as="span" flex="1" textAlign="left">
                   <Heading as="h6" size="sm" pb={3}>
                     First Witness
@@ -531,7 +535,7 @@ const CreateWill = () => {
               </AccordionPanel>
             </AccordionItem>
             <AccordionItem>
-              <AccordionButton>
+              <AccordionButton onClick={toggleSecondWitnessButton}>
                 <Box as="span" flex="1" textAlign="left">
                   <Heading as="h6" size="sm" pb={3}>
                     Second Witness
