@@ -35,19 +35,15 @@ import {
   Link,
 } from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {abi, contractAddresses} from "../constants";
-import {
-  Address,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
+import {contractAddresses} from "../constants";
+import {Address} from "wagmi";
 import {useDebounce} from "usehooks-ts";
 import {BaseError, ContractFunctionExecutionError} from "viem";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import CreateWillParams from "../types/CreateWillParams";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
+import {useRevokeWill} from "../hooks/useRevokeWill";
 
 const steps = [
   {
@@ -108,49 +104,22 @@ const CreateWill = () => {
   const {
     prepareCreateWillError,
     isPrepareCreateWillError,
-    refetchPrepareCreateWill,
     writeCreateWillData,
     writeCreateWill,
-    resetWriteCreateWill,
     isTransactionCreateWillLoading,
     isTransanctionCreateWillSuccess,
     isTransactionCreateWillError,
     transactionCreateWillError,
   } = useCreateWill(contractAddress, debouncedWill, isWillCompleted());
 
-  // usePrepareContractWrite hook fetches the parameters required for sending a contract write transaction.
   const {
-    config: prepareRevokePublicWillConfig,
-    refetch: refetchPrepareRevokeWill,
-  } = usePrepareContractWrite({
-    address: contractAddress,
-    abi: abi,
-    functionName: "revokePublicWill",
-    enabled: Boolean(revokeMode), // Enable the hook only when the debouncedWill is not null and revokeMode is true.
-    args: debouncedWill
-      ? debouncedWill[2] != ""
-        ? [debouncedWill[2]]
-        : []
-      : [], // The element at index 2 is the testatorCitizenshipCardId
-    onError: onPrepareCreateWillError,
-  });
-
-  // useContractWrite hook performs the actual contract write transaction.
-  const {
-    data: writeRevokeWillData,
-    write: revokeWrite,
-    reset: resetWriteRevokeWill,
-  } = useContractWrite(prepareRevokePublicWillConfig);
-
-  const {
-    isLoading: isTransactionRevokeWillLoading,
-    isSuccess: isTransactionRevokeSuccess,
-    isError: isTransactionRevokeWillError,
-    data: transactionRevokeWillData,
-    error: transactionRevokeWillError,
-  } = useWaitForTransaction({
-    hash: writeRevokeWillData?.hash,
-  });
+    revokeWrite,
+    isTransactionRevokeWillLoading,
+    isTransactionRevokeSuccess,
+    isTransactionRevokeWillError,
+    transactionRevokeWillData,
+    transactionRevokeWillError,
+  } = useRevokeWill(contractAddress, debouncedWill, revokeMode);
 
   useEffect(() => {
     if (
@@ -166,25 +135,14 @@ const CreateWill = () => {
         isTransactionRevokeWillLoading
       );
       console.log("revokeMode", revokeMode);
+      console.log("Setting revoke mode to false...");
 
       setRevokeMode(false);
+      console.log("Closing alert...");
+
       onClose();
     }
   }, [isTransactionRevokeWillLoading, revokeWrite, revokeMode]);
-
-  useEffect(() => {
-    resetWriteCreateWill();
-    resetWriteRevokeWill();
-    refetchPrepareCreateWill();
-    refetchPrepareRevokeWill();
-  }, [
-    writeCreateWill,
-    revokeWrite,
-    isTransanctionCreateWillSuccess,
-    isTransactionRevokeSuccess,
-    isTransactionCreateWillError,
-    isTransactionRevokeWillError,
-  ]);
 
   useEffect(() => {
     {
@@ -240,55 +198,31 @@ const CreateWill = () => {
 
   function isWillCompleted(): boolean {
     return (
-      will.authorName != "" &&
-      will.testatorCitizenshipCardId != "" &&
+      will.authorName.length > 0 &&
+      will.testatorCitizenshipCardId.length > 0 &&
       will.testatorBirthdate != 0 &&
-      will.firstWitnessName != "" &&
-      will.firstWitnessCitizenshipCardId != "" &&
+      will.firstWitnessName.length > 0 &&
+      will.firstWitnessCitizenshipCardId.length > 0 &&
       will.firstWitnessBirthdate != 0 &&
-      will.secondWitnessName != "" &&
-      will.secondWitnessCitizenshipCardId != "" &&
+      will.secondWitnessName.length > 0 &&
+      will.secondWitnessCitizenshipCardId.length > 0 &&
       will.secondWitnessBirthdate != 0 &&
-      will.will != ""
+      will.will.length > 0
     );
   }
 
-  function onPrepareCreateWillError(error: Error): void {
-    const baseError = error as BaseError;
-    const isConstractFunctionExecutionError =
-      baseError.walk(
-        (e) => e instanceof ContractFunctionExecutionError
-      ) instanceof ContractFunctionExecutionError;
-
-    if (isConstractFunctionExecutionError) {
-      const err = baseError as ContractFunctionExecutionError;
-      // The reason for the error is available in the metaMessages property in the first element.
-      console.log("Reason", err.metaMessages?.at(0));
-    } else {
-      console.log("Error from prepare write", error);
-    }
-  }
+  useEffect(() => {
+    console.log("Current will", will);
+  }, [will]);
 
   function setAuthorName(event: ChangeEvent<HTMLInputElement>): void {
-    console.log("Testator Name:", event.target.value);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
     setWill({
       ...will,
       authorName: event.target.value, // Set the name to the value of the input field
     });
-
-    console.log("Testator Name:", will.authorName);
   }
 
   function setAuthorCitizenshipId(event: ChangeEvent<HTMLInputElement>): void {
-    console.log("Testator Citizenship Id:", event.target.value);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
     setWill({
       ...will,
       testatorCitizenshipCardId: event.target.value,
@@ -296,14 +230,8 @@ const CreateWill = () => {
   }
 
   function setAuthorBirthdate(event: ChangeEvent<HTMLInputElement>): void {
-    console.log("Testator Birthdate:", event.target.value);
     // Convert the date string to a timestamp
     const birthdateTimestamp = new Date(event.target.value).getTime() / 1000;
-
-    console.log("Testator Birthdate Timestamp:", birthdateTimestamp);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
 
     setWill({
       ...will,
@@ -312,10 +240,6 @@ const CreateWill = () => {
   }
 
   function setFirstWitnessName(event: ChangeEvent<HTMLInputElement>): void {
-    console.log("First Witness Name:", event.target.value);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
     setWill({
       ...will,
       firstWitnessName: event.target.value,
@@ -325,10 +249,6 @@ const CreateWill = () => {
   function setFirstWitnessCitizenshipId(
     event: ChangeEvent<HTMLInputElement>
   ): void {
-    console.log("First Witness CitizenshipId:", event.target.value);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
     setWill({
       ...will,
       firstWitnessCitizenshipCardId: event.target.value,
@@ -338,14 +258,8 @@ const CreateWill = () => {
   function setFirstWitnessBirthdate(
     event: ChangeEvent<HTMLInputElement>
   ): void {
-    console.log("First Witness Birthdate:", event.target.value);
     // Convert the date string to a timestamp
     const birthdateTimestamp = new Date(event.target.value).getTime() / 1000;
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
-    console.log("First Witness Birthdate Timestamp:", birthdateTimestamp);
 
     setWill({
       ...will,
@@ -354,10 +268,6 @@ const CreateWill = () => {
   }
 
   function setSecondWitnessName(event: ChangeEvent<HTMLInputElement>): void {
-    console.log("Second Witness Name:", event.target.value);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
     setWill({
       ...will,
       secondWitnessName: event.target.value,
@@ -369,10 +279,6 @@ const CreateWill = () => {
   function setSecondWitnessCitizenshipId(
     event: ChangeEvent<HTMLInputElement>
   ): void {
-    console.log("Second Witness CitizenshipId:", event.target.value);
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
     setWill({
       ...will,
       secondWitnessCitizenshipCardId: event.target.value,
@@ -382,13 +288,8 @@ const CreateWill = () => {
   function setSecondWitnessBirthdate(
     event: ChangeEvent<HTMLInputElement>
   ): void {
-    console.log("Second Witness Birthdate:", event.target.value);
     // Convert the date string to a timestamp
     const birthdateTimestamp = new Date(event.target.value).getTime() / 1000;
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
-    console.log("Second Witness Birthdate Timestamp:", birthdateTimestamp);
 
     setWill({
       ...will,
@@ -397,10 +298,6 @@ const CreateWill = () => {
   }
 
   function setWillType(nextValue: string): void {
-    console.log("Will Type:", nextValue);
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
     setWill({
       ...will,
       isPublic: nextValue == "public",
@@ -408,11 +305,6 @@ const CreateWill = () => {
   }
 
   function setWillBody(event: ChangeEvent<HTMLTextAreaElement>): void {
-    console.log("Will Body:", event.target.value);
-
-    console.log("Debounced Will Params size", debouncedWill?.length);
-    console.log("Debounced Will", debouncedWill);
-
     setWill({...will, will: event.target.value});
   }
 

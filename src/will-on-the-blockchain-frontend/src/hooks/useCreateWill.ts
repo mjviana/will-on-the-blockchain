@@ -5,6 +5,7 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import {willSmartContractAbi} from "../constants";
+import {useEffect} from "react";
 
 export const useCreateWill = (
   address: Address,
@@ -43,13 +44,20 @@ export const useCreateWill = (
     hash: writeCreateWillData?.hash,
   });
 
+  useEffect(() => {
+    refetchPrepareCreateWill();
+    resetWriteCreateWill();
+  }, [
+    writeCreateWill,
+    isTransanctionCreateWillSuccess,
+    isTransactionCreateWillError,
+  ]);
+
   return {
     prepareCreateWillError,
     isPrepareCreateWillError,
-    refetchPrepareCreateWill,
     writeCreateWillData,
     writeCreateWill,
-    resetWriteCreateWill,
     isTransactionCreateWillLoading,
     isTransanctionCreateWillSuccess,
     isTransactionCreateWillError,
