@@ -47,14 +47,12 @@ export const useRevokeWill = (
   });
 
   useEffect(() => {
-    resetWriteRevokeWill();
     refetchPrepareRevokeWill();
+    resetWriteRevokeWill();
   }, [revokeWrite, isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
   return {
-    refetchPrepareRevokeWill,
     revokeWrite,
-    resetWriteRevokeWill,
     isTransactionRevokeWillLoading,
     isTransactionRevokeSuccess,
     isTransactionRevokeWillError,

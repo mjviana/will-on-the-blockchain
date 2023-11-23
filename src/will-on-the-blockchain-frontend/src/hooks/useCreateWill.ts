@@ -57,6 +57,7 @@ export const useCreateWill = (
     prepareCreateWillError,
     isPrepareCreateWillError,
     writeCreateWillData,
+    refetchPrepareCreateWill,
     writeCreateWill,
     isTransactionCreateWillLoading,
     isTransanctionCreateWillSuccess,

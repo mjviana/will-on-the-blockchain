@@ -38,7 +38,6 @@ import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {contractAddresses} from "../constants";
 import {Address} from "wagmi";
 import {useDebounce} from "usehooks-ts";
-import {BaseError, ContractFunctionExecutionError} from "viem";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import CreateWillParams from "../types/CreateWillParams";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
@@ -105,6 +104,7 @@ const CreateWill = () => {
     prepareCreateWillError,
     isPrepareCreateWillError,
     writeCreateWillData,
+    refetchPrepareCreateWill,
     writeCreateWill,
     isTransactionCreateWillLoading,
     isTransanctionCreateWillSuccess,
@@ -137,10 +137,10 @@ const CreateWill = () => {
       console.log("revokeMode", revokeMode);
       console.log("Setting revoke mode to false...");
 
-      setRevokeMode(false);
-      console.log("Closing alert...");
+      deactivateRevokeWillMode();
+      refetchPrepareCreateWill();
 
-      onClose();
+      console.log("Closing alert...");
     }
   }, [isTransactionRevokeWillLoading, revokeWrite, revokeMode]);
 
@@ -309,6 +309,7 @@ const CreateWill = () => {
   }
 
   function activateRevokeWillMode(): void {
+    console.log("Activating revoke will mode...");
     setRevokeMode(true);
     revokeWrite?.();
   }
