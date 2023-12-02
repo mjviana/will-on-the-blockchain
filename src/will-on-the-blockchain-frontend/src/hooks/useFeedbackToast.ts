@@ -33,5 +33,5 @@ export function useFeedbackToast() {
     }
   }, [state]);
 
-  return [state, setState] as const;
+  return [setState] as const;
 }

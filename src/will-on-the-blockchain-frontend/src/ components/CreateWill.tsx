@@ -109,7 +109,7 @@ const CreateWill = () => {
     },
   } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const [feedbackToast, setFeedbackToast] = useFeedbackToast();
+  const [setFeedbackToast] = useFeedbackToast();
 
   const {address: walletAddress, isConnected} = useAccount();
 
