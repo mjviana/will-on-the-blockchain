@@ -1,3 +1,4 @@
+import {WillStepper} from "./WillStepper";
 import {
   Accordion,
   AccordionButton,
@@ -36,13 +37,14 @@ import {
 } from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {contractAddresses} from "../constants";
-import {Address} from "wagmi";
+import {Address, useAccount} from "wagmi";
 import {useDebounce} from "usehooks-ts";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import CreateWillParams from "../types/CreateWillParams";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
 import {useRevokeWill} from "../hooks/useRevokeWill";
+import {useFeedbackToast} from "../hooks/useFeedbackToast";
 
 const steps = [
   {
@@ -66,23 +68,23 @@ const steps = [
   {title: "Fourth", description: "Will Information", size: "50", active: false},
 ];
 
+const defaultWillParams: CreateWillParams = {
+  authorName: "",
+  will: "",
+  testatorCitizenshipCardId: "",
+  testatorBirthdate: 0,
+  isPublic: true,
+  firstWitnessName: "",
+  firstWitnessCitizenshipCardId: "",
+  firstWitnessBirthdate: 0,
+  secondWitnessName: "",
+  secondWitnessCitizenshipCardId: "",
+  secondWitnessBirthdate: 0,
+};
+
 const CreateWill = () => {
   const addresses: ContractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
-
-  const defaultWillParams: CreateWillParams = {
-    authorName: "",
-    will: "",
-    testatorCitizenshipCardId: "",
-    testatorBirthdate: 0,
-    isPublic: true,
-    firstWitnessName: "",
-    firstWitnessCitizenshipCardId: "",
-    firstWitnessBirthdate: 0,
-    secondWitnessName: "",
-    secondWitnessCitizenshipCardId: "",
-    secondWitnessBirthdate: 0,
-  };
 
   const [will, setWill] = useState<CreateWillParams>(defaultWillParams);
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
@@ -95,15 +97,21 @@ const CreateWill = () => {
   const {
     isOpen: isRevokeWillAlertOpen,
     onOpen: openRevokeWillAlertDialog,
-    onClose,
+    onClose = () => {
+      console.log("Closing alert...");
+    },
   } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const toast = useToast();
+  const [setFeedbackToast] = useFeedbackToast();
+
+  const {address: walletAddress, isConnected} = useAccount();
 
   const {
     prepareCreateWillError,
     isPrepareCreateWillError,
     writeCreateWillData,
+    isWriteCreateWillLoading,
+    writeCreateWillError,
     refetchPrepareCreateWill,
     writeCreateWill,
     isTransactionCreateWillLoading,
@@ -113,7 +121,11 @@ const CreateWill = () => {
   } = useCreateWill(contractAddress, debouncedWill, isWillCompleted());
 
   const {
-    revokeWrite,
+    prepareRevokeWillError,
+    writeRevokeWill,
+    writeRevokeWillError,
+    refetchPrepareRevokeWill,
+    isWriteRevokeWillLoading,
     isTransactionRevokeWillLoading,
     isTransactionRevokeSuccess,
     isTransactionRevokeWillError,
@@ -122,77 +134,45 @@ const CreateWill = () => {
   } = useRevokeWill(contractAddress, debouncedWill, revokeMode);
 
   useEffect(() => {
-    if (
-      isRevokeWillAlertOpen &&
-      revokeMode &&
-      !isTransactionRevokeWillLoading &&
-      transactionRevokeWillData != null
-    ) {
-      console.log("Inside if statement to close modal");
-      console.log("isRevokeWillModalOpen", isRevokeWillAlertOpen);
-      console.log(
-        "isTransactionRevokeWillLoading",
-        isTransactionRevokeWillLoading
-      );
-      console.log("revokeMode", revokeMode);
-      console.log("Setting revoke mode to false...");
-
-      deactivateRevokeWillMode();
-      refetchPrepareCreateWill();
-
-      console.log("Closing alert...");
-    }
-  }, [isTransactionRevokeWillLoading, revokeWrite, revokeMode]);
-
-  useEffect(() => {
     {
-      console.log("Inside useEffect for transaction status");
       if (isTransanctionCreateWillSuccess) {
-        console.log("Success from create will", writeCreateWillData);
-        toast({
+        setFeedbackToast({
           title: "Will Creation.",
           description: "Your will has been created successfully.",
           status: "success",
-          duration: 9000,
-          isClosable: true,
         });
       } else if (isTransactionCreateWillError) {
-        console.log("Error from create will", transactionCreateWillError);
-
-        toast({
+        setFeedbackToast({
           title: "Will Creation.",
           description:
             "Your will has not been created. Here are some details: " +
             transactionCreateWillError?.message,
           status: "error",
-          duration: 9000,
-          isClosable: true,
         });
       }
+      refetchPrepareRevokeWill();
     }
   }, [isTransanctionCreateWillSuccess, isTransactionCreateWillError]);
 
   useEffect(() => {
     {
       if (isTransactionRevokeSuccess) {
-        toast({
+        setFeedbackToast({
           title: "Will Revoke.",
           description: "Your will has been successfully revoked.",
           status: "success",
-          duration: 9000,
-          isClosable: true,
         });
       } else if (isTransactionRevokeWillError) {
-        toast({
+        setFeedbackToast({
           title: "Will Revoke.",
           description:
             "Your will has not been revoked. Here are some details: " +
             transactionRevokeWillError?.message,
           status: "error",
-          duration: 9000,
-          isClosable: true,
         });
       }
+      deactivateRevokeWillMode();
+      refetchPrepareCreateWill();
     }
   }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
@@ -210,10 +190,6 @@ const CreateWill = () => {
       will.will.length > 0
     );
   }
-
-  useEffect(() => {
-    console.log("Current will", will);
-  }, [will]);
 
   function setAuthorName(event: ChangeEvent<HTMLInputElement>): void {
     setWill({
@@ -309,12 +285,14 @@ const CreateWill = () => {
   }
 
   function activateRevokeWillMode(): void {
-    console.log("Activating revoke will mode...");
+    console.log("Revoking will...");
+    console.log("Write revoke will", writeRevokeWill);
     setRevokeMode(true);
-    revokeWrite?.();
+    writeRevokeWill?.();
   }
 
   function deactivateRevokeWillMode(): void {
+    console.log("Deactivating revoke will mode...");
     setRevokeMode(false);
     onClose();
   }
@@ -481,11 +459,23 @@ const CreateWill = () => {
           </Accordion>
           <Button
             w="fit-content"
-            isLoading={isTransactionCreateWillLoading}
-            loadingText="Creating Will..."
-            isDisabled={isTransactionCreateWillLoading}
+            isLoading={
+              isWriteCreateWillLoading || isTransactionCreateWillLoading
+            }
+            loadingText={
+              isWriteCreateWillLoading
+                ? "Waiting for confirmation..."
+                : isTransactionCreateWillLoading
+                ? "Creating Will..."
+                : "Create"
+            }
+            isDisabled={
+              isWriteCreateWillLoading ||
+              isTransactionCreateWillLoading ||
+              !isWillCompleted()
+            }
             onClick={() => {
-              if (!isPrepareCreateWillError) {
+              if (!prepareCreateWillError) {
                 writeCreateWill?.();
               } else if (
                 isPrepareCreateWillError &&
@@ -495,9 +485,7 @@ const CreateWill = () => {
               }
             }}
           >
-            {isTransactionCreateWillLoading
-              ? "Creating Will..."
-              : "Create Will"}
+            Create Will
           </Button>
         </Stack>
       </Stack>
@@ -532,8 +520,19 @@ const CreateWill = () => {
 
           <AlertDialogFooter>
             <Button
-              isLoading={isTransactionRevokeWillLoading}
-              loadingText="Revoking Will..."
+              isLoading={
+                isWriteRevokeWillLoading || isTransactionRevokeWillLoading
+              }
+              isDisabled={
+                isWriteRevokeWillLoading || isTransactionRevokeWillLoading
+              }
+              loadingText={
+                isWriteRevokeWillLoading
+                  ? "Waiting for confirmation..."
+                  : isTransactionRevokeWillLoading
+                  ? "Revoking Will..."
+                  : "Yes"
+              }
               colorScheme="blue"
               mr={3}
               onClick={activateRevokeWillMode}
@@ -544,6 +543,24 @@ const CreateWill = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <p>Prepare Errors:</p>
+      {prepareCreateWillError && (
+        <p>Error prepare Create will: {prepareCreateWillError.message}</p>
+      )}
+      {prepareRevokeWillError && (
+        <p>Error preapre revoke will: {prepareRevokeWillError.message}</p>
+      )}
+
+      <p>----------------------------------</p>
+      <p>Write Errors:</p>
+      {writeCreateWillError && (
+        <p>Error write Create will: {writeCreateWillError.message}</p>
+      )}
+      {writeRevokeWillError && (
+        <p>Error write Revoke will: {writeRevokeWillError.message}</p>
+      )}
+      {isConnected ? <p>Connected to {walletAddress}</p> : <p>Not Connected</p>}
     </>
   );
 };

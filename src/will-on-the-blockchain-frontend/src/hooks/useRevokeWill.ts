@@ -16,11 +16,13 @@ export const useRevokeWill = (
   const {
     config: prepareRevokePublicWillConfig,
     refetch: refetchPrepareRevokeWill,
+    error: prepareRevokeWillError,
+    isError: isPrepareRevokeWillError,
   } = usePrepareContractWrite({
     address: address,
     abi: willSmartContractAbi,
     functionName: "revokePublicWill",
-    enabled: Boolean(revokeMode), // Enable the hook only when the debouncedWill is not null and revokeMode is true.
+    enabled: revokeMode, // Enable the hook only when the debouncedWill is not null and revokeMode is true.
     args: debouncedWill
       ? debouncedWill[2] != ""
         ? [debouncedWill[2]]
@@ -31,8 +33,12 @@ export const useRevokeWill = (
   // useContractWrite hook performs the actual contract write transaction.
   const {
     data: writeRevokeWillData,
-    write: revokeWrite,
+    isLoading: isWriteRevokeWillLoading,
+    write: writeRevokeWill,
     reset: resetWriteRevokeWill,
+    error: writeRevokeWillError,
+    isSuccess: isWriteRevokeWillSuccess,
+    isError: isWriteRevokeWillError,
   } = useContractWrite(prepareRevokePublicWillConfig);
 
   // useWaitForTransaction hook is used to wait for a transaction to be mined, provides the ability to show feedback on the status of the transaction to the user.
@@ -47,12 +53,23 @@ export const useRevokeWill = (
   });
 
   useEffect(() => {
+    console.log("useRevokeWill writeRevokeWill useEffect");
     refetchPrepareRevokeWill();
+  }, [isWriteRevokeWillError, isWriteRevokeWillSuccess]);
+
+  useEffect(() => {
+    console.log("useRevokeWill transactionRevoke useEffect");
     resetWriteRevokeWill();
-  }, [revokeWrite, isTransactionRevokeSuccess, isTransactionRevokeWillError]);
+  }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
   return {
-    revokeWrite,
+    prepareRevokeWillError,
+    isPrepareRevokeWillError,
+    isWriteRevokeWillLoading,
+    writeRevokeWillError,
+    refetchPrepareRevokeWill,
+    writeRevokeWill,
+    resetWriteRevokeWill,
     isTransactionRevokeWillLoading,
     isTransactionRevokeSuccess,
     isTransactionRevokeWillError,
