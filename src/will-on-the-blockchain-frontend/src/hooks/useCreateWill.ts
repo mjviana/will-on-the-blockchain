@@ -5,7 +5,7 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import {willSmartContractAbi} from "../constants";
-import {useCallback, useEffect} from "react";
+import {useEffect} from "react";
 
 export const useCreateWill = (
   address: Address,

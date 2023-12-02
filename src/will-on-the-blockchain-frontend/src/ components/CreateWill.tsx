@@ -1,4 +1,3 @@
-import {WillStepper} from "./WillStepper";
 import {
   Accordion,
   AccordionButton,
@@ -32,7 +31,6 @@ import {
   AlertDialogCloseButton,
   AlertDialogBody,
   AlertDialogFooter,
-  useToast,
   Link,
 } from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
@@ -52,20 +50,29 @@ const steps = [
     description: "Author Information",
     size: "150",
     active: true,
+    completed: false,
   },
   {
     title: "Second",
     description: "First Witness Information",
     size: "150",
     active: false,
+    completed: false,
   },
   {
     title: "Third",
     description: "Second Witness Information",
     size: "150",
     active: false,
+    completed: false,
   },
-  {title: "Fourth", description: "Will Information", size: "50", active: false},
+  {
+    title: "Fourth",
+    description: "Will Information",
+    size: "50",
+    active: false,
+    completed: false,
+  },
 ];
 
 const defaultWillParams: CreateWillParams = {
@@ -90,7 +97,7 @@ const CreateWill = () => {
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
   const [revokeMode, setRevokeMode] = useState(false);
   const {activeStep, setActiveStep} = useSteps({
-    index: 1,
+    index: 0,
     count: steps.length,
   });
   const [willSteps, setWillSteps] = useState(steps);
@@ -102,7 +109,7 @@ const CreateWill = () => {
     },
   } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const [setFeedbackToast] = useFeedbackToast();
+  const [feedbackToast, setFeedbackToast] = useFeedbackToast();
 
   const {address: walletAddress, isConnected} = useAccount();
 
@@ -178,16 +185,34 @@ const CreateWill = () => {
 
   function isWillCompleted(): boolean {
     return (
+      isAuthorDataCompleted() &&
+      isFirstWitnessDataCompleted() &&
+      isSecondWitnessDataCompleted() &&
+      will.will.length > 0
+    );
+  }
+
+  function isAuthorDataCompleted(): boolean {
+    return (
       will.authorName.length > 0 &&
       will.testatorCitizenshipCardId.length > 0 &&
-      will.testatorBirthdate != 0 &&
+      will.testatorBirthdate != 0
+    );
+  }
+
+  function isFirstWitnessDataCompleted(): boolean {
+    return (
       will.firstWitnessName.length > 0 &&
       will.firstWitnessCitizenshipCardId.length > 0 &&
-      will.firstWitnessBirthdate != 0 &&
+      will.firstWitnessBirthdate != 0
+    );
+  }
+
+  function isSecondWitnessDataCompleted(): boolean {
+    return (
       will.secondWitnessName.length > 0 &&
       will.secondWitnessCitizenshipCardId.length > 0 &&
-      will.secondWitnessBirthdate != 0 &&
-      will.will.length > 0
+      will.secondWitnessBirthdate != 0
     );
   }
 
@@ -196,6 +221,21 @@ const CreateWill = () => {
       ...will,
       authorName: event.target.value, // Set the name to the value of the input field
     });
+
+    if (isAuthorDataCompleted()) {
+      setActiveStep(1);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setAuthorCitizenshipId(event: ChangeEvent<HTMLInputElement>): void {
@@ -203,6 +243,21 @@ const CreateWill = () => {
       ...will,
       testatorCitizenshipCardId: event.target.value,
     });
+
+    if (isAuthorDataCompleted()) {
+      setActiveStep(1);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setAuthorBirthdate(event: ChangeEvent<HTMLInputElement>): void {
@@ -213,6 +268,21 @@ const CreateWill = () => {
       ...will,
       testatorBirthdate: birthdateTimestamp,
     });
+
+    if (isAuthorDataCompleted()) {
+      setActiveStep(1);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setFirstWitnessName(event: ChangeEvent<HTMLInputElement>): void {
@@ -220,6 +290,21 @@ const CreateWill = () => {
       ...will,
       firstWitnessName: event.target.value,
     });
+
+    if (isFirstWitnessDataCompleted()) {
+      setActiveStep(2);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setFirstWitnessCitizenshipId(
@@ -229,6 +314,21 @@ const CreateWill = () => {
       ...will,
       firstWitnessCitizenshipCardId: event.target.value,
     });
+
+    if (isFirstWitnessDataCompleted()) {
+      setActiveStep(2);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setFirstWitnessBirthdate(
@@ -241,6 +341,21 @@ const CreateWill = () => {
       ...will,
       firstWitnessBirthdate: birthdateTimestamp,
     });
+
+    if (isFirstWitnessDataCompleted()) {
+      setActiveStep(2);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setSecondWitnessName(event: ChangeEvent<HTMLInputElement>): void {
@@ -249,7 +364,20 @@ const CreateWill = () => {
       secondWitnessName: event.target.value,
     });
 
-    setActiveStep(2);
+    if (isSecondWitnessDataCompleted()) {
+      setActiveStep(3);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setSecondWitnessCitizenshipId(
@@ -259,6 +387,21 @@ const CreateWill = () => {
       ...will,
       secondWitnessCitizenshipCardId: event.target.value,
     });
+
+    if (isSecondWitnessDataCompleted()) {
+      setActiveStep(3);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setSecondWitnessBirthdate(
@@ -271,6 +414,21 @@ const CreateWill = () => {
       ...will,
       secondWitnessBirthdate: birthdateTimestamp,
     });
+
+    if (isSecondWitnessDataCompleted()) {
+      setActiveStep(3);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function setWillType(nextValue: string): void {
@@ -282,6 +440,21 @@ const CreateWill = () => {
 
   function setWillBody(event: ChangeEvent<HTMLTextAreaElement>): void {
     setWill({...will, will: event.target.value});
+
+    if (isWillCompleted()) {
+      setActiveStep(4);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Fourth" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Fourth" ? {...step, completed: false} : step
+        )
+      );
+    }
   }
 
   function activateRevokeWillMode(): void {
@@ -335,7 +508,7 @@ const CreateWill = () => {
             <Step key={index}>
               <StepIndicator>
                 <StepStatus
-                  complete={<StepIcon />}
+                  complete={step.completed ? <StepIcon /> : <StepNumber />}
                   incomplete={<StepNumber />}
                   active={<StepNumber />}
                 />
