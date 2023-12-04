@@ -1,18 +1,5 @@
-import {
-  Button,
-  Text,
-  Stack,
-  useSteps,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogCloseButton,
-  AlertDialogBody,
-  AlertDialogFooter,
-  Link,
-} from "@chakra-ui/react";
+import {RevokeWillAlertDialog} from "./RevokeWillAlertDialog";
+import {Stack, useSteps, useDisclosure, Link} from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {contractAddresses} from "../constants";
 import {Address, useAccount} from "wagmi";
@@ -73,16 +60,14 @@ const defaultWillParams: CreateWillParams = {
 };
 
 const CreateWill = () => {
-  const addresses: ContractAddressesInterface = contractAddresses;
-  const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
   const [will, setWill] = useState<CreateWillParams>(defaultWillParams);
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
-  const [revokeMode, setRevokeMode] = useState(false);
   const {activeStep, setActiveStep} = useSteps({
     index: 0,
     count: steps.length,
   });
   const [willSteps, setWillSteps] = useState(steps);
+  const [revokeMode, setRevokeMode] = useState(false);
   const {
     isOpen: isRevokeWillAlertOpen,
     onOpen: openRevokeWillAlertDialog,
@@ -93,8 +78,9 @@ const CreateWill = () => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const [setFeedbackToast] = useFeedbackToast();
 
+  const addresses: ContractAddressesInterface = contractAddresses;
+  const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
   const {address: walletAddress, isConnected} = useAccount();
-
   const {
     prepareCreateWillError,
     isPrepareCreateWillError,
@@ -518,50 +504,15 @@ const CreateWill = () => {
           </Link>
         </>
       )}
-      <AlertDialog
-        closeOnOverlayClick={false}
-        isOpen={isRevokeWillAlertOpen}
+      <RevokeWillAlertDialog
+        isRevokeWillAlertOpen={isRevokeWillAlertOpen}
         onClose={onClose}
-        leastDestructiveRef={cancelRef}
-        isCentered
-      >
-        <AlertDialogOverlay />
-        <AlertDialogContent>
-          <AlertDialogHeader>Revoke Will?</AlertDialogHeader>
-          <AlertDialogCloseButton />
-          <AlertDialogBody>
-            <Text>
-              You've previously created a will. Would you like to revoke it and
-              designate this as your new will? Click 'Yes' to proceed, and then
-              press the 'Create Will' button to generate your will.
-            </Text>
-          </AlertDialogBody>
-
-          <AlertDialogFooter>
-            <Button
-              isLoading={
-                isWriteRevokeWillLoading || isTransactionRevokeWillLoading
-              }
-              isDisabled={
-                isWriteRevokeWillLoading || isTransactionRevokeWillLoading
-              }
-              loadingText={
-                isWriteRevokeWillLoading
-                  ? "Waiting for confirmation..."
-                  : isTransactionRevokeWillLoading
-                  ? "Revoking Will..."
-                  : "Yes"
-              }
-              colorScheme="blue"
-              mr={3}
-              onClick={activateRevokeWillMode}
-            >
-              Yes
-            </Button>
-            <Button onClick={deactivateRevokeWillMode}>Cancel</Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        cancelRef={cancelRef}
+        isWriteRevokeWillLoading={isWriteRevokeWillLoading}
+        isTransactionRevokeWillLoading={isTransactionRevokeWillLoading}
+        activateRevokeWillMode={activateRevokeWillMode}
+        deactivateRevokeWillMode={deactivateRevokeWillMode}
+      />
 
       <p>Prepare Errors:</p>
       {prepareCreateWillError && (
