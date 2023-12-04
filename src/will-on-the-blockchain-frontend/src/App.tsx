@@ -1,7 +1,7 @@
 import {Grid, GridItem} from "@chakra-ui/react";
-import Navbar from "./ components/NavBar";
-import Wills from "./ components/Wills";
-import CreateWill from "./ components/CreateWill";
+import Navbar from "./components/NavBar";
+import Wills from "./components/Wills";
+import CreateWill from "./components/CreateWill";
 
 function App() {
   return (

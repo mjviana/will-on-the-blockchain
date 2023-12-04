@@ -43,6 +43,7 @@ import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
 import {useRevokeWill} from "../hooks/useRevokeWill";
 import {useFeedbackToast} from "../hooks/useFeedbackToast";
+import WillStepper from "./WillStepper";
 
 const steps = [
   {
@@ -497,31 +498,7 @@ const CreateWill = () => {
   return (
     <>
       <Stack direction="row">
-        <Stepper
-          p={10}
-          index={activeStep}
-          orientation="vertical"
-          gap="0"
-          h={300}
-        >
-          {willSteps.map((step, index) => (
-            <Step key={index}>
-              <StepIndicator>
-                <StepStatus
-                  complete={step.completed ? <StepIcon /> : <StepNumber />}
-                  incomplete={<StepNumber />}
-                  active={<StepNumber />}
-                />
-              </StepIndicator>
-              <Box h={step.active ? step.size : "55px"} flexShrink="0">
-                <StepTitle>{step.title}</StepTitle>
-                <StepDescription>{step.description}</StepDescription>
-              </Box>
-              <StepSeparator />
-            </Step>
-          ))}
-        </Stepper>
-
+        <WillStepper activeStep={activeStep} steps={willSteps} />
         <Stack p={10} w="100%" direction="column">
           <Accordion defaultIndex={[0]} allowMultiple>
             <AccordionItem>
