@@ -1,27 +1,7 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
   Text,
-  Heading,
-  Input,
-  Radio,
-  RadioGroup,
   Stack,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  Stepper,
-  Textarea,
   useSteps,
   useDisclosure,
   AlertDialog,
@@ -44,6 +24,8 @@ import {useCreateWill} from "../hooks/useCreateWill";
 import {useRevokeWill} from "../hooks/useRevokeWill";
 import {useFeedbackToast} from "../hooks/useFeedbackToast";
 import WillStepper from "./WillStepper";
+import {CreateWillButton} from "./CreateWillButton";
+import {WillForm} from "./WillForm";
 
 const steps = [
   {
@@ -93,7 +75,6 @@ const defaultWillParams: CreateWillParams = {
 const CreateWill = () => {
   const addresses: ContractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
-
   const [will, setWill] = useState<CreateWillParams>(defaultWillParams);
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
   const [revokeMode, setRevokeMode] = useState(false);
@@ -500,143 +481,31 @@ const CreateWill = () => {
       <Stack direction="row">
         <WillStepper activeStep={activeStep} steps={willSteps} />
         <Stack p={10} w="100%" direction="column">
-          <Accordion defaultIndex={[0]} allowMultiple>
-            <AccordionItem>
-              <AccordionButton onClick={toggleAuthorAccordionButton}>
-                <Box as="span" flex="1" textAlign="left">
-                  <Heading as="h6" size="sm">
-                    Author
-                  </Heading>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <Stack>
-                  <Input placeholder="Name" onChange={setAuthorName} />
-                  <Stack direction="row">
-                    <Input
-                      type="number"
-                      placeholder="Citizenship Id"
-                      onChange={setAuthorCitizenshipId}
-                    />
-                    <Input
-                      type="date"
-                      placeholder="Birthdate"
-                      onChange={setAuthorBirthdate}
-                    />
-                  </Stack>
-                </Stack>
-              </AccordionPanel>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionButton onClick={toggleFirstWitnessButton}>
-                <Box as="span" flex="1" textAlign="left">
-                  <Heading as="h6" size="sm" pb={3}>
-                    First Witness
-                  </Heading>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <Stack>
-                  <Input placeholder="Name" onChange={setFirstWitnessName} />
-                  <Stack direction="row">
-                    <Input
-                      type="number"
-                      placeholder="Citizenship Id"
-                      onChange={setFirstWitnessCitizenshipId}
-                    />
-                    <Input
-                      type="date"
-                      placeholder="Birthdate"
-                      onChange={setFirstWitnessBirthdate}
-                    />
-                  </Stack>
-                </Stack>
-              </AccordionPanel>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionButton onClick={toggleSecondWitnessButton}>
-                <Box as="span" flex="1" textAlign="left">
-                  <Heading as="h6" size="sm" pb={3}>
-                    Second Witness
-                  </Heading>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <Stack>
-                  <Input placeholder="Name" onChange={setSecondWitnessName} />
-                  <Stack direction="row">
-                    <Input
-                      type="number"
-                      placeholder="Citizenship Id"
-                      onChange={setSecondWitnessCitizenshipId}
-                    />
-                    <Input
-                      type="date"
-                      placeholder="Birthdate"
-                      onChange={setSecondWitnessBirthdate}
-                    />
-                  </Stack>
-                </Stack>
-              </AccordionPanel>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionButton>
-                <Box as="span" flex="1" textAlign="left">
-                  <Heading as="h6" size="sm" pb={3}>
-                    Will
-                  </Heading>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <RadioGroup defaultValue="public" onChange={setWillType} mb={6}>
-                  <Stack direction="row" spacing={5}>
-                    <Radio value="public">Public</Radio>
-                    <Radio value="private">Private</Radio>
-                  </Stack>
-                </RadioGroup>
-                <Textarea
-                  h="200px"
-                  size="lg"
-                  placeholder="Write your will here"
-                  onChange={setWillBody}
-                />
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
-          <Button
-            w="fit-content"
-            isLoading={
-              isWriteCreateWillLoading || isTransactionCreateWillLoading
-            }
-            loadingText={
-              isWriteCreateWillLoading
-                ? "Waiting for confirmation..."
-                : isTransactionCreateWillLoading
-                ? "Creating Will..."
-                : "Create"
-            }
-            isDisabled={
-              isWriteCreateWillLoading ||
-              isTransactionCreateWillLoading ||
-              !isWillCompleted()
-            }
-            onClick={() => {
-              if (!prepareCreateWillError) {
-                writeCreateWill?.();
-              } else if (
-                isPrepareCreateWillError &&
-                prepareCreateWillError?.message.includes("HasCreatedWill")
-              ) {
-                openRevokeWillAlertDialog();
-              }
-            }}
-          >
-            Create Will
-          </Button>
+          <WillForm
+            setAuthorBirthdate={setAuthorBirthdate}
+            setAuthorCitizenshipId={setAuthorCitizenshipId}
+            setAuthorName={setAuthorName}
+            setFirstWitnessBirthdate={setFirstWitnessBirthdate}
+            setFirstWitnessCitizenshipId={setFirstWitnessCitizenshipId}
+            setFirstWitnessName={setFirstWitnessName}
+            setSecondWitnessBirthdate={setSecondWitnessBirthdate}
+            setSecondWitnessCitizenshipId={setSecondWitnessCitizenshipId}
+            setSecondWitnessName={setSecondWitnessName}
+            setWillBody={setWillBody}
+            setWillType={setWillType}
+            toggleAuthorAccordionButton={toggleAuthorAccordionButton}
+            toggleFirstWitnessButton={toggleFirstWitnessButton}
+            toggleSecondWitnessButton={toggleSecondWitnessButton}
+          />
+          <CreateWillButton
+            isWriteCreateWillLoading={isWriteCreateWillLoading}
+            isTransactionCreateWillLoading={isTransactionCreateWillLoading}
+            isWillCompleted={isWillCompleted}
+            prepareCreateWillError={prepareCreateWillError}
+            writeCreateWill={writeCreateWill}
+            isPrepareCreateWillError={isPrepareCreateWillError}
+            openRevokeWillAlertDialog={openRevokeWillAlertDialog}
+          />
         </Stack>
       </Stack>
       {isTransanctionCreateWillSuccess && (
