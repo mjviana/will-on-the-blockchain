@@ -518,8 +518,8 @@ const CreateWill = () => {
         cancelRef={cancelRef}
         isWriteRevokeWillLoading={isWriteRevokeWillLoading}
         isTransactionRevokeWillLoading={isTransactionRevokeWillLoading}
-        activateRevokeWillMode={activateRevokeWillMode}
-        deactivateRevokeWillMode={deactivateRevokeWillMode}
+        onActivateRevokeWillMode={activateRevokeWillMode}
+        onDeactivateRevokeWillMode={deactivateRevokeWillMode}
       />
 
       <p>Prepare Errors:</p>

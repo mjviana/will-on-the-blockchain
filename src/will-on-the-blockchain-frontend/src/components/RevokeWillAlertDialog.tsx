@@ -16,8 +16,8 @@ interface RevokeWillAlertDialogProps {
   cancelRef: React.RefObject<HTMLButtonElement>;
   isWriteRevokeWillLoading: boolean;
   isTransactionRevokeWillLoading: boolean;
-  activateRevokeWillMode: () => void;
-  deactivateRevokeWillMode: () => void;
+  onActivateRevokeWillMode: () => void;
+  onDeactivateRevokeWillMode: () => void;
 }
 
 export function RevokeWillAlertDialog({
@@ -26,8 +26,8 @@ export function RevokeWillAlertDialog({
   cancelRef,
   isWriteRevokeWillLoading,
   isTransactionRevokeWillLoading,
-  activateRevokeWillMode,
-  deactivateRevokeWillMode,
+  onActivateRevokeWillMode,
+  onDeactivateRevokeWillMode,
 }: RevokeWillAlertDialogProps) {
   return (
     <AlertDialog
@@ -66,11 +66,11 @@ export function RevokeWillAlertDialog({
             }
             colorScheme="blue"
             mr={3}
-            onClick={activateRevokeWillMode}
+            onClick={onActivateRevokeWillMode}
           >
             Yes
           </Button>
-          <Button onClick={deactivateRevokeWillMode}>Cancel</Button>
+          <Button onClick={onDeactivateRevokeWillMode}>Cancel</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
