@@ -479,20 +479,20 @@ const CreateWill = () => {
         <WillStepper activeStep={activeStep} steps={willSteps} />
         <Stack p={10} w="100%" direction="column">
           <WillForm
-            setAuthorBirthdate={setAuthorBirthdate}
-            setAuthorCitizenshipId={setAuthorCitizenshipId}
-            setAuthorName={setAuthorName}
-            setFirstWitnessBirthdate={setFirstWitnessBirthdate}
-            setFirstWitnessCitizenshipId={setFirstWitnessCitizenshipId}
-            setFirstWitnessName={setFirstWitnessName}
-            setSecondWitnessBirthdate={setSecondWitnessBirthdate}
-            setSecondWitnessCitizenshipId={setSecondWitnessCitizenshipId}
-            setSecondWitnessName={setSecondWitnessName}
-            setWillBody={setWillBody}
-            setWillType={setWillType}
-            toggleAuthorAccordionButton={toggleAuthorAccordionButton}
-            toggleFirstWitnessButton={toggleFirstWitnessButton}
-            toggleSecondWitnessButton={toggleSecondWitnessButton}
+            onAuthorBirthdateChange={setAuthorBirthdate}
+            onAuthorCitizenshipIdChange={setAuthorCitizenshipId}
+            onAuthorNameChange={setAuthorName}
+            onFirstWitnessBirthdateChange={setFirstWitnessBirthdate}
+            onFirstWitnessCitizenshipIdChange={setFirstWitnessCitizenshipId}
+            onFirstWitnessNameChange={setFirstWitnessName}
+            onSecondWitnessBirthdateChange={setSecondWitnessBirthdate}
+            onSecondWitnessCitizenshipIdChange={setSecondWitnessCitizenshipId}
+            onSecondWitnessNameChange={setSecondWitnessName}
+            onWillBodyChange={setWillBody}
+            onWillTypeChange={setWillType}
+            onAuthorAccordionButtonClick={toggleAuthorAccordionButton}
+            onFirstWitnessAccordionButtonClick={toggleFirstWitnessButton}
+            onSecondWitnessAccordionButtonClick={toggleSecondWitnessButton}
           />
           <CreateWillButton
             isWriteCreateWillLoading={isWriteCreateWillLoading}
