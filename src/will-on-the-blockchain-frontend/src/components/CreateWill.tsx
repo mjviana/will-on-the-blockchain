@@ -462,6 +462,17 @@ const CreateWill = () => {
     );
   }
 
+  function handleCreateWillClick(): void {
+    if (!prepareCreateWillError) {
+      writeCreateWill?.();
+    } else if (
+      isPrepareCreateWillError &&
+      prepareCreateWillError?.message.includes("HasCreatedWill")
+    ) {
+      openRevokeWillAlertDialog();
+    }
+  }
+
   return (
     <>
       <Stack direction="row">
@@ -486,11 +497,8 @@ const CreateWill = () => {
           <CreateWillButton
             isWriteCreateWillLoading={isWriteCreateWillLoading}
             isTransactionCreateWillLoading={isTransactionCreateWillLoading}
-            isWillCompleted={isWillCompleted}
-            prepareCreateWillError={prepareCreateWillError}
-            writeCreateWill={writeCreateWill}
-            isPrepareCreateWillError={isPrepareCreateWillError}
-            openRevokeWillAlertDialog={openRevokeWillAlertDialog}
+            isWillCompleted={isWillCompleted()}
+            onCreateWill={handleCreateWillClick}
           />
         </Stack>
       </Stack>

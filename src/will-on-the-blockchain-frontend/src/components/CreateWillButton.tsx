@@ -3,21 +3,15 @@ import {Button} from "@chakra-ui/react";
 interface CreateWillButtonProps {
   isWriteCreateWillLoading: boolean;
   isTransactionCreateWillLoading: boolean;
-  isWillCompleted: () => boolean;
-  prepareCreateWillError: Error | null;
-  isPrepareCreateWillError: boolean;
-  openRevokeWillAlertDialog: () => void;
-  writeCreateWill: (() => void) | undefined;
+  isWillCompleted: boolean;
+  onCreateWill: () => void;
 }
 
 export function CreateWillButton({
   isWriteCreateWillLoading,
   isTransactionCreateWillLoading,
   isWillCompleted,
-  prepareCreateWillError,
-  writeCreateWill,
-  isPrepareCreateWillError,
-  openRevokeWillAlertDialog,
+  onCreateWill,
 }: CreateWillButtonProps) {
   return (
     <Button
@@ -33,18 +27,9 @@ export function CreateWillButton({
       isDisabled={
         isWriteCreateWillLoading ||
         isTransactionCreateWillLoading ||
-        !isWillCompleted()
+        !isWillCompleted
       }
-      onClick={() => {
-        if (!prepareCreateWillError) {
-          writeCreateWill?.();
-        } else if (
-          isPrepareCreateWillError &&
-          prepareCreateWillError?.message.includes("HasCreatedWill")
-        ) {
-          openRevokeWillAlertDialog();
-        }
-      }}
+      onClick={onCreateWill}
     >
       Create Will
     </Button>
