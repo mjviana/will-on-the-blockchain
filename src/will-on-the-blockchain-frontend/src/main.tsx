@@ -15,6 +15,8 @@ import {
 import {configureChains, createConfig, WagmiConfig} from "wagmi";
 import {sepolia} from "wagmi/chains";
 import {alchemyProvider} from "wagmi/providers/alchemy";
+import {RouterProvider} from "react-router-dom";
+import router from "./routes.tsx";
 
 const WALLET_CONNECT_PROJECT_ID =
   import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || "";
@@ -49,7 +51,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             darkMode: midnightTheme(),
           }}
         >
-          <App />
+          <RouterProvider router={router} />
         </RainbowKitProvider>
       </ChakraProvider>
     </WagmiConfig>

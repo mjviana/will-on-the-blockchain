@@ -9,7 +9,7 @@ interface contractAddressesInterface {
   [key: string]: string[];
 }
 
-const Wills = () => {
+const PublicWillsPage = () => {
   const [wills, setWills] = useState<BlockchainWill.WillStructOutput[]>([]);
   const addresses: contractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
@@ -48,4 +48,4 @@ const Wills = () => {
   );
 };
 
-export default Wills;
+export default PublicWillsPage;

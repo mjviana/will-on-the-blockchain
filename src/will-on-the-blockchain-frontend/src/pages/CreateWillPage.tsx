@@ -1,4 +1,4 @@
-import {RevokeWillAlertDialog} from "./RevokeWillAlertDialog";
+import {RevokeWillAlertDialog} from "../components/RevokeWillAlertDialog";
 import {Stack, useSteps, useDisclosure, Link} from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {contractAddresses} from "../constants";
@@ -10,9 +10,9 @@ import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
 import {useRevokeWill} from "../hooks/useRevokeWill";
 import {useFeedbackToast} from "../hooks/useFeedbackToast";
-import WillStepper from "./WillStepper";
-import {CreateWillButton} from "./CreateWillButton";
-import {WillForm} from "./WillForm";
+import WillStepper from "../components/WillStepper";
+import {CreateWillButton} from "../components/CreateWillButton";
+import {WillForm} from "../components/WillForm";
 
 const steps = [
   {
@@ -59,7 +59,7 @@ const defaultWillParams: CreateWillParams = {
   secondWitnessBirthdate: 0,
 };
 
-const CreateWill = () => {
+const CreateWillPage = () => {
   const [will, setWill] = useState<CreateWillParams>(defaultWillParams);
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
   const {activeStep, setActiveStep} = useSteps({
@@ -543,4 +543,4 @@ const CreateWill = () => {
   );
 };
 
-export default CreateWill;
+export default CreateWillPage;

@@ -1,19 +1,22 @@
-import {Flex, HStack, Link, Spacer} from "@chakra-ui/react";
+import {Flex, HStack, Spacer} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
+import {Link} from "react-router-dom";
 
 const Navbar = () => {
   return (
     <>
       <Flex paddingLeft={5} paddingRight={5} display="flex" alignItems="center">
-        <BiBookHeart fontSize="60px" />
+        <Link to={"/"}>
+          <BiBookHeart fontSize="60px" />
+        </Link>
         <Spacer />
-        <Link>Public Wills</Link>
+        <Link to={"/public-wills"}>Public Wills</Link>
         <Spacer />
-        <Link>Create a Will</Link>
+        <Link to={"/create-will"}>Create a Will</Link>
         <Spacer />
-        <Link>How to</Link>
+        <Link to={"/how-to-create-will"}>How to</Link>
         <Spacer />
         <HStack justifyContent={"flex-end"}>
           <ColorModeSwitch />
