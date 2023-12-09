@@ -2,8 +2,9 @@ import {abi, contractAddresses} from "../constants";
 import {useEffect, useState} from "react";
 import {BlockchainWill} from "../types";
 import {Address, useContractRead} from "wagmi";
-import {Box, Button} from "@chakra-ui/react";
-import {Text} from "@chakra-ui/react";
+import {Button, SimpleGrid} from "@chakra-ui/react";
+import WillCard from "../components/WillCard";
+import WillCardContainer from "../components/WillCardContainer";
 
 interface contractAddressesInterface {
   [key: string]: string[];
@@ -36,14 +37,19 @@ const PublicWillsPage = () => {
     <>
       <Button onClick={() => readContract.refetch()}> Get Wills</Button>
       Wills:{" "}
-      {wills?.map((w, i) => (
-        <Box key={i} m={2} bg="blue.900">
-          <h1>
-            {w.testator.name} | Citizenship Id: {w.testator.citizenshipCardId} |
-          </h1>
-          <Text>Will: {w.will}</Text>
-        </Box>
-      ))}
+      <SimpleGrid
+        columns={{sm: 1, md: 2, lg: 3, xl: 4}}
+        spacing={6}
+        padding="10px"
+      >
+        {wills?.map((w, i) => (
+          <>
+            <WillCardContainer key={i}>
+              <WillCard will={w} />
+            </WillCardContainer>
+          </>
+        ))}
+      </SimpleGrid>
     </>
   );
 };
