@@ -15,6 +15,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Center,
+  Stack,
+  StackDivider,
+  Divider,
 } from "@chakra-ui/react";
 import {FaUser, FaCalendar, FaUserFriends} from "react-icons/fa";
 import {HiIdentification} from "react-icons/hi";
@@ -30,9 +34,11 @@ const WillCard = ({will}: WillCardProps) => {
   const {isOpen, onOpen, onClose} = useDisclosure();
 
   return (
-    <Card bgColor="blue.900">
+    <Card>
       <CardBody>
-        <Heading size="md">Will Details</Heading>
+        <Heading mb={3} size="md">
+          Will Details
+        </Heading>
         <HStack>
           <Icon as={FaUser} />
           <Text>Testator Name</Text>
@@ -66,7 +72,30 @@ const WillCard = ({will}: WillCardProps) => {
           <ModalHeader>Will from {will.testator.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <Text>{will.will}</Text>
+            <HStack>
+              <Icon as={FaUser} />
+              <Text>Testator Name</Text>
+            </HStack>
+            <Text>{will.testator.name}</Text>
+            <HStack>
+              <Icon as={HiIdentification} />
+              <Text>Citizenship Id</Text>
+            </HStack>
+            <Text>{will.testator.citizenshipCardId}</Text>
+            <HStack>
+              <Icon as={FaCalendar} />
+              <Text>Date of Creation</Text>
+            </HStack>
+            <Text>18/08/2023</Text>
+            <HStack>
+              <Icon as={FaUserFriends} />
+              <Text>Witnesses</Text>
+            </HStack>
+            <Text>
+              {will.firstWitness.name}, {will.secondWitness.name}
+            </Text>
+            <Divider pb={5} />
+            <Text pt={5}>{will.will}</Text>
           </ModalBody>
         </ModalContent>
       </Modal>
