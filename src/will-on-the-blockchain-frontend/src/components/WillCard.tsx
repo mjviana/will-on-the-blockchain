@@ -12,12 +12,8 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Center,
-  Stack,
-  StackDivider,
   Divider,
 } from "@chakra-ui/react";
 import {FaUser, FaCalendar, FaUserFriends} from "react-icons/fa";

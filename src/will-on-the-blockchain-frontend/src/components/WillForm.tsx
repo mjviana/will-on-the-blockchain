@@ -36,6 +36,8 @@ interface WillFormProps {
   ) => void;
   onWillTypeChange: (e: string) => void;
   onWillBodyChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  isPrivateWill: boolean;
+  onSecretKeyChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function WillForm({
@@ -53,6 +55,8 @@ export function WillForm({
   onSecondWitnessBirthdateChange,
   onWillTypeChange,
   onWillBodyChange,
+  isPrivateWill,
+  onSecretKeyChange,
 }: WillFormProps) {
   return (
     <>
@@ -156,6 +160,13 @@ export function WillForm({
               <Stack direction="row" spacing={5}>
                 <Radio value="public">Public</Radio>
                 <Radio value="private">Private</Radio>
+                {isPrivateWill && (
+                  <Input
+                    type="password"
+                    placeholder="Secret Code"
+                    onChange={onSecretKeyChange}
+                  />
+                )}
               </Stack>
             </RadioGroup>
             <Textarea

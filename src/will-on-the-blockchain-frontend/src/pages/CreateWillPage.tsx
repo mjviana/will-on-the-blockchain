@@ -13,6 +13,7 @@ import {useFeedbackToast} from "../hooks/useFeedbackToast";
 import WillStepper from "../components/WillStepper";
 import {CreateWillButton} from "../components/CreateWillButton";
 import {WillForm} from "../components/WillForm";
+import {encrypt, decrypt} from "../utils/CryptoHelper";
 
 const steps = [
   {
@@ -61,6 +62,7 @@ const defaultWillParams: CreateWillParams = {
 
 const CreateWillPage = () => {
   const [will, setWill] = useState<CreateWillParams>(defaultWillParams);
+  const [secretKey, setSecretkey] = useState("");
   const debouncedWill = useDebounce(will ? Object.values(will!) : null, 500);
   const {activeStep, setActiveStep} = useSteps({
     index: 0,
@@ -464,6 +466,14 @@ const CreateWillPage = () => {
 
   function handleCreateWillClick(): void {
     if (!prepareCreateWillError) {
+      if (!will.isPublic) {
+        console.log("Secret key: ", secretKey);
+        const encryptedWill = encrypt(will.will, secretKey);
+        console.log("Encrypted will: ", encryptedWill);
+        console.log("Decrypted will: ", decrypt(encryptedWill, secretKey));
+      }
+      console.log("Will type: ", will.isPublic);
+
       writeCreateWill?.();
     } else if (
       isPrepareCreateWillError &&
@@ -471,6 +481,10 @@ const CreateWillPage = () => {
     ) {
       openRevokeWillAlertDialog();
     }
+  }
+
+  function handleSecretKeyChange(e: ChangeEvent<HTMLInputElement>): void {
+    setSecretkey(e.target.value);
   }
 
   return (
@@ -493,6 +507,8 @@ const CreateWillPage = () => {
             onAuthorAccordionButtonClick={toggleAuthorAccordionButton}
             onFirstWitnessAccordionButtonClick={toggleFirstWitnessButton}
             onSecondWitnessAccordionButtonClick={toggleSecondWitnessButton}
+            isPrivateWill={!will.isPublic}
+            onSecretKeyChange={handleSecretKeyChange}
           />
           <CreateWillButton
             isWriteCreateWillLoading={isWriteCreateWillLoading}
