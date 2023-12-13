@@ -153,6 +153,21 @@ const CreateWillPage = () => {
     }
   }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
+  useEffect(() => {
+    console.log("In useEffect for will type, secret key, will.will");
+
+    if (!will.isPublic) {
+      encryptWill();
+    }
+  }, [will.isPublic]);
+
+  function encryptWill() {
+    console.log("Will is private encrypting...");
+
+    const encryptedWill = encrypt(will.will, secretKey);
+    setWill((w) => ({...w, will: encryptedWill}));
+  }
+
   function isWillCompleted(): boolean {
     return (
       isAuthorDataCompleted() &&
@@ -404,12 +419,17 @@ const CreateWillPage = () => {
   function setWillType(nextValue: string): void {
     setWill({
       ...will,
-      isPublic: nextValue == "public",
+      isPublic: nextValue === "public",
     });
   }
 
   function setWillBody(event: ChangeEvent<HTMLTextAreaElement>): void {
-    setWill({...will, will: event.target.value});
+    if (!will.isPublic) {
+      const encryptedWill = encrypt(event.target.value, secretKey);
+      setWill({...will, will: encryptedWill});
+    } else {
+      setWill({...will, will: event.target.value});
+    }
 
     if (isWillCompleted()) {
       setActiveStep(4);
@@ -466,13 +486,8 @@ const CreateWillPage = () => {
 
   function handleCreateWillClick(): void {
     if (!prepareCreateWillError) {
-      if (!will.isPublic) {
-        console.log("Secret key: ", secretKey);
-        const encryptedWill = encrypt(will.will, secretKey);
-        console.log("Encrypted will: ", encryptedWill);
-        console.log("Decrypted will: ", decrypt(encryptedWill, secretKey));
-      }
-      console.log("Will type: ", will.isPublic);
+      console.log("Will type:", will.isPublic ? "public" : "private");
+      console.log("Will:", will.will);
 
       writeCreateWill?.();
     } else if (
