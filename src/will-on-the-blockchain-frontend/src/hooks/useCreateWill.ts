@@ -25,6 +25,13 @@ export const useCreateWill = (
     enabled: isWillCompleted, // Enable the hook only when the debouncedWill is not null and all the fields are filled.
     args: debouncedWill ? debouncedWill : [],
     gas: 3100000n,
+    onError(error) {
+      console.log(
+        "%c useCreateWill usePrepareContractWrite onError",
+        "color: red"
+      );
+      console.log("%c error:", "color: red", error);
+    },
   });
 
   // useContractWrite hook is used to send a contract write transaction.
@@ -65,6 +72,14 @@ export const useCreateWill = (
 
     resetWriteCreateWill();
   }, [isTransanctionCreateWillSuccess, isTransactionCreateWillError]);
+
+  // console.log(writeCreateWill);
+  // console.log(useContractWrite);
+  // console.log(
+  //   "%c prepare contract as error",
+  //   "color: red",
+  //   isPrepareCreateWillError
+  // );
 
   return {
     prepareCreateWillError,
