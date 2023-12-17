@@ -15,6 +15,7 @@ import {CreateWillButton} from "../components/CreateWillButton";
 import {WillForm} from "../components/WillForm";
 import {encrypt} from "../utils/CryptoHelper";
 import EncryptWillButton from "../components/EncryptWillButton";
+import FeedbackToast from "../components/FeedbackToast";
 
 const steps = [
   {
@@ -133,21 +134,6 @@ const CreateWillPage = () => {
   } = useRevokeWill(contractAddress, debouncedWill, revokeMode);
 
   useEffect(() => {
-    if (isTransanctionCreateWillSuccess) {
-      setFeedbackToast({
-        title: "Will Creation.",
-        description: "Your will has been created successfully.",
-        status: "success",
-      });
-    } else if (isTransactionCreateWillError) {
-      setFeedbackToast({
-        title: "Will Creation.",
-        description:
-          "Your will has not been created. Here are some details: " +
-          transactionCreateWillError?.message,
-        status: "error",
-      });
-    }
     refetchPrepareRevokeWill();
   }, [isTransanctionCreateWillSuccess, isTransactionCreateWillError]);
 
@@ -651,6 +637,29 @@ const CreateWillPage = () => {
         onActivateRevokeWillMode={activateRevokeWillMode}
         onDeactivateRevokeWillMode={deactivateRevokeWillMode}
       />
+
+      {isTransanctionCreateWillSuccess && (
+        <FeedbackToast
+          toastState={{
+            status: "success",
+            title: "Will Creation",
+            description: "Your will has been created successfully.",
+            link: `https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`,
+          }}
+        ></FeedbackToast>
+      )}
+      {isTransactionCreateWillError && (
+        <FeedbackToast
+          toastState={{
+            status: "error",
+            title: "Will Creation",
+            description:
+              "Your will has not been created. Here are some details: " +
+              transactionCreateWillError?.message,
+            position: "top",
+          }}
+        ></FeedbackToast>
+      )}
 
       <p>Prepare Errors:</p>
       {prepareCreateWillError && (
