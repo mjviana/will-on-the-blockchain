@@ -2,7 +2,7 @@ import {abi, contractAddresses} from "../constants";
 import {useEffect, useState} from "react";
 import {BlockchainWill} from "../types";
 import {Address, useContractRead} from "wagmi";
-import {Button, SimpleGrid} from "@chakra-ui/react";
+import {Box, SimpleGrid} from "@chakra-ui/react";
 import WillCard from "../components/WillCard";
 import WillCardContainer from "../components/WillCardContainer";
 
@@ -34,9 +34,9 @@ const PublicWillsPage = () => {
   }
 
   return (
-    <>
-      <Button onClick={() => readContract.refetch()}> Get Wills</Button>
-      Wills:{" "}
+    <Box maxW="1536px" mx="auto">
+      {" "}
+      {/* Set your desired max width and center the content */}
       <SimpleGrid
         columns={{sm: 1, md: 2, lg: 3, xl: 4}}
         spacing={6}
@@ -50,7 +50,7 @@ const PublicWillsPage = () => {
           </>
         ))}
       </SimpleGrid>
-    </>
+    </Box>
   );
 };
 

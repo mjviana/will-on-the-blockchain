@@ -578,7 +578,7 @@ const CreateWillPage = () => {
 
   return (
     <>
-      <Stack direction="row">
+      <Stack mx={"auto"} maxW={{base: "100%", md: "1536px"}} direction="row">
         <WillStepper activeStep={activeStep} steps={willSteps} />
         <Stack p={10} w="100%" direction="column">
           <WillForm
