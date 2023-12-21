@@ -34,14 +34,10 @@ const PublicWillsPage = () => {
   }
 
   return (
-    <Box maxW="1536px" mx="auto">
+    <Box p={10} maxW="1536px" mx="auto">
       {" "}
       {/* Set your desired max width and center the content */}
-      <SimpleGrid
-        columns={{sm: 1, md: 2, lg: 3, xl: 4}}
-        spacing={6}
-        padding="10px"
-      >
+      <SimpleGrid columns={{sm: 1, md: 2, lg: 3, xl: 4}} spacing={6}>
         {wills?.map((w, i) => (
           <>
             <WillCardContainer key={i}>

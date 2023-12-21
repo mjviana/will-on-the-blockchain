@@ -4,6 +4,7 @@ import CreateWillPage from "./pages/CreateWillPage";
 import HomePage from "./pages/HomePage";
 import Layout from "./pages/Layout";
 import HowToCreateWillPage from "./pages/HowToCreateWillPage";
+import SearchWillPage from "./pages/SearchWillPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
       },
       {path: "/public-wills", element: <PublicWillsPage />},
       {path: "/how-to-create-will", element: <HowToCreateWillPage />},
+      {path: "/search-will", element: <SearchWillPage />},
     ],
   },
 ]);
