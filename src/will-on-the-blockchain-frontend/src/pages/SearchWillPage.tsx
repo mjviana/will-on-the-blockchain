@@ -5,9 +5,7 @@ import {ChangeEvent, useState} from "react";
 import SearchWillButton from "../components/SearchWillButton";
 import {Address, useContractRead} from "wagmi";
 import {BlockchainWill} from "../types";
-import WillHeader from "../components/WillHeader";
 import {WillDetails} from "../components/WillDetails";
-import WillBody from "../components/WillBody";
 
 interface contractAddressesInterface {
   [key: string]: string[];
@@ -56,10 +54,9 @@ const SearchWillPage = () => {
         </Stack>
         {isRefetching && <Spinner size="xl" />}
         {will != null && (
-          <WillDetails>
-            <WillHeader will={will} />
-            <WillBody will={will} />
-          </WillDetails>
+          <>
+            <WillDetails will={will} />
+          </>
         )}
         {isError && <p>Something went wrong</p>}
       </Box>

@@ -1,9 +1,18 @@
-import React from "react";
+import {BlockchainWill} from "../types";
+import WillAuthorInformation from "./WillAuthorInformation";
+import WillContent from "./WillContent";
+import {WillWitnessInformation} from "./WillWitnessInformation";
 
 interface WillDetailsProps {
-  children: React.ReactNode;
+  will: BlockchainWill.WillStructOutput;
 }
 
-export const WillDetails = ({children}: WillDetailsProps) => {
-  return <>{children}</>;
+export const WillDetails = ({will}: WillDetailsProps) => {
+  return (
+    <>
+      <WillAuthorInformation will={will} />
+      <WillWitnessInformation will={will} />
+      <WillContent will={will} />
+    </>
+  );
 };

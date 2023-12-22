@@ -1,5 +1,6 @@
 body {
   padding: 0px;
+  overscroll-behavior: none;
 }
 
 .custom-connect-button-wrapper button {
