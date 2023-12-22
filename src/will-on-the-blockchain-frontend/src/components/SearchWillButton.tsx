@@ -1,7 +1,11 @@
 import {Button} from "@chakra-ui/react";
 
-const SearchWillButton = () => {
-  return <Button>Search Will</Button>;
+interface SearchWillButtonProps {
+  onSearchWillClick: () => void;
+}
+
+const SearchWillButton = ({onSearchWillClick}: SearchWillButtonProps) => {
+  return <Button onClick={onSearchWillClick}>Search Will</Button>;
 };
 
 export default SearchWillButton;
