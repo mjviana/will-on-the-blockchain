@@ -19,6 +19,7 @@ contract BlockchainWill {
     struct Will {
         string will;
         bool isPublic;
+        uint256 createdAt;
         Person testator;
         Person firstWitness;
         Person secondWitness;
@@ -68,6 +69,7 @@ contract BlockchainWill {
         Will memory newWill = Will({
             will: _will,
             isPublic: _isPublic,
+            createdAt: block.timestamp, // Current timestamp in seconds since the Unix epoch
             testator: Person({ // Data for the testator
                 name: _author,
                 citizenshipCardId: _testatorCitizenshipCardId,
