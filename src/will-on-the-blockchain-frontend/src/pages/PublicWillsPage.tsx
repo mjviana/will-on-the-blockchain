@@ -13,7 +13,9 @@ interface contractAddressesInterface {
 const PublicWillsPage = () => {
   const [wills, setWills] = useState<BlockchainWill.WillStructOutput[]>([]);
   const addresses: contractAddressesInterface = contractAddresses;
-  const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
+  const contractAddress = addresses["11155111"][
+    addresses["11155111"].length - 1
+  ] as Address; // sepolia chainId is 11155111. We use the last address of the array to make sure that the last deployed contract is used.
 
   const readContract = useContractRead({
     address: contractAddress,

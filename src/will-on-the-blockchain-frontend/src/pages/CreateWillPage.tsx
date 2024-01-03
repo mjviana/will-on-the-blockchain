@@ -101,7 +101,9 @@ const CreateWillPage = () => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const [setFeedbackToast] = useFeedbackToast();
   const addresses: ContractAddressesInterface = contractAddresses;
-  const contractAddress = addresses["11155111"][0] as Address; // sepolia chainId is 11155111
+  const contractAddress = addresses["11155111"][
+    addresses["11155111"].length - 1
+  ] as Address; // sepolia chainId is 11155111. We use the last address of the array to make sure that the last deployed contract is used.
   const {address: walletAddress, isConnected} = useAccount();
   const {
     prepareCreateWillError,

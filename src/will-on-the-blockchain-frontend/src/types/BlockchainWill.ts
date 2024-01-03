@@ -31,11 +31,12 @@ export declare namespace BlockchainWill {
     name: string,
     citizenshipCardId: string,
     birthdate: bigint
-  ] & { name: string; citizenshipCardId: string; birthdate: bigint };
+  ] & {name: string; citizenshipCardId: string; birthdate: bigint};
 
   export type WillStruct = {
     will: string;
     isPublic: boolean;
+    createdAt: BigNumberish;
     testator: BlockchainWill.PersonStruct;
     firstWitness: BlockchainWill.PersonStruct;
     secondWitness: BlockchainWill.PersonStruct;
@@ -44,12 +45,14 @@ export declare namespace BlockchainWill {
   export type WillStructOutput = [
     will: string,
     isPublic: boolean,
+    createdAt: bigint,
     testator: BlockchainWill.PersonStructOutput,
     firstWitness: BlockchainWill.PersonStructOutput,
     secondWitness: BlockchainWill.PersonStructOutput
   ] & {
     will: string;
     isPublic: boolean;
+    createdAt: bigint;
     testator: BlockchainWill.PersonStructOutput;
     firstWitness: BlockchainWill.PersonStructOutput;
     secondWitness: BlockchainWill.PersonStructOutput;
@@ -225,12 +228,14 @@ export interface BlockchainWill extends BaseContract {
       [
         string,
         boolean,
+        bigint,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
       ] & {
         will: string;
         isPublic: boolean;
+        createdAt: bigint;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
@@ -257,12 +262,14 @@ export interface BlockchainWill extends BaseContract {
       [
         string,
         boolean,
+        bigint,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
       ] & {
         will: string;
         isPublic: boolean;
+        createdAt: bigint;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
@@ -310,20 +317,20 @@ export interface BlockchainWill extends BaseContract {
   getFunction(
     nameOrSignature: "personHasCreatedWill"
   ): TypedContractMethod<[arg0: string], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "publicWills"
-  ): TypedContractMethod<
+  getFunction(nameOrSignature: "publicWills"): TypedContractMethod<
     [arg0: BigNumberish],
     [
       [
         string,
         boolean,
+        bigint,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
       ] & {
         will: string;
         isPublic: boolean;
+        createdAt: bigint;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
@@ -353,12 +360,14 @@ export interface BlockchainWill extends BaseContract {
       [
         string,
         boolean,
+        bigint,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
       ] & {
         will: string;
         isPublic: boolean;
+        createdAt: bigint;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
