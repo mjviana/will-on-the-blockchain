@@ -6,17 +6,8 @@ interface WillBodyProps {
 }
 
 const WillContent = ({will}: WillBodyProps) => {
-  const isPrivateWill = !will.isPublic;
   return (
-    <Card
-      mb={5}
-      mx={10}
-      p={10}
-      style={{
-        filter: isPrivateWill ? "blur(8px)" : "none",
-        backdropFilter: isPrivateWill ? "blur(8px)" : "none",
-      }}
-    >
+    <Card mb={5} mx={10} p={10}>
       <Text as="b" pb={10} fontSize="2xl" style={{userSelect: "none"}}>
         Will Content
       </Text>

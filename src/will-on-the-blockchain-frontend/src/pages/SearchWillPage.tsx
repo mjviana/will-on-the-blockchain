@@ -12,7 +12,7 @@ interface contractAddressesInterface {
 }
 
 const SearchWillPage = () => {
-  const [will, setWill] = useState<BlockchainWill.WillStructOutput>();
+  const [will, setWill] = useState<BlockchainWill.WillStructOutput | null>();
   const [citizenshipCardId, setCitizenshipCardId] = useState<string>("");
 
   const addresses: contractAddressesInterface = contractAddresses;
@@ -57,7 +57,13 @@ const SearchWillPage = () => {
         {isRefetching && <Spinner size="xl" />}
         {will != null && (
           <>
-            <WillDetails will={will} />
+            <WillDetails
+              will={will}
+              onCancel={() => {
+                console.log("will details canceled...");
+                setWill(null);
+              }}
+            />
           </>
         )}
         {isError && <p>Something went wrong</p>}
