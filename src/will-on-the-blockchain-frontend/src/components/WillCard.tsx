@@ -19,36 +19,10 @@ import {
 import {FaUser, FaCalendar, FaUserFriends} from "react-icons/fa";
 import {HiIdentification} from "react-icons/hi";
 import {BlockchainWill} from "../types/BlockchainWill";
+import {convertEpochStringToDate} from "../utils/EpockConverter";
 
 interface WillCardProps {
   will: BlockchainWill.WillStructOutput;
-}
-
-// // Define the extension method interface for BigInt
-// interface bigInt {
-//   toLocalDate(): Date;
-// }
-
-// // Implement the extension method
-// BigInt.prototype.toLocalDate = function (): Date {
-//   // Convert the BigInt to a number and then to a Date
-//   const timestampInMilliseconds = Number(this);
-//   return new Date(timestampInMilliseconds);
-// };
-
-function convertEpochStringToDate(epochString: string): Date | null {
-  const epochValue = parseInt(epochString, 10);
-
-  // Check if the conversion was successful
-  if (isNaN(epochValue)) {
-    console.error("Invalid epoch value");
-    return null;
-  }
-
-  const date = new Date(0); // The 0 here represents the epoch date
-  date.setTime(epochValue * 1000); // Multiply by 1000 to convert seconds to milliseconds
-
-  return date;
 }
 
 const WillCard = ({will}: WillCardProps) => {

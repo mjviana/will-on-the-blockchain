@@ -13,14 +13,21 @@ import {
 import SecretCode from "./SecretCode";
 import {ChangeEvent, useEffect, useState} from "react";
 import {BlockchainWill} from "../types";
-import {Form, Link as ReactRouterLink} from "react-router-dom";
+import {Link as ReactRouterLink} from "react-router-dom";
 import {decrypt} from "../utils/CryptoHelper";
 
 interface SecretCodeModalProps {
   will: BlockchainWill.WillStructOutput;
   onCancel(): void;
+  onDecryptedWill(decryptedWill: string): void;
+  isToClose: boolean;
 }
-const SecretCodeModal = ({will, onCancel}: SecretCodeModalProps) => {
+const SecretCodeModal = ({
+  will,
+  onCancel,
+  onDecryptedWill,
+  isToClose,
+}: SecretCodeModalProps) => {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [secretCode, setSecretCode] = useState<string>("");
   const [isValidSecretCode, setIsValidSecretCode] = useState<boolean>(true);
@@ -39,9 +46,21 @@ const SecretCodeModal = ({will, onCancel}: SecretCodeModalProps) => {
       setIsValidSecretCode(false);
     } else {
       setIsValidSecretCode(true);
-      onClose();
+      onDecryptedWill(decryptedWill);
     }
   }
+
+  useEffect(() => {
+    if (isToClose) {
+      onClose();
+      console.log(onClose);
+      console.log(onClose());
+
+      return () => {
+        onClose();
+      };
+    }
+  }, [isToClose, onClose]);
 
   function handleSecretCodeChange(e: ChangeEvent<HTMLInputElement>): void {
     setSecretCode(e.target.value);

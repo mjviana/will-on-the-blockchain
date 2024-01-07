@@ -2,6 +2,7 @@ import {Card, HStack, Icon, Text} from "@chakra-ui/react";
 import {FaUser, FaCalendar} from "react-icons/fa";
 import {HiIdentification} from "react-icons/hi";
 import {BlockchainWill} from "../types";
+import {convertEpochStringToDate} from "../utils/EpockConverter";
 
 interface WillTestatorInformationProps {
   will: BlockchainWill.WillStructOutput;
@@ -27,7 +28,12 @@ const WillAuthorInformation = ({will}: WillTestatorInformationProps) => {
         <HStack>
           <Icon as={FaCalendar} />
           <Text as="b">Date of Creation:</Text>
-          <Text>18/08/2023</Text>
+          <Text>
+            {" "}
+            {convertEpochStringToDate(
+              will.createdAt.toString()
+            )?.toDateString()}
+          </Text>
         </HStack>
       </Card>
     </>

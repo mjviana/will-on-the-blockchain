@@ -7,14 +7,26 @@ import SecretCodeModal from "./SecretCodeModal";
 interface WillDetailsProps {
   will: BlockchainWill.WillStructOutput;
   onCancel: () => void;
+  onDecryptedWill(decryptedWill: string): void;
+  isToClose: boolean;
 }
 
-export const WillDetails = ({will, onCancel}: WillDetailsProps) => {
+export const WillDetails = ({
+  will,
+  onCancel,
+  onDecryptedWill,
+  isToClose,
+}: WillDetailsProps) => {
   return (
     <>
       {will && (
         <>
-          <SecretCodeModal will={will} onCancel={onCancel}></SecretCodeModal>
+          <SecretCodeModal
+            will={will}
+            onCancel={onCancel}
+            onDecryptedWill={onDecryptedWill}
+            isToClose={isToClose}
+          ></SecretCodeModal>
 
           <WillAuthorInformation will={will} />
           <WillWitnessInformation will={will} />

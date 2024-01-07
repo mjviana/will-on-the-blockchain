@@ -6,6 +6,7 @@ import SearchWillButton from "../components/SearchWillButton";
 import {Address, useContractRead} from "wagmi";
 import {BlockchainWill} from "../types";
 import {WillDetails} from "../components/WillDetails";
+import {useCallback} from "react";
 
 interface contractAddressesInterface {
   [key: string]: string[];
@@ -14,6 +15,7 @@ interface contractAddressesInterface {
 const SearchWillPage = () => {
   const [will, setWill] = useState<BlockchainWill.WillStructOutput | null>();
   const [citizenshipCardId, setCitizenshipCardId] = useState<string>("");
+  const [isToClose, setIsToClose] = useState<boolean>(false);
 
   const addresses: contractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][
@@ -47,6 +49,16 @@ const SearchWillPage = () => {
     refetch();
   }
 
+  const handleDecryptedWill = useCallback(
+    (decryptedWill: string): void => {
+      if (will != null) {
+        setWill({...will, will: decryptedWill});
+        setIsToClose(true);
+      }
+    },
+    [will]
+  );
+
   return (
     <>
       <Box maxW="1536px" mx="auto">
@@ -63,6 +75,8 @@ const SearchWillPage = () => {
                 console.log("will details canceled...");
                 setWill(null);
               }}
+              onDecryptedWill={handleDecryptedWill}
+              isToClose={isToClose}
             />
           </>
         )}
