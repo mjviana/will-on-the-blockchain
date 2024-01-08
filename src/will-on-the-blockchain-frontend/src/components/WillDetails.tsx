@@ -3,34 +3,51 @@ import WillAuthorInformation from "./WillAuthorInformation";
 import WillContent from "./WillContent";
 import {WillWitnessInformation} from "./WillWitnessInformation";
 import SecretCodeModal from "./SecretCodeModal";
-
+import {useDisclosure} from "@chakra-ui/react";
+import {useEffect, useState} from "react";
 interface WillDetailsProps {
   will: BlockchainWill.WillStructOutput;
-  onCancel: () => void;
-  onDecryptedWill(decryptedWill: string): void;
-  isToClose: boolean;
+  onReset: () => void;
 }
 
-export const WillDetails = ({
-  will,
-  onCancel,
-  onDecryptedWill,
-  isToClose,
-}: WillDetailsProps) => {
+export const WillDetails = ({will, onReset}: WillDetailsProps) => {
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const [visibleWill, setVisibleWill] =
+    useState<BlockchainWill.WillStructOutput>(will);
+
+  useEffect(() => {
+    if (!will.isPublic) {
+      onOpen();
+    }
+  }, [will, onOpen]);
+
+  useEffect(() => {
+    setVisibleWill(will);
+  }, [will]);
+
+  function handleOnCancel(): void {
+    onClose();
+    onReset();
+  }
+
   return (
     <>
       {will && (
         <>
           <SecretCodeModal
-            will={will}
-            onCancel={onCancel}
-            onDecryptedWill={onDecryptedWill}
-            isToClose={isToClose}
+            will={visibleWill}
+            onCancel={handleOnCancel}
+            onClose={handleOnCancel}
+            onDecryptedWill={(decryptedWill) => {
+              setVisibleWill({...will, will: decryptedWill});
+              onClose();
+            }}
+            isOpen={isOpen}
           ></SecretCodeModal>
 
-          <WillAuthorInformation will={will} />
-          <WillWitnessInformation will={will} />
-          <WillContent will={will} />
+          <WillAuthorInformation will={visibleWill} />
+          <WillWitnessInformation will={visibleWill} />
+          <WillContent will={visibleWill} />
         </>
       )}
     </>
