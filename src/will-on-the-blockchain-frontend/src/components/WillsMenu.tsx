@@ -19,7 +19,7 @@ const WillsMenu = () => {
           <MenuItem as={ReactRouterLink} to={"/search-will"}>
             Search Will
           </MenuItem>
-          <MenuItem>Revoke Will</MenuItem>
+          <MenuItem as={ReactRouterLink} to={"/revoke-will"}>Revoke Will</MenuItem>
           <MenuItem as={ReactRouterLink} to={"/how-to-create-will"}>
             How to Create a Will
           </MenuItem>
