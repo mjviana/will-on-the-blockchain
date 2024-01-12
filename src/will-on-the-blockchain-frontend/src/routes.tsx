@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import Layout from "./pages/Layout";
 import HowToCreateWillPage from "./pages/HowToCreateWillPage";
 import SearchWillPage from "./pages/SearchWillPage";
+import React from 'react'
 const router = createBrowserRouter([
   {
     path: "/",

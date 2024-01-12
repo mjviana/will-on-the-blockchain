@@ -1,10 +1,11 @@
 import {abi, contractAddresses} from "../constants";
-import {useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {BlockchainWill} from "../types";
 import {Address, useContractRead} from "wagmi";
 import {Box, SimpleGrid} from "@chakra-ui/react";
 import WillCard from "../components/WillCard";
 import WillCardContainer from "../components/WillCardContainer";
+import React from 'react'
 
 interface contractAddressesInterface {
   [key: string]: string[];
@@ -41,11 +42,11 @@ const PublicWillsPage = () => {
       {/* Set your desired max width and center the content */}
       <SimpleGrid columns={{sm: 1, md: 2, lg: 3, xl: 4}} spacing={6}>
         {wills?.map((w, i) => (
-          <>
-            <WillCardContainer key={i}>
+          <Fragment key={i}>
+            <WillCardContainer>
               <WillCard will={w} />
             </WillCardContainer>
-          </>
+          </Fragment>
         ))}
       </SimpleGrid>
     </Box>
