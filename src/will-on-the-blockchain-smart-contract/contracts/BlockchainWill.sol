@@ -5,6 +5,7 @@ pragma solidity 0.8.8;
 error UnderAge(string citizenshipCardId);
 error HasCreatedWill(string citizenshipCardId);
 error HasNotCreatedWill(string citizenshipCardId);
+error NotTestator(address testator);
 error PrivateWill();
 
 /**
@@ -20,6 +21,7 @@ contract BlockchainWill {
         string will;
         bool isPublic;
         uint256 createdAt;
+        string secretCode;
         Person testator;
         Person firstWitness;
         Person secondWitness;
@@ -31,68 +33,92 @@ contract BlockchainWill {
         uint256 birthdate;
     }
 
+    struct WillCreation {
+        string will;
+        bool isPublic;
+        string secretCode;
+        Person testator;
+        Person firstWitness;
+        Person secondWitness;
+    }
+
     // ====== Storage Variables ======
-    mapping(string => Will) public userCitizenshipCardIdToWill;
+    // Mapping to store the citizenship card ID associated with each will
+    mapping(string => Will) public citizenshipCardIdToWill;
+    // Mapping to store if a person has created a will
     mapping(string => bool) public personHasCreatedWill;
+    // Mapping to store the address associated with each citizenship card ID
+    mapping(string => address) public citizenshipCardIdToAddress;
+    // Array to store the public wills
     Will[] public publicWills;
 
     // ====== Public Functions ======
-    function createWill(
-        string memory _author,
-        string memory _will,
-        string memory _testatorCitizenshipCardId,
-        uint256 _testatorBirthdate,
-        bool _isPublic,
-        string memory _firstWitnessName,
-        string memory _firstWitnessCitizenshipCardId,
-        uint _firstWitnessBirthdate,
-        string memory _secondWitnessName,
-        string memory _secondWitnessCitizenshipCardId,
-        uint _secondWitnessBirthdate
-    ) public {
-        if (personHasCreatedWill[_testatorCitizenshipCardId]) {
-            revert HasCreatedWill(_testatorCitizenshipCardId);
+
+    function createWill(WillCreation memory _will) public {
+        if (personHasCreatedWill[_will.testator.citizenshipCardId]) {
+            revert HasCreatedWill(_will.testator.citizenshipCardId);
         }
 
-        if (!isAdult(_testatorBirthdate)) {
-            revert UnderAge(_author);
+        if (!isAdult(_will.testator.birthdate)) {
+            revert UnderAge(_will.testator.name);
         }
 
-        if (!isAdult(_firstWitnessBirthdate)) {
-            revert UnderAge(_firstWitnessName);
+        if (!isAdult(_will.firstWitness.birthdate)) {
+            revert UnderAge(_will.firstWitness.name);
         }
 
-        if (!isAdult(_secondWitnessBirthdate)) {
-            revert UnderAge(_secondWitnessName);
+        if (!isAdult(_will.secondWitness.birthdate)) {
+            revert UnderAge(_will.secondWitness.name);
         }
 
         Will memory newWill = Will({
-            will: _will,
-            isPublic: _isPublic,
+            will: _will.will,
+            isPublic: _will.isPublic,
             createdAt: block.timestamp, // Current timestamp in seconds since the Unix epoch
-            testator: Person({ // Data for the testator
-                name: _author,
-                citizenshipCardId: _testatorCitizenshipCardId,
-                birthdate: _testatorBirthdate
-            }),
-            firstWitness: Person({ // Data for the first witness
-                name: _firstWitnessName,
-                citizenshipCardId: _firstWitnessCitizenshipCardId,
-                birthdate: _firstWitnessBirthdate
-            }),
-            secondWitness: Person({ // Data for the second witness
-                name: _secondWitnessName,
-                citizenshipCardId: _secondWitnessCitizenshipCardId,
-                birthdate: _secondWitnessBirthdate
-            })
+            secretCode: _will.secretCode, // Secret code to be used to revoke a will or to see the details of a private will
+            testator: createPerson(
+                _will.testator.name,
+                _will.testator.citizenshipCardId,
+                _will.testator.birthdate
+            ),
+            firstWitness: createPerson(
+                _will.firstWitness.name,
+                _will.firstWitness.citizenshipCardId,
+                _will.firstWitness.birthdate
+            ),
+            secondWitness: createPerson(
+                _will.secondWitness.name,
+                _will.secondWitness.citizenshipCardId,
+                _will.secondWitness.birthdate
+            )
         });
 
-        userCitizenshipCardIdToWill[_testatorCitizenshipCardId] = newWill;
-        personHasCreatedWill[_testatorCitizenshipCardId] = true;
+        // Store the will in the mapping between citizenship card ID and will
+        citizenshipCardIdToWill[_will.testator.citizenshipCardId] = newWill;
 
-        if (_isPublic) {
+        // Set the testator as having a will
+        personHasCreatedWill[_will.testator.citizenshipCardId] = true;
+
+        // Store the mapping between citizenship card ID and sender's address
+        citizenshipCardIdToAddress[_will.testator.citizenshipCardId] = msg
+            .sender;
+
+        if (_will.isPublic) {
             publicWills.push(newWill);
         }
+    }
+
+    function createPerson(
+        string memory _name,
+        string memory _citizenshipId,
+        uint _birthdate
+    ) private pure returns (Person memory) {
+        return
+            Person({
+                name: _name,
+                birthdate: _birthdate,
+                citizenshipCardId: _citizenshipId
+            });
     }
 
     /**
@@ -123,7 +149,7 @@ contract BlockchainWill {
         if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
             revert HasNotCreatedWill(_testatorCitizenshipCardId);
         }
-        return userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
+        return citizenshipCardIdToWill[_testatorCitizenshipCardId];
     }
 
     /**
@@ -131,11 +157,20 @@ contract BlockchainWill {
      * @param _testatorCitizenshipCardId The citizenship card id of the testator.
      */
     function revokePublicWill(string memory _testatorCitizenshipCardId) public {
+        // Check if the sender is the testator
+        if (
+            msg.sender != citizenshipCardIdToAddress[_testatorCitizenshipCardId]
+        ) {
+            revert NotTestator(msg.sender);
+        }
+
+        // Check if the testator has a will
         if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
             revert HasNotCreatedWill(_testatorCitizenshipCardId);
         }
 
-        if (!userCitizenshipCardIdToWill[_testatorCitizenshipCardId].isPublic) {
+        // Check if the will is public
+        if (!citizenshipCardIdToWill[_testatorCitizenshipCardId].isPublic) {
             revert PrivateWill();
         }
 
@@ -153,7 +188,10 @@ contract BlockchainWill {
                 publicWills.pop();
 
                 // Delete the will from the mapping
-                delete userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
+                delete citizenshipCardIdToWill[_testatorCitizenshipCardId];
+
+                // Detete the address from the mapping
+                delete citizenshipCardIdToAddress[_testatorCitizenshipCardId];
 
                 // Set the testator as not having a will
                 personHasCreatedWill[_testatorCitizenshipCardId] = false;
@@ -166,12 +204,25 @@ contract BlockchainWill {
      * @dev Allows the testator to revoke his will.
      * @param _testatorCitizenshipCardId The citizenship card id of the testator.
      */
-    function revokeWill(string memory _testatorCitizenshipCardId) public {
+    function revokePrivateWill(
+        string memory _testatorCitizenshipCardId
+    ) public {
+        // Check if the sender is the testator
+        if (
+            msg.sender != citizenshipCardIdToAddress[_testatorCitizenshipCardId]
+        ) {
+            revert NotTestator(msg.sender);
+        }
+
         if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
             revert HasNotCreatedWill(_testatorCitizenshipCardId);
         }
 
-        delete userCitizenshipCardIdToWill[_testatorCitizenshipCardId];
+        // Delete the will from the mapping
+        delete citizenshipCardIdToWill[_testatorCitizenshipCardId];
+
+        // Detete the address from the mapping
+        delete citizenshipCardIdToAddress[_testatorCitizenshipCardId];
 
         // Set the testator as not having a will
         personHasCreatedWill[_testatorCitizenshipCardId] = false;

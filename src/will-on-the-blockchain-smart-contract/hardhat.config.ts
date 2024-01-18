@@ -21,6 +21,15 @@ const config: HardhatUserConfig = {
         version: "0.8.8",
       },
     ],
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 10000,
+        details: {
+          yul: true,
+        },
+      },
+    },
   },
   networks: {
     sepolia: {
