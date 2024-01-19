@@ -37,6 +37,9 @@ const config: HardhatUserConfig = {
       accounts: PRIVATE_KEY_SEPOLIA ? [PRIVATE_KEY_SEPOLIA] : [],
       chainId: 11155111,
     },
+    hardhat: {
+      chainId: 31337,
+    },
   },
   etherscan: {
     // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>

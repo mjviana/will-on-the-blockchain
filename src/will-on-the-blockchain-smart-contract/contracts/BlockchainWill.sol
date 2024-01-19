@@ -5,8 +5,9 @@ pragma solidity 0.8.8;
 error UnderAge(string citizenshipCardId);
 error HasCreatedWill(string citizenshipCardId);
 error HasNotCreatedWill(string citizenshipCardId);
-error NotTestator(address testator);
+error NotTestator(address sender);
 error PrivateWill();
+error PublicWill();
 
 /**
  * @title BlockchainWill
@@ -214,6 +215,12 @@ contract BlockchainWill {
             revert NotTestator(msg.sender);
         }
 
+        // Check if the will is public
+        if (citizenshipCardIdToWill[_testatorCitizenshipCardId].isPublic) {
+            revert PublicWill();
+        }
+
+        // Check if the testator has a will
         if (!personHasCreatedWill[_testatorCitizenshipCardId]) {
             revert HasNotCreatedWill(_testatorCitizenshipCardId);
         }
