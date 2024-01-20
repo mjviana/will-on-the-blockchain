@@ -20,6 +20,12 @@ enum SecretModalType {
   "revokeWill",
 }
 
+// Props in case modal is used to revoke will
+type RevokeWillProps = {
+  isWriteRevokeWillLoading?: boolean;
+  isTransactionRevokeWillLoading?: boolean;
+};
+
 interface SecretCodeModalProps {
   will: BlockchainWill.WillStruct;
   onCancel(): void;
@@ -28,6 +34,10 @@ interface SecretCodeModalProps {
   modalType: SecretModalType;
   onSecretCodeDecrypted(decryptedValue: string): void;
 }
+
+// Based on the modalType, we can decide which props to use
+type ConditionalProps = SecretCodeModalProps & RevokeWillProps;
+
 const SecretCodeModal = ({
   will,
   onCancel,
@@ -35,7 +45,9 @@ const SecretCodeModal = ({
   onSecretCodeDecrypted,
   onClose,
   isOpen,
-}: SecretCodeModalProps) => {
+  isWriteRevokeWillLoading,
+  isTransactionRevokeWillLoading,
+}: ConditionalProps) => {
   const [secretCode, setSecretCode] = useState<string>("");
   const [isValidSecretCode, setIsValidSecretCode] = useState<boolean>(true);
 
@@ -98,6 +110,19 @@ const SecretCodeModal = ({
             <Button
               marginRight="15px"
               colorScheme="blue"
+              isLoading={
+                isWriteRevokeWillLoading || isTransactionRevokeWillLoading
+              }
+              isDisabled={
+                isWriteRevokeWillLoading || isTransactionRevokeWillLoading
+              }
+              loadingText={
+                isWriteRevokeWillLoading
+                  ? "Waiting for confirmation..."
+                  : isTransactionRevokeWillLoading
+                    ? "Revoking Will..."
+                    : "Confirm"
+              }
               onClick={handleConfirmClick}
             >
               Confirm

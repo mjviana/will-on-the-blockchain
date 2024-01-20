@@ -27,10 +27,12 @@ const RevokeWillPage = () => {
   const {
     refetchPrepareRevokeWill,
     writeRevokeWill,
+    writeRevokeWillData,
     isTransactionRevokeSuccess,
     isTransactionRevokeWillError,
-    writeRevokeWillData,
     transactionRevokeWillError,
+    isTransactionRevokeWillLoading,
+    isWriteRevokeWillLoading,
   } = useRevokeWill(contractAddress, citizenshipCardId, will?.isPublic);
 
   useEffect(() => {
@@ -77,6 +79,12 @@ const RevokeWillPage = () => {
     }
   }
 
+  useEffect(() => {
+    if (isTransactionRevokeSuccess || isTransactionRevokeWillError) onClose();
+
+    return () => {};
+  }, [onClose, isTransactionRevokeSuccess, isTransactionRevokeWillError]);
+
   return (
     <>
       <Box maxW="1536px" mx="auto">
@@ -87,23 +95,17 @@ const RevokeWillPage = () => {
         {isRefetching && <Spinner size="xl" />}
         {will && (
           <SecretCodeModal
+            modalType={SecretModalType.revokeWill}
             will={will}
             onCancel={handleOnCancel}
             onClose={handleOnCancel}
-            modalType={SecretModalType.revokeWill}
             onSecretCodeDecrypted={(secretCode) => {
               handleOnValidSecretCode(secretCode);
-              onClose();
             }}
             isOpen={isOpen}
+            isWriteRevokeWillLoading={isWriteRevokeWillLoading}
+            isTransactionRevokeWillLoading={isTransactionRevokeWillLoading}
           ></SecretCodeModal>
-
-          // <RevokeWillModal
-          //   will={will}
-          //   isOpen={isOpen}
-          //   onCancel={handleOnCancel}
-          //   onValidSecretCode={handleOnValidSecretCode}
-          // />
         )}
 
         {isTransactionRevokeSuccess && (

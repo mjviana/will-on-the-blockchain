@@ -4,7 +4,6 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import {useEffect} from "react";
 import {blockchainWillAbi} from "../constants/blockchainWillAbi";
 
 export const useRevokeWill = (
@@ -35,7 +34,10 @@ export const useRevokeWill = (
     error: writeRevokeWillError,
     isSuccess: isWriteRevokeWillSuccess,
     isError: isWriteRevokeWillError,
-  } = useContractWrite(prepareRevokePublicWillConfig);
+  } = useContractWrite({
+    ...prepareRevokePublicWillConfig,
+    onSettled: onSettledCallback,
+  });
 
   // useWaitForTransaction hook is used to wait for a transaction to be mined, provides the ability to show feedback on the status of the transaction to the user.
   const {
@@ -48,15 +50,14 @@ export const useRevokeWill = (
     hash: writeRevokeWillData?.hash,
   });
 
-  // useEffect(() => {
-  //   console.log("useRevokeWill writeRevokeWill useEffect");
-  //   refetchPrepareRevokeWill();
-  // }, [isWriteRevokeWillError, isWriteRevokeWillSuccess]);
-
-  // useEffect(() => {
-  //   console.log("useRevokeWill transactionRevoke useEffect");
-  //   resetWriteRevokeWill();
-  // }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
+  function onSettledCallback(
+    data: import("@wagmi/core").WriteContractResult | undefined,
+    error: Error | null
+  ) {
+    console.log("useRevokeWill onSettled");
+    console.log("useRevokeWill onSettled data", data);
+    console.log("useRevokeWill onSettled error", error);
+  }
 
   return {
     prepareRevokeWillError,
