@@ -21,17 +21,43 @@ export const willSmartContractAbi = [
     constant: false,
     payable: false,
     inputs: [
-      {type: "string", name: "_author"},
-      {type: "string", name: "_will"},
-      {type: "string", name: "_testatorCitizenshipCardId"},
-      {type: "uint256", name: "_testatorBirthdate"},
-      {type: "bool", name: "_isPublic"},
-      {type: "string", name: "_firstWitnessName"},
-      {type: "string", name: "_firstWitnessCitizenshipCardId"},
-      {type: "uint256", name: "_firstWitnessBirthdate"},
-      {type: "string", name: "_secondWitnessName"},
-      {type: "string", name: "_secondWitnessCitizenshipCardId"},
-      {type: "uint256", name: "_secondWitnessBirthdate"},
+      {
+        type: "tuple",
+        name: "_will",
+        components: [
+          {type: "string", name: "will"},
+          {type: "bool", name: "isPublic"},
+          {type: "uint256", name: "createdAt"},
+          {type: "string", name: "secretCode"},
+          {
+            type: "tuple",
+            name: "testator",
+            components: [
+              {type: "string", name: "name"},
+              {type: "string", name: "citizenshipCardId"},
+              {type: "uint256", name: "birthdate"},
+            ],
+          },
+          {
+            type: "tuple",
+            name: "firstWitness",
+            components: [
+              {type: "string", name: "name"},
+              {type: "string", name: "citizenshipCardId"},
+              {type: "uint256", name: "birthdate"},
+            ],
+          },
+          {
+            type: "tuple",
+            name: "secondWitness",
+            components: [
+              {type: "string", name: "name"},
+              {type: "string", name: "citizenshipCardId"},
+              {type: "uint256", name: "birthdate"},
+            ],
+          },
+        ],
+      },
     ],
     outputs: [],
   },
@@ -49,6 +75,8 @@ export const willSmartContractAbi = [
         components: [
           {type: "string", name: "will"},
           {type: "bool", name: "isPublic"},
+          {type: "uint256", name: "createdAt"},
+          {type: "string", name: "secretCode"},
           {
             type: "tuple",
             name: "testator",
@@ -103,6 +131,8 @@ export const willSmartContractAbi = [
         components: [
           {type: "string", name: "will"},
           {type: "bool", name: "isPublic"},
+          {type: "uint256", name: "createdAt"},
+          {type: "string", name: "secretCode"},
           {
             type: "tuple",
             name: "testator",
@@ -153,6 +183,8 @@ export const willSmartContractAbi = [
     outputs: [
       {type: "string", name: "will"},
       {type: "bool", name: "isPublic"},
+      {type: "uint256", name: "createdAt"},
+      {type: "string", name: "secretCode"},
       {
         type: "tuple",
         name: "testator",
@@ -184,7 +216,7 @@ export const willSmartContractAbi = [
   },
   {
     type: "function",
-    name: "revokePublicWill",
+    name: "revokePrivateWill",
     constant: false,
     payable: false,
     inputs: [{type: "string", name: "_testatorCitizenshipCardId"}],
@@ -192,7 +224,7 @@ export const willSmartContractAbi = [
   },
   {
     type: "function",
-    name: "revokeWill",
+    name: "revokePublicWill",
     constant: false,
     payable: false,
     inputs: [{type: "string", name: "_testatorCitizenshipCardId"}],
@@ -208,6 +240,8 @@ export const willSmartContractAbi = [
     outputs: [
       {type: "string", name: "will"},
       {type: "bool", name: "isPublic"},
+      {type: "uint256", name: "createdAt"},
+      {type: "string", name: "secretCode"},
       {
         type: "tuple",
         name: "testator",

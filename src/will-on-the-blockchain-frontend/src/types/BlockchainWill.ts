@@ -31,12 +31,38 @@ export declare namespace BlockchainWill {
     name: string,
     citizenshipCardId: string,
     birthdate: bigint
-  ] & {name: string; citizenshipCardId: string; birthdate: bigint};
+  ] & { name: string; citizenshipCardId: string; birthdate: bigint };
+
+  export type WillCreationStruct = {
+    will: string;
+    isPublic: boolean;
+    secretCode: string;
+    testator: BlockchainWill.PersonStruct;
+    firstWitness: BlockchainWill.PersonStruct;
+    secondWitness: BlockchainWill.PersonStruct;
+  };
+
+  export type WillCreationStructOutput = [
+    will: string,
+    isPublic: boolean,
+    secretCode: string,
+    testator: BlockchainWill.PersonStructOutput,
+    firstWitness: BlockchainWill.PersonStructOutput,
+    secondWitness: BlockchainWill.PersonStructOutput
+  ] & {
+    will: string;
+    isPublic: boolean;
+    secretCode: string;
+    testator: BlockchainWill.PersonStructOutput;
+    firstWitness: BlockchainWill.PersonStructOutput;
+    secondWitness: BlockchainWill.PersonStructOutput;
+  };
 
   export type WillStruct = {
     will: string;
     isPublic: boolean;
     createdAt: BigNumberish;
+    secretCode: string;
     testator: BlockchainWill.PersonStruct;
     firstWitness: BlockchainWill.PersonStruct;
     secondWitness: BlockchainWill.PersonStruct;
@@ -46,6 +72,7 @@ export declare namespace BlockchainWill {
     will: string,
     isPublic: boolean,
     createdAt: bigint,
+    secretCode: string,
     testator: BlockchainWill.PersonStructOutput,
     firstWitness: BlockchainWill.PersonStructOutput,
     secondWitness: BlockchainWill.PersonStructOutput
@@ -53,6 +80,7 @@ export declare namespace BlockchainWill {
     will: string;
     isPublic: boolean;
     createdAt: bigint;
+    secretCode: string;
     testator: BlockchainWill.PersonStructOutput;
     firstWitness: BlockchainWill.PersonStructOutput;
     secondWitness: BlockchainWill.PersonStructOutput;
@@ -62,32 +90,29 @@ export declare namespace BlockchainWill {
 export interface BlockchainWillInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "citizenshipCardIdToAddress"
+      | "citizenshipCardIdToWill"
       | "createWill"
       | "getPublicWills"
       | "getPublicWillsLength"
       | "getWill"
       | "personHasCreatedWill"
       | "publicWills"
+      | "revokePrivateWill"
       | "revokePublicWill"
-      | "revokeWill"
-      | "userCitizenshipCardIdToWill"
   ): FunctionFragment;
 
   encodeFunctionData(
+    functionFragment: "citizenshipCardIdToAddress",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "citizenshipCardIdToWill",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "createWill",
-    values: [
-      string,
-      string,
-      string,
-      BigNumberish,
-      boolean,
-      string,
-      string,
-      BigNumberish,
-      string,
-      string,
-      BigNumberish
-    ]
+    values: [BlockchainWill.WillCreationStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "getPublicWills",
@@ -107,15 +132,22 @@ export interface BlockchainWillInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "revokePrivateWill",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "revokePublicWill",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "revokeWill", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "userCitizenshipCardIdToWill",
-    values: [string]
-  ): string;
 
+  decodeFunctionResult(
+    functionFragment: "citizenshipCardIdToAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "citizenshipCardIdToWill",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "createWill", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getPublicWills",
@@ -135,12 +167,11 @@ export interface BlockchainWillInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "revokePublicWill",
+    functionFragment: "revokePrivateWill",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "revokeWill", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "userCitizenshipCardIdToWill",
+    functionFragment: "revokePublicWill",
     data: BytesLike
   ): Result;
 }
@@ -188,20 +219,38 @@ export interface BlockchainWill extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  createWill: TypedContractMethod<
+  citizenshipCardIdToAddress: TypedContractMethod<
+    [arg0: string],
+    [string],
+    "view"
+  >;
+
+  citizenshipCardIdToWill: TypedContractMethod<
+    [arg0: string],
     [
-      _author: string,
-      _will: string,
-      _testatorCitizenshipCardId: string,
-      _testatorBirthdate: BigNumberish,
-      _isPublic: boolean,
-      _firstWitnessName: string,
-      _firstWitnessCitizenshipCardId: string,
-      _firstWitnessBirthdate: BigNumberish,
-      _secondWitnessName: string,
-      _secondWitnessCitizenshipCardId: string,
-      _secondWitnessBirthdate: BigNumberish
+      [
+        string,
+        boolean,
+        bigint,
+        string,
+        BlockchainWill.PersonStructOutput,
+        BlockchainWill.PersonStructOutput,
+        BlockchainWill.PersonStructOutput
+      ] & {
+        will: string;
+        isPublic: boolean;
+        createdAt: bigint;
+        secretCode: string;
+        testator: BlockchainWill.PersonStructOutput;
+        firstWitness: BlockchainWill.PersonStructOutput;
+        secondWitness: BlockchainWill.PersonStructOutput;
+      }
     ],
+    "view"
+  >;
+
+  createWill: TypedContractMethod<
+    [_will: BlockchainWill.WillCreationStruct],
     [void],
     "nonpayable"
   >;
@@ -229,6 +278,7 @@ export interface BlockchainWill extends BaseContract {
         string,
         boolean,
         bigint,
+        string,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
@@ -236,12 +286,19 @@ export interface BlockchainWill extends BaseContract {
         will: string;
         isPublic: boolean;
         createdAt: bigint;
+        secretCode: string;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
       }
     ],
     "view"
+  >;
+
+  revokePrivateWill: TypedContractMethod<
+    [_testatorCitizenshipCardId: string],
+    [void],
+    "nonpayable"
   >;
 
   revokePublicWill: TypedContractMethod<
@@ -250,19 +307,23 @@ export interface BlockchainWill extends BaseContract {
     "nonpayable"
   >;
 
-  revokeWill: TypedContractMethod<
-    [_testatorCitizenshipCardId: string],
-    [void],
-    "nonpayable"
-  >;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  userCitizenshipCardIdToWill: TypedContractMethod<
+  getFunction(
+    nameOrSignature: "citizenshipCardIdToAddress"
+  ): TypedContractMethod<[arg0: string], [string], "view">;
+  getFunction(
+    nameOrSignature: "citizenshipCardIdToWill"
+  ): TypedContractMethod<
     [arg0: string],
     [
       [
         string,
         boolean,
         bigint,
+        string,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
@@ -270,6 +331,7 @@ export interface BlockchainWill extends BaseContract {
         will: string;
         isPublic: boolean;
         createdAt: bigint;
+        secretCode: string;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
@@ -277,27 +339,10 @@ export interface BlockchainWill extends BaseContract {
     ],
     "view"
   >;
-
-  getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
-  ): T;
-
   getFunction(
     nameOrSignature: "createWill"
   ): TypedContractMethod<
-    [
-      _author: string,
-      _will: string,
-      _testatorCitizenshipCardId: string,
-      _testatorBirthdate: BigNumberish,
-      _isPublic: boolean,
-      _firstWitnessName: string,
-      _firstWitnessCitizenshipCardId: string,
-      _firstWitnessBirthdate: BigNumberish,
-      _secondWitnessName: string,
-      _secondWitnessCitizenshipCardId: string,
-      _secondWitnessBirthdate: BigNumberish
-    ],
+    [_will: BlockchainWill.WillCreationStruct],
     [void],
     "nonpayable"
   >;
@@ -317,13 +362,16 @@ export interface BlockchainWill extends BaseContract {
   getFunction(
     nameOrSignature: "personHasCreatedWill"
   ): TypedContractMethod<[arg0: string], [boolean], "view">;
-  getFunction(nameOrSignature: "publicWills"): TypedContractMethod<
+  getFunction(
+    nameOrSignature: "publicWills"
+  ): TypedContractMethod<
     [arg0: BigNumberish],
     [
       [
         string,
         boolean,
         bigint,
+        string,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput,
         BlockchainWill.PersonStructOutput
@@ -331,12 +379,20 @@ export interface BlockchainWill extends BaseContract {
         will: string;
         isPublic: boolean;
         createdAt: bigint;
+        secretCode: string;
         testator: BlockchainWill.PersonStructOutput;
         firstWitness: BlockchainWill.PersonStructOutput;
         secondWitness: BlockchainWill.PersonStructOutput;
       }
     ],
     "view"
+  >;
+  getFunction(
+    nameOrSignature: "revokePrivateWill"
+  ): TypedContractMethod<
+    [_testatorCitizenshipCardId: string],
+    [void],
+    "nonpayable"
   >;
   getFunction(
     nameOrSignature: "revokePublicWill"
@@ -344,36 +400,6 @@ export interface BlockchainWill extends BaseContract {
     [_testatorCitizenshipCardId: string],
     [void],
     "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "revokeWill"
-  ): TypedContractMethod<
-    [_testatorCitizenshipCardId: string],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "userCitizenshipCardIdToWill"
-  ): TypedContractMethod<
-    [arg0: string],
-    [
-      [
-        string,
-        boolean,
-        bigint,
-        BlockchainWill.PersonStructOutput,
-        BlockchainWill.PersonStructOutput,
-        BlockchainWill.PersonStructOutput
-      ] & {
-        will: string;
-        isPublic: boolean;
-        createdAt: bigint;
-        testator: BlockchainWill.PersonStructOutput;
-        firstWitness: BlockchainWill.PersonStructOutput;
-        secondWitness: BlockchainWill.PersonStructOutput;
-      }
-    ],
-    "view"
   >;
 
   filters: {};

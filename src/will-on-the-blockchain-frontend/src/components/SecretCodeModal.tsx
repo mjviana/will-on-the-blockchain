@@ -15,17 +15,24 @@ import {BlockchainWill} from "../types";
 import {Link as ReactRouterLink} from "react-router-dom";
 import {decrypt} from "../utils/CryptoHelper";
 
+enum SecretModalType {
+  "privateWillDetails",
+  "revokeWill",
+}
+
 interface SecretCodeModalProps {
-  will: BlockchainWill.WillStructOutput;
+  will: BlockchainWill.WillStruct;
   onCancel(): void;
-  onDecryptedWill(decryptedWill: string): void;
   onClose(): void;
   isOpen: boolean;
+  modalType: SecretModalType;
+  onSecretCodeDecrypted(decryptedValue: string): void;
 }
 const SecretCodeModal = ({
   will,
   onCancel,
-  onDecryptedWill,
+  modalType,
+  onSecretCodeDecrypted,
   onClose,
   isOpen,
 }: SecretCodeModalProps) => {
@@ -33,13 +40,23 @@ const SecretCodeModal = ({
   const [isValidSecretCode, setIsValidSecretCode] = useState<boolean>(true);
 
   function handleConfirmClick(): void {
-    const decryptedWill = decrypt(will.will, secretCode);
-    console.log("decryptedWill", decryptedWill);
-    if (decryptedWill.length === 0) {
-      setIsValidSecretCode(false);
+    if (modalType === SecretModalType.privateWillDetails) {
+      const decryptedWill = decrypt(will.will, secretCode);
+      console.log("decryptedWill", decryptedWill);
+      if (decryptedWill.length === 0) {
+        setIsValidSecretCode(false);
+      } else {
+        setIsValidSecretCode(true);
+        onSecretCodeDecrypted(decryptedWill);
+      }
     } else {
-      setIsValidSecretCode(true);
-      onDecryptedWill(decryptedWill);
+      const decryptedSecret = decrypt(will.secretCode, secretCode);
+      if (decryptedSecret.length === 0) {
+        setIsValidSecretCode(false);
+      } else {
+        setIsValidSecretCode(true);
+        onSecretCodeDecrypted(will.secretCode);
+      }
     }
   }
 
@@ -64,7 +81,11 @@ const SecretCodeModal = ({
                 onSecretCodeChange={handleSecretCodeChange}
               ></SecretCode>
               <FormHelperText>
-                This will is private, please insert the secret key.
+                {modalType === SecretModalType.privateWillDetails ? (
+                  <>Insert the secret code to see the will.</>
+                ) : (
+                  <> Insert the secret code to revoke will.</>
+                )}
               </FormHelperText>
               {!isValidSecretCode && (
                 <FormHelperText color="red.500">
@@ -91,4 +112,4 @@ const SecretCodeModal = ({
   );
 };
 
-export default SecretCodeModal;
+export {SecretCodeModal, SecretModalType};

@@ -10,4 +10,6 @@ export default interface CreateWillParams {
   secondWitnessName: string;
   secondWitnessCitizenshipCardId: string;
   secondWitnessBirthdate: number;
+  secretCode: string;
+  createdAt: number;
 }

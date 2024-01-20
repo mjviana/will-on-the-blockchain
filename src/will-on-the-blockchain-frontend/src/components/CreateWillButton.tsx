@@ -5,7 +5,6 @@ interface CreateWillButtonProps {
   isTransactionCreateWillLoading: boolean;
   isWillCompleted: boolean;
   onCreateWill: () => void;
-  isPublicWill: boolean;
   isWillEncrypted: boolean;
 }
 
@@ -14,7 +13,6 @@ export function CreateWillButton({
   isTransactionCreateWillLoading,
   isWillCompleted,
   onCreateWill,
-  isPublicWill,
   isWillEncrypted,
 }: CreateWillButtonProps) {
   function isWritingOnBlockchain(): boolean {
@@ -29,13 +27,11 @@ export function CreateWillButton({
         isWriteCreateWillLoading
           ? "Waiting for confirmation..."
           : isTransactionCreateWillLoading
-          ? "Creating Will..."
-          : "Create"
+            ? "Creating Will..."
+            : "Create"
       }
       isDisabled={
-        !isPublicWill
-          ? !isWillEncrypted || isWritingOnBlockchain() || !isWillCompleted
-          : isWritingOnBlockchain() || !isWillCompleted
+        !isWillEncrypted || isWritingOnBlockchain() || !isWillCompleted
       }
       onClick={onCreateWill}
     >

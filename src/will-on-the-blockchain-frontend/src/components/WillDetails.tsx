@@ -2,7 +2,7 @@ import {BlockchainWill} from "../types";
 import WillAuthorInformation from "./WillAuthorInformation";
 import WillContent from "./WillContent";
 import {WillWitnessInformation} from "./WillWitnessInformation";
-import SecretCodeModal from "./SecretCodeModal";
+import {SecretCodeModal, SecretModalType} from "./SecretCodeModal";
 import {useDisclosure} from "@chakra-ui/react";
 import {useEffect, useState} from "react";
 interface WillDetailsProps {
@@ -38,7 +38,8 @@ export const WillDetails = ({will, onReset}: WillDetailsProps) => {
             will={visibleWill}
             onCancel={handleOnCancel}
             onClose={handleOnCancel}
-            onDecryptedWill={(decryptedWill) => {
+            modalType={SecretModalType.privateWillDetails}
+            onSecretCodeDecrypted={(decryptedWill) => {
               setVisibleWill({...will, will: decryptedWill});
               onClose();
             }}

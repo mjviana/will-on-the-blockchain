@@ -4,13 +4,13 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import {willSmartContractAbi} from "../constants";
 import {useEffect} from "react";
+import {blockchainWillAbi} from "../constants/blockchainWillAbi";
 
 export const useRevokeWill = (
-  address: Address,
-  debouncedWill: string[] | null,
-  revokeMode: boolean
+  contractAddress: Address,
+  citizenshipCardId: string,
+  isPublicWill: boolean | undefined
 ) => {
   /// usePrepareContractWrite hook is used to prepare a contract write transaction, it fetches the required parameters for the transaction.
   const {
@@ -19,15 +19,11 @@ export const useRevokeWill = (
     error: prepareRevokeWillError,
     isError: isPrepareRevokeWillError,
   } = usePrepareContractWrite({
-    address: address,
-    abi: willSmartContractAbi,
-    functionName: "revokePublicWill",
-    enabled: revokeMode, // Enable the hook only when the debouncedWill is not null and revokeMode is true.
-    args: debouncedWill
-      ? debouncedWill[2] != ""
-        ? [debouncedWill[2]]
-        : []
-      : [], // The element at index 2 is the testatorCitizenshipCardId
+    address: contractAddress,
+    abi: blockchainWillAbi,
+    functionName: isPublicWill ? "revokePublicWill" : "revokePrivateWill",
+    // enabled: false,
+    args: [citizenshipCardId],
   });
 
   // useContractWrite hook performs the actual contract write transaction.
@@ -52,15 +48,15 @@ export const useRevokeWill = (
     hash: writeRevokeWillData?.hash,
   });
 
-  useEffect(() => {
-    console.log("useRevokeWill writeRevokeWill useEffect");
-    refetchPrepareRevokeWill();
-  }, [isWriteRevokeWillError, isWriteRevokeWillSuccess]);
+  // useEffect(() => {
+  //   console.log("useRevokeWill writeRevokeWill useEffect");
+  //   refetchPrepareRevokeWill();
+  // }, [isWriteRevokeWillError, isWriteRevokeWillSuccess]);
 
-  useEffect(() => {
-    console.log("useRevokeWill transactionRevoke useEffect");
-    resetWriteRevokeWill();
-  }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
+  // useEffect(() => {
+  //   console.log("useRevokeWill transactionRevoke useEffect");
+  //   resetWriteRevokeWill();
+  // }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
   return {
     prepareRevokeWillError,
@@ -75,5 +71,6 @@ export const useRevokeWill = (
     isTransactionRevokeWillError,
     transactionRevokeWillData,
     transactionRevokeWillError,
+    writeRevokeWillData,
   };
 };

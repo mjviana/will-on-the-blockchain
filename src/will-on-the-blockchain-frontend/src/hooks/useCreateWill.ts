@@ -4,12 +4,12 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import {willSmartContractAbi} from "../constants";
-import {useEffect} from "react";
+import {BlockchainWill} from "../types";
+import {blockchainWillAbi} from "../constants/blockchainWillAbi";
 
 export const useCreateWill = (
   address: Address,
-  debouncedWill: string[] | null,
+  debouncedWill: BlockchainWill.WillCreationStruct,
   isWillCompleted: boolean
 ) => {
   // usePrepareContractWrite hook is used to prepare a contract write transaction, it fetches the required parameters for the transaction.
@@ -20,10 +20,31 @@ export const useCreateWill = (
     refetch: refetchPrepareCreateWill,
   } = usePrepareContractWrite({
     address: address,
-    abi: willSmartContractAbi,
+    abi: blockchainWillAbi,
     functionName: "createWill",
     enabled: isWillCompleted, // Enable the hook only when the debouncedWill is not null and all the fields are filled.
-    args: debouncedWill ? debouncedWill : [],
+    args: [
+      {
+        will: debouncedWill.will,
+        isPublic: debouncedWill.isPublic,
+        firstWitness: {
+          name: debouncedWill.firstWitness.name,
+          birthdate: debouncedWill.firstWitness.birthdate as bigint,
+          citizenshipCardId: debouncedWill.firstWitness.citizenshipCardId,
+        },
+        secondWitness: {
+          name: debouncedWill.secondWitness.name,
+          birthdate: debouncedWill.secondWitness.birthdate as bigint,
+          citizenshipCardId: debouncedWill.secondWitness.citizenshipCardId,
+        },
+        testator: {
+          name: debouncedWill.testator.name,
+          birthdate: debouncedWill.testator.birthdate as bigint,
+          citizenshipCardId: debouncedWill.testator.citizenshipCardId,
+        },
+        secretCode: debouncedWill.secretCode,
+      },
+    ],
     gas: 3100000n,
     onError(error) {
       console.log(
@@ -31,6 +52,7 @@ export const useCreateWill = (
         "color: red"
       );
       console.log("%c error:", "color: red", error);
+      console.log(`%c current params ${debouncedWill}`, "color:red");
     },
   });
 
@@ -55,23 +77,31 @@ export const useCreateWill = (
     hash: writeCreateWillData?.hash,
   });
 
-  useEffect(() => {
-    console.log("useCreateWill writeCreate wseEffect");
-    console.log("isWriteCreateWillSuccess", isWriteCreateWillSuccess);
-    console.log("isWriteCreateWillError", isWriteCreateWillError);
-    refetchPrepareCreateWill();
-  }, [isWriteCreateWillSuccess, isWriteCreateWillError]);
+  // useEffect(() => {
+  //   console.log("useCreateWill writeCreate wseEffect");
+  //   console.log("isWriteCreateWillSuccess", isWriteCreateWillSuccess);
+  //   console.log("isWriteCreateWillError", isWriteCreateWillError);
+  //   refetchPrepareCreateWill();
+  // }, [
+  //   isWriteCreateWillSuccess,
+  //   isWriteCreateWillError,
+  //   refetchPrepareCreateWill,
+  // ]);
 
-  useEffect(() => {
-    console.log("useCreateWill transactionCreate useEffect");
-    console.log(
-      "isTransanctionCreateWillSuccess",
-      isTransanctionCreateWillSuccess
-    );
-    console.log("isTransactionCreateWillError", isTransactionCreateWillError);
+  // useEffect(() => {
+  //   console.log("useCreateWill transactionCreate useEffect");
+  //   console.log(
+  //     "isTransanctionCreateWillSuccess",
+  //     isTransanctionCreateWillSuccess
+  //   );
+  //   console.log("isTransactionCreateWillError", isTransactionCreateWillError);
 
-    resetWriteCreateWill();
-  }, [isTransanctionCreateWillSuccess, isTransactionCreateWillError]);
+  //   resetWriteCreateWill();
+  // }, [
+  //   isTransanctionCreateWillSuccess,
+  //   isTransactionCreateWillError,
+  //   resetWriteCreateWill,
+  // ]);
 
   // console.log(writeCreateWill);
   // console.log(useContractWrite);

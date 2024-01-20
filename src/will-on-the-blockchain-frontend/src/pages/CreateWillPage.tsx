@@ -1,21 +1,18 @@
-import {RevokeWillAlertDialog} from "../components/RevokeWillAlertDialog";
-import {Stack, useSteps, useDisclosure, Link} from "@chakra-ui/react";
-import {ChangeEvent, useEffect, useRef, useState} from "react";
+import {Stack, useSteps, Link} from "@chakra-ui/react";
+import {ChangeEvent, useState} from "react";
 import {contractAddresses} from "../constants";
 import {Address, useAccount} from "wagmi";
 import {useDebounce} from "usehooks-ts";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
-import CreateWillParams from "../types/CreateWillParams";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
-import {useRevokeWill} from "../hooks/useRevokeWill";
-import {useFeedbackToast} from "../hooks/useFeedbackToast";
 import WillStepper from "../components/WillStepper";
 import {CreateWillButton} from "../components/CreateWillButton";
 import {WillForm} from "../components/WillForm";
 import {encrypt} from "../utils/CryptoHelper";
 import EncryptWillButton from "../components/EncryptWillButton";
 import FeedbackToast from "../components/FeedbackToast";
+import {BlockchainWill} from "../types";
 
 const steps = [
   {
@@ -48,41 +45,41 @@ const steps = [
   },
 ];
 
-const defaultWillParams: CreateWillParams = {
-  authorName: "",
+const defaultCreateWillParamsTest: BlockchainWill.WillCreationStruct = {
   will: "",
-  testatorCitizenshipCardId: "",
-  testatorBirthdate: 0,
   isPublic: true,
-  firstWitnessName: "",
-  firstWitnessCitizenshipCardId: "",
-  firstWitnessBirthdate: 0,
-  secondWitnessName: "",
-  secondWitnessCitizenshipCardId: "",
-  secondWitnessBirthdate: 0,
+  secretCode: "",
+  testator: {
+    name: "",
+    citizenshipCardId: "",
+    birthdate: 0n,
+  } as BlockchainWill.PersonStruct,
+  firstWitness: {
+    name: "",
+    citizenshipCardId: "",
+    birthdate: 0n,
+  } as BlockchainWill.PersonStruct,
+  secondWitness: {
+    name: "",
+    citizenshipCardId: "",
+    birthdate: 0n,
+  } as BlockchainWill.PersonStruct,
 };
 
 interface CreateWillPageProps {
-  createWillParams: CreateWillParams;
+  createWillParams: BlockchainWill.WillCreationStruct;
   isWillEncrypted: boolean;
-  createEncrypedWillParams: string[];
 }
 
 const defaultCreateWillPageProps: CreateWillPageProps = {
-  createWillParams: defaultWillParams,
+  createWillParams: defaultCreateWillParamsTest,
   isWillEncrypted: false,
-  createEncrypedWillParams: Object.values(defaultWillParams),
 };
 
 const CreateWillPage = () => {
   const [createWillPageProps, setCreateWillPageProps] =
     useState<CreateWillPageProps>(defaultCreateWillPageProps);
-  const debouncedWill = useDebounce(
-    createWillPageProps.createWillParams
-      ? Object.values(createWillPageProps.createWillParams!)
-      : null,
-    500
-  );
+  const debouncedWill = useDebounce(createWillPageProps.createWillParams, 500);
 
   const [secretKey, setSecretkey] = useState("");
   const {activeStep, setActiveStep} = useSteps({
@@ -90,16 +87,7 @@ const CreateWillPage = () => {
     count: steps.length,
   });
   const [willSteps, setWillSteps] = useState(steps);
-  const [revokeMode, setRevokeMode] = useState(false);
-  const {
-    isOpen: isRevokeWillAlertOpen,
-    onOpen: openRevokeWillAlertDialog,
-    onClose = () => {
-      console.log("Closing alert...");
-    },
-  } = useDisclosure();
-  const cancelRef = useRef<HTMLButtonElement>(null);
-  const [setFeedbackToast] = useFeedbackToast();
+
   const addresses: ContractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][
     addresses["11155111"].length - 1
@@ -111,55 +99,17 @@ const CreateWillPage = () => {
     writeCreateWillData,
     isWriteCreateWillLoading,
     writeCreateWillError,
-    refetchPrepareCreateWill,
     writeCreateWill,
     isTransactionCreateWillLoading,
     isTransanctionCreateWillSuccess,
     isTransactionCreateWillError,
     transactionCreateWillError,
+    refetchPrepareCreateWill,
   } = useCreateWill(
     contractAddress,
-    Object.values(createWillPageProps.createWillParams!),
+    createWillPageProps.createWillParams,
     isWillCompleted()
   );
-
-  const {
-    prepareRevokeWillError,
-    writeRevokeWill,
-    writeRevokeWillError,
-    refetchPrepareRevokeWill,
-    isWriteRevokeWillLoading,
-    isTransactionRevokeWillLoading,
-    isTransactionRevokeSuccess,
-    isTransactionRevokeWillError,
-    transactionRevokeWillError,
-  } = useRevokeWill(contractAddress, debouncedWill, revokeMode);
-
-  useEffect(() => {
-    refetchPrepareRevokeWill();
-  }, [isTransanctionCreateWillSuccess, isTransactionCreateWillError]);
-
-  useEffect(() => {
-    {
-      if (isTransactionRevokeSuccess) {
-        setFeedbackToast({
-          title: "Will Revoke.",
-          description: "Your will has been successfully revoked.",
-          status: "success",
-        });
-      } else if (isTransactionRevokeWillError) {
-        setFeedbackToast({
-          title: "Will Revoke.",
-          description:
-            "Your will has not been revoked. Here are some details: " +
-            transactionRevokeWillError?.message,
-          status: "error",
-        });
-      }
-      deactivateRevokeWillMode();
-      refetchPrepareCreateWill();
-    }
-  }, [isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
   function isWillCompleted(): boolean {
     return (
@@ -172,28 +122,28 @@ const CreateWillPage = () => {
 
   function isAuthorDataCompleted(): boolean {
     return (
-      createWillPageProps.createWillParams.authorName.length > 0 &&
-      createWillPageProps.createWillParams.testatorCitizenshipCardId.length >
+      createWillPageProps.createWillParams.testator.name.length > 0 &&
+      createWillPageProps.createWillParams.testator.citizenshipCardId.length >
         0 &&
-      createWillPageProps.createWillParams.testatorBirthdate != 0
+      createWillPageProps.createWillParams.testator.birthdate != 0
     );
   }
 
   function isFirstWitnessDataCompleted(): boolean {
     return (
-      createWillPageProps.createWillParams.firstWitnessName.length > 0 &&
-      createWillPageProps.createWillParams.firstWitnessCitizenshipCardId
+      createWillPageProps.createWillParams.firstWitness.name.length > 0 &&
+      createWillPageProps.createWillParams.firstWitness.citizenshipCardId
         .length > 0 &&
-      createWillPageProps.createWillParams.firstWitnessBirthdate != 0
+      createWillPageProps.createWillParams.firstWitness.birthdate != 0
     );
   }
 
   function isSecondWitnessDataCompleted(): boolean {
     return (
-      createWillPageProps.createWillParams.secondWitnessName.length > 0 &&
-      createWillPageProps.createWillParams.secondWitnessCitizenshipCardId
+      createWillPageProps.createWillParams.secondWitness.name.length > 0 &&
+      createWillPageProps.createWillParams.secondWitness.citizenshipCardId
         .length > 0 &&
-      createWillPageProps.createWillParams.secondWitnessBirthdate != 0
+      createWillPageProps.createWillParams.secondWitness.birthdate != 0
     );
   }
 
@@ -206,7 +156,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        authorName: event.target.value,
+        testator: {
+          ...createWillPageProps.createWillParams.testator,
+          name: event.target.value,
+        },
       },
     });
 
@@ -231,7 +184,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        testatorCitizenshipCardId: event.target.value,
+        testator: {
+          ...createWillPageProps.createWillParams.testator,
+          citizenshipCardId: event.target.value,
+        },
       },
     });
 
@@ -258,7 +214,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        testatorBirthdate: birthdateTimestamp,
+        testator: {
+          ...createWillPageProps.createWillParams.testator,
+          birthdate: birthdateTimestamp,
+        },
       },
     });
 
@@ -283,7 +242,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        firstWitnessName: event.target.value,
+        firstWitness: {
+          ...createWillPageProps.createWillParams.firstWitness,
+          name: event.target.value,
+        },
       },
     });
 
@@ -310,7 +272,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        firstWitnessCitizenshipCardId: event.target.value,
+        firstWitness: {
+          ...createWillPageProps.createWillParams.firstWitness,
+          citizenshipCardId: event.target.value,
+        },
       },
     });
 
@@ -340,7 +305,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        firstWitnessBirthdate: birthdateTimestamp,
+        firstWitness: {
+          ...createWillPageProps.createWillParams.firstWitness,
+          birthdate: birthdateTimestamp,
+        },
       },
     });
 
@@ -365,7 +333,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        secondWitnessName: event.target.value,
+        secondWitness: {
+          ...createWillPageProps.createWillParams.secondWitness,
+          name: event.target.value,
+        },
       },
     });
 
@@ -392,7 +363,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        secondWitnessCitizenshipCardId: event.target.value,
+        secondWitness: {
+          ...createWillPageProps.createWillParams.secondWitness,
+          citizenshipCardId: event.target.value,
+        },
       },
     });
 
@@ -422,7 +396,10 @@ const CreateWillPage = () => {
       ...createWillPageProps,
       createWillParams: {
         ...createWillPageProps.createWillParams,
-        secondWitnessBirthdate: birthdateTimestamp,
+        secondWitness: {
+          ...createWillPageProps.createWillParams.secondWitness,
+          birthdate: birthdateTimestamp,
+        },
       },
     });
 
@@ -443,6 +420,8 @@ const CreateWillPage = () => {
   }
 
   function setWillType(nextValue: string): void {
+    console.log("Will type: ", nextValue);
+
     setCreateWillPageProps({
       ...createWillPageProps,
       createWillParams: {
@@ -477,19 +456,6 @@ const CreateWillPage = () => {
     }
   }
 
-  function activateRevokeWillMode(): void {
-    console.log("Revoking will...");
-    console.log("Write revoke will", writeRevokeWill);
-    setRevokeMode(true);
-    writeRevokeWill?.();
-  }
-
-  function deactivateRevokeWillMode(): void {
-    console.log("Deactivating revoke will mode...");
-    setRevokeMode(false);
-    onClose();
-  }
-
   function toggleAuthorAccordionButton(): void {
     setWillSteps(
       willSteps.map((step) =>
@@ -516,39 +482,67 @@ const CreateWillPage = () => {
 
   function handleSecretKeyChange(e: ChangeEvent<HTMLInputElement>): void {
     setSecretkey(e.target.value);
+
+    setCreateWillPageProps({
+      ...createWillPageProps,
+      createWillParams: {
+        ...createWillPageProps.createWillParams,
+        secretCode: e.target.value,
+      },
+    });
   }
 
   function encryptWillConditionsMet(
-    isPublicWill: boolean,
     willBody: string,
     secretKey: string
   ): boolean {
-    return !isPublicWill && willBody.length > 0 && secretKey.length > 0;
+    return willBody.length > 0 && secretKey.length > 0;
   }
 
   function handleEncrypWillClick(): void {
     if (
       encryptWillConditionsMet(
-        createWillPageProps.createWillParams.isPublic,
         createWillPageProps.createWillParams.will,
         secretKey
       )
     ) {
       console.log("Conditions to encrypt met. Encrypting will...");
 
-      const encryptedWill = encrypt(
-        createWillPageProps.createWillParams.will,
+      const encryptedSecret = encrypt(
+        createWillPageProps.createWillParams.secretCode,
         secretKey
       );
 
-      setCreateWillPageProps({
-        ...createWillPageProps,
-        createWillParams: {
-          ...createWillPageProps.createWillParams,
-          will: encryptedWill,
-        },
-        isWillEncrypted: true,
-      });
+      console.log("Encrypted secret: ", encryptedSecret);
+
+      if (!createWillPageProps.createWillParams.isPublic) {
+        console.log("Will is private. Encrypting will body...");
+
+        const encryptedWill = encrypt(
+          createWillPageProps.createWillParams.will,
+          secretKey
+        );
+
+        console.log("Encrypted will: ", encryptedWill);
+        setCreateWillPageProps({
+          ...createWillPageProps,
+          createWillParams: {
+            ...createWillPageProps.createWillParams,
+            will: encryptedWill,
+            secretCode: encryptedSecret,
+          },
+          isWillEncrypted: true,
+        });
+      } else {
+        setCreateWillPageProps({
+          ...createWillPageProps,
+          createWillParams: {
+            ...createWillPageProps.createWillParams,
+            secretCode: encryptedSecret,
+          },
+          isWillEncrypted: true,
+        });
+      }
     } else {
       console.log("The conditions to encrypt are not met.");
     }
@@ -561,15 +555,39 @@ const CreateWillPage = () => {
       console.log("Debounce Will", debouncedWill);
 
       console.log("Write create will fuction state", writeCreateWill);
+      refetchPrepareCreateWill?.();
       writeCreateWill?.();
-      setCreateWillPageProps({...createWillPageProps, isWillEncrypted: false});
+      setCreateWillPageProps({
+        createWillParams: {
+          will: "",
+          isPublic: true,
+          secretCode: "",
+          testator: {
+            name: "",
+            citizenshipCardId: "",
+            birthdate: 0n,
+          } as BlockchainWill.PersonStruct,
+          firstWitness: {
+            name: "",
+            citizenshipCardId: "",
+            birthdate: 0n,
+          } as BlockchainWill.PersonStruct,
+          secondWitness: {
+            name: "",
+            citizenshipCardId: "",
+            birthdate: 0n,
+          } as BlockchainWill.PersonStruct,
+        },
+        isWillEncrypted: false,
+      });
 
       //TODO add a clean up function to reset the state of the page
     } else if (
       isPrepareCreateWillError &&
       prepareCreateWillError?.message.includes("HasCreatedWill")
     ) {
-      openRevokeWillAlertDialog();
+      //TODO: add a modal to warn the user that he has already created a will
+      console.log("The user has already created a will");
     } else {
       console.log(
         "Error prepare Create will: ",
@@ -598,19 +616,15 @@ const CreateWillPage = () => {
             onAuthorAccordionButtonClick={toggleAuthorAccordionButton}
             onFirstWitnessAccordionButtonClick={toggleFirstWitnessButton}
             onSecondWitnessAccordionButtonClick={toggleSecondWitnessButton}
-            isPrivateWill={!createWillPageProps.createWillParams.isPublic}
             onSecretKeyChange={handleSecretKeyChange}
           />
           <Stack direction="row" spacing={4}>
-            {!createWillPageProps.createWillParams.isPublic && (
-              <EncryptWillButton
-                onEncryptWillClick={handleEncrypWillClick}
-                isSecretKeySettled={isSecretKeySettled()}
-                isWillCompleted={isWillCompleted()}
-              />
-            )}
+            <EncryptWillButton
+              onEncryptWillClick={handleEncrypWillClick}
+              isSecretKeySettled={isSecretKeySettled()}
+              isWillCompleted={isWillCompleted()}
+            />
             <CreateWillButton
-              isPublicWill={createWillPageProps.createWillParams.isPublic}
               isWillEncrypted={createWillPageProps.isWillEncrypted}
               isWriteCreateWillLoading={isWriteCreateWillLoading}
               isTransactionCreateWillLoading={isTransactionCreateWillLoading}
@@ -630,15 +644,6 @@ const CreateWillPage = () => {
           </Link>
         </>
       )}
-      <RevokeWillAlertDialog
-        isRevokeWillAlertOpen={isRevokeWillAlertOpen}
-        onClose={onClose}
-        cancelRef={cancelRef}
-        isWriteRevokeWillLoading={isWriteRevokeWillLoading}
-        isTransactionRevokeWillLoading={isTransactionRevokeWillLoading}
-        onActivateRevokeWillMode={activateRevokeWillMode}
-        onDeactivateRevokeWillMode={deactivateRevokeWillMode}
-      />
 
       {isTransanctionCreateWillSuccess && (
         <FeedbackToast
@@ -667,17 +672,11 @@ const CreateWillPage = () => {
       {prepareCreateWillError && (
         <p>Error prepare Create will: {prepareCreateWillError.message}</p>
       )}
-      {prepareRevokeWillError && (
-        <p>Error preapre revoke will: {prepareRevokeWillError.message}</p>
-      )}
 
       <p>----------------------------------</p>
       <p>Write Errors:</p>
       {writeCreateWillError && (
         <p>Error write Create will: {writeCreateWillError.message}</p>
-      )}
-      {writeRevokeWillError && (
-        <p>Error write Revoke will: {writeRevokeWillError.message}</p>
       )}
       {isConnected ? <p>Connected to {walletAddress}</p> : <p>Not Connected</p>}
     </>

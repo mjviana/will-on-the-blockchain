@@ -15,7 +15,7 @@ const SecretCode = ({onSecretCodeChange}: SecretCodeProps) => {
           id="secret-code"
           type={show ? "text" : "password"}
           pr="4.5rem"
-          placeholder="Enter password"
+          placeholder="Enter secret code"
           onChange={onSecretCodeChange}
         />
         <InputRightElement width="4.5rem">
