@@ -12,6 +12,7 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
+import SecretCode from "./SecretCode";
 
 interface WillFormProps {
   onAuthorAccordionButtonClick: () => void;
@@ -158,11 +159,7 @@ export function WillForm({
               <Stack direction="row" spacing={5}>
                 <Radio value="public">Public</Radio>
                 <Radio value="private">Private</Radio>
-                <Input
-                  type="password"
-                  placeholder="Secret Code"
-                  onChange={onSecretKeyChange}
-                />
+                <SecretCode onSecretCodeChange={onSecretKeyChange} />
               </Stack>
             </RadioGroup>
             <Textarea
