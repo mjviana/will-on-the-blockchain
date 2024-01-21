@@ -1,4 +1,4 @@
-import {Flex, HStack, Spacer, Link} from "@chakra-ui/react";
+import {Flex, HStack, Spacer, Link, Show} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
@@ -21,7 +21,9 @@ const Navbar = () => {
 
         <Spacer />
         <HStack justifyContent={"flex-end"}>
-          <WillsMenu />
+          <Show below="lg">
+            <WillsMenu />
+          </Show>
           <ColorModeSwitch />
           {/* <div className="custom-connect-button-wrapper">
             <ConnectButton moralisAuth={false} />
