@@ -38,28 +38,30 @@ const WillCard = ({will}: WillCardProps) => {
         </Heading>
         <HStack>
           <Icon as={FaUser} />
-          <Text>Testator Name</Text>
+          <Text as="b">Testator Name:</Text>
+          <Text>{will.testator.name}</Text>
         </HStack>
-        <Text>{will.testator.name}</Text>
         <HStack>
           <Icon as={HiIdentification} />
-          <Text>Citizenship Id</Text>
+          <Text as="b">Citizenship Id:</Text>
+          <Text>{will.testator.citizenshipCardId}</Text>
         </HStack>
-        <Text>{will.testator.citizenshipCardId}</Text>
         <HStack>
           <Icon as={FaCalendar} />
-          <Text>Date of Creation</Text>
+          <Text as="b">Date of Creation:</Text>
+          <Text>
+            {convertEpochStringToDate(
+              will.createdAt.toString()
+            )?.toDateString()}
+          </Text>
         </HStack>
-        <Text>
-          {convertEpochStringToDate(will.createdAt.toString())?.toDateString()}
-        </Text>
         <HStack>
           <Icon as={FaUserFriends} />
-          <Text>Witnesses</Text>
+          <Text as="b">Witnesses:</Text>
+          <Text>
+            {will.firstWitness.name}, {will.secondWitness.name}
+          </Text>
         </HStack>
-        <Text>
-          {will.firstWitness.name}, {will.secondWitness.name}
-        </Text>
       </CardBody>
       <CardFooter>
         <Button onClick={onOpen}>View will</Button>
@@ -73,31 +75,30 @@ const WillCard = ({will}: WillCardProps) => {
           <ModalBody pb={6}>
             <HStack>
               <Icon as={FaUser} />
-              <Text>Testator Name</Text>
+              <Text as="b">Testator Name:</Text>
+              <Text>{will.testator.name}</Text>
             </HStack>
-            <Text>{will.testator.name}</Text>
             <HStack>
               <Icon as={HiIdentification} />
-              <Text>Citizenship Id</Text>
+              <Text as="b">Citizenship Id:</Text>
+              <Text>{will.testator.citizenshipCardId}</Text>
             </HStack>
-            <Text>{will.testator.citizenshipCardId}</Text>
             <HStack>
               <Icon as={FaCalendar} />
-              <Text>Date of Creation</Text>
+              <Text as="b">Date of Creation:</Text>
+              <Text>
+                {convertEpochStringToDate(
+                  will.createdAt.toString()
+                )?.toDateString()}
+              </Text>
             </HStack>
-            <Text>
-              {" "}
-              {convertEpochStringToDate(
-                will.createdAt.toString()
-              )?.toDateString()}
-            </Text>
             <HStack>
               <Icon as={FaUserFriends} />
-              <Text>Witnesses</Text>
+              <Text as="b">Witnesses:</Text>
+              <Text>
+                {will.firstWitness.name}, {will.secondWitness.name}
+              </Text>
             </HStack>
-            <Text>
-              {will.firstWitness.name}, {will.secondWitness.name}
-            </Text>
             <Divider pb={5} />
             <Text pt={5}>{will.will}</Text>
           </ModalBody>

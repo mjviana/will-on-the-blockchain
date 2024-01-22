@@ -9,7 +9,7 @@ const Navbar = () => {
   return (
     <>
       <Flex
-        bg={"blackAlpha.900"}
+        bg="gray.900"
         paddingLeft={5}
         paddingRight={5}
         display="flex"

@@ -8,6 +8,7 @@ function Layout() {
     <>
       <Navbar />
       <Grid
+        p="5px"
         templateAreas={{
           base: `"main"
                 "footer"`,

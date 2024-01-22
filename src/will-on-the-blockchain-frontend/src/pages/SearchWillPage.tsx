@@ -1,11 +1,20 @@
 import {abi, contractAddresses} from "../constants";
-import {Box, Spinner, Stack} from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  CardBody,
+  Skeleton,
+  SkeletonText,
+  Spinner,
+  Stack,
+} from "@chakra-ui/react";
 import SearchWill from "../components/SearchWill";
 import {ChangeEvent, useState} from "react";
 import SearchWillButton from "../components/SearchWillButton";
 import {Address, useContractRead} from "wagmi";
 import {BlockchainWill} from "../types";
 import {WillDetails} from "../components/WillDetails";
+import SearchWillSkeleton from "../components/SearchWillSkeleton";
 interface contractAddressesInterface {
   [key: string]: string[];
 }
@@ -53,7 +62,11 @@ const SearchWillPage = () => {
           <SearchWill onCitizenshipIdChange={handleOnCitizenshipIdChange} />
           <SearchWillButton onSearchWillClick={handleSearchWillClick} />
         </Stack>
-        {isRefetching && <Spinner size="xl" />}
+        {isRefetching && (
+          <>
+            <SearchWillSkeleton />
+          </>
+        )}
         {will != null && (
           <>
             <WillDetails
