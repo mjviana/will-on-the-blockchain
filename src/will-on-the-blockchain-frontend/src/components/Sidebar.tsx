@@ -14,7 +14,13 @@ const Sidebar = () => {
       <Heading fontSize="2xl" mb={3}>
         Actions
       </Heading>
-      <HStack py="5px">
+      <HStack
+        py="5px"
+        _hover={{
+          transform: "scale(1.1)",
+          transition: "transform 0.15s ease-in-out",
+        }}
+      >
         <Icon as={FaListUl} />
         <Button
           whiteSpace="normal"
@@ -28,7 +34,13 @@ const Sidebar = () => {
           Public Wills
         </Button>
       </HStack>
-      <HStack py="5px">
+      <HStack
+        py="5px"
+        _hover={{
+          transform: "scale(1.1)",
+          transition: "transform 0.15s ease-in-out",
+        }}
+      >
         <Icon as={FaUserPlus} />
         <Button
           whiteSpace="normal"
@@ -42,7 +54,13 @@ const Sidebar = () => {
           Create Will
         </Button>
       </HStack>
-      <HStack py="5px">
+      <HStack
+        py="5px"
+        _hover={{
+          transform: "scale(1.1)",
+          transition: "transform 0.15s ease-in-out",
+        }}
+      >
         <Icon as={FaSearch} />
         <Button
           whiteSpace="normal"
@@ -56,7 +74,13 @@ const Sidebar = () => {
           Search Will
         </Button>
       </HStack>
-      <HStack py="5px">
+      <HStack
+        py="5px"
+        _hover={{
+          transform: "scale(1.1)",
+          transition: "transform 0.15s ease-in-out",
+        }}
+      >
         <Icon as={FaUserMinus} />
         <Button
           whiteSpace="normal"
@@ -70,7 +94,13 @@ const Sidebar = () => {
           Revoke Will
         </Button>
       </HStack>
-      <HStack py="5px">
+      <HStack
+        py="5px"
+        _hover={{
+          transform: "scale(1.1)",
+          transition: "transform 0.15s ease-in-out",
+        }}
+      >
         <Icon as={FaQuestion} />
         <Button
           whiteSpace="normal"
