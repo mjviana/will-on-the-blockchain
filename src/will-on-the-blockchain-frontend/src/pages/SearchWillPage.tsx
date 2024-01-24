@@ -1,13 +1,5 @@
 import {abi, contractAddresses} from "../constants";
-import {
-  Box,
-  Card,
-  CardBody,
-  Skeleton,
-  SkeletonText,
-  Spinner,
-  Stack,
-} from "@chakra-ui/react";
+import {Box, Stack} from "@chakra-ui/react";
 import SearchWill from "../components/SearchWill";
 import {ChangeEvent, useState} from "react";
 import SearchWillButton from "../components/SearchWillButton";
@@ -55,6 +47,17 @@ const SearchWillPage = () => {
     refetch();
   }
 
+  if (isRefetching)
+    return (
+      <Box maxW="1536px" mx="auto">
+        <Stack p={10} direction={"row"}>
+          <SearchWill onCitizenshipIdChange={handleOnCitizenshipIdChange} />
+          <SearchWillButton onSearchWillClick={handleSearchWillClick} />
+        </Stack>
+        <SearchWillSkeleton />
+      </Box>
+    );
+
   return (
     <>
       <Box maxW="1536px" mx="auto">
@@ -62,11 +65,6 @@ const SearchWillPage = () => {
           <SearchWill onCitizenshipIdChange={handleOnCitizenshipIdChange} />
           <SearchWillButton onSearchWillClick={handleSearchWillClick} />
         </Stack>
-        {isRefetching && (
-          <>
-            <SearchWillSkeleton />
-          </>
-        )}
         {will != null && (
           <>
             <WillDetails

@@ -46,7 +46,7 @@ const PublicWillsPage = () => {
           {isLoading ||
             (isFetching &&
               skeletons.map((skeleton) => (
-                <Card key={skeleton}>
+                <Card borderRadius={10} key={skeleton}>
                   <Skeleton height="200px" />
                   <CardBody>
                     <SkeletonText />
