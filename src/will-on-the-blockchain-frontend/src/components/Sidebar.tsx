@@ -1,4 +1,11 @@
-import {Button, HStack, Heading, Icon} from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  HStack,
+  Heading,
+  Icon,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import {
   FaListUl,
   FaQuestion,
@@ -9,8 +16,9 @@ import {
 import {Link as ReactRouterLink} from "react-router-dom";
 
 const Sidebar = () => {
+  const value = useColorModeValue("white", "white");
   return (
-    <>
+    <Box color={value}>
       <Heading fontSize="2xl" mb={3}>
         Actions
       </Heading>
@@ -23,6 +31,7 @@ const Sidebar = () => {
       >
         <Icon as={FaListUl} />
         <Button
+          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
@@ -43,6 +52,7 @@ const Sidebar = () => {
       >
         <Icon as={FaUserPlus} />
         <Button
+          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
@@ -63,6 +73,7 @@ const Sidebar = () => {
       >
         <Icon as={FaSearch} />
         <Button
+          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
@@ -83,6 +94,7 @@ const Sidebar = () => {
       >
         <Icon as={FaUserMinus} />
         <Button
+          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
@@ -103,6 +115,7 @@ const Sidebar = () => {
       >
         <Icon as={FaQuestion} />
         <Button
+          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
@@ -114,7 +127,7 @@ const Sidebar = () => {
           How to Create a Will
         </Button>
       </HStack>
-    </>
+    </Box>
   );
 };
 

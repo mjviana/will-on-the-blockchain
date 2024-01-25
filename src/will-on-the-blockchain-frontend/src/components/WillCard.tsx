@@ -1,8 +1,6 @@
 import {
-  Button,
   Card,
   CardBody,
-  CardFooter,
   HStack,
   Heading,
   Text,
@@ -31,7 +29,12 @@ const WillCard = ({will}: WillCardProps) => {
   const {isOpen, onOpen, onClose} = useDisclosure();
 
   return (
-    <Card>
+    <Card
+      onClick={onOpen}
+      border="1px"
+      borderRadius={15}
+      _hover={{cursor: "pointer"}}
+    >
       <CardBody>
         <Heading mb={3} size="md">
           Will Details
@@ -63,9 +66,9 @@ const WillCard = ({will}: WillCardProps) => {
           </Text>
         </HStack>
       </CardBody>
-      <CardFooter>
+      {/* <CardFooter>
         <Button onClick={onOpen}>View will</Button>
-      </CardFooter>
+      </CardFooter> */}
 
       <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

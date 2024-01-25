@@ -8,12 +8,11 @@ function Layout() {
     <>
       <Navbar />
       <Grid
-        p="5px"
         templateAreas={{
           base: `"main"
                 "footer"`,
           lg: `"aside main main"
-              "footer footer footer"`,
+              "aside footer footer"`,
         }}
         templateColumns={{
           base: "1fr",
@@ -21,7 +20,7 @@ function Layout() {
         }}
       >
         <Show above="lg">
-          <GridItem area="aside" paddingX={5}>
+          <GridItem p={5} bg="blackAlpha.900" area="aside" h="100vh">
             <Sidebar />
           </GridItem>
         </Show>
