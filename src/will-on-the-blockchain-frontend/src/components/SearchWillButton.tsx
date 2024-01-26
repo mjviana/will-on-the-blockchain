@@ -5,7 +5,11 @@ interface SearchWillButtonProps {
 }
 
 const SearchWillButton = ({onSearchWillClick}: SearchWillButtonProps) => {
-  return <Button onClick={onSearchWillClick}>Search Will</Button>;
+  return (
+    <>
+      <Button onClick={onSearchWillClick}>Search Will</Button>
+    </>
+  );
 };
 
 export default SearchWillButton;

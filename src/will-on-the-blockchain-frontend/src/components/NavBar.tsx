@@ -1,11 +1,4 @@
-import {
-  Flex,
-  HStack,
-  Spacer,
-  Link,
-  Show,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import {Flex, HStack, Spacer, Show, IconButton} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
@@ -13,7 +6,6 @@ import {Link as ReactRouterLink} from "react-router-dom";
 import WillsMenu from "./WillsMenu";
 
 const Navbar = () => {
-  const value = useColorModeValue("blackAlpha.900", "white");
   return (
     <>
       <Flex
@@ -23,9 +15,14 @@ const Navbar = () => {
         display="flex"
         alignItems="center"
       >
-        <Link as={ReactRouterLink} to={"/"}>
-          <BiBookHeart color={value} fontSize="60px" />
-        </Link>
+        <IconButton
+          variant="link"
+          aria-label="Home page"
+          as={ReactRouterLink}
+          to={"/"}
+        >
+          <BiBookHeart fontSize="60px" />
+        </IconButton>
 
         <Spacer />
         <HStack justifyContent={"flex-end"}>

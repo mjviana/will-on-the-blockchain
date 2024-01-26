@@ -25,7 +25,14 @@ interface WillStepperProps {
 const WillStepper = ({activeStep, steps}: WillStepperProps) => {
   return (
     <>
-      <Stepper p={10} index={activeStep} orientation="vertical" gap="0" h={300}>
+      <Stepper
+        colorScheme="gold"
+        p={10}
+        index={activeStep}
+        orientation="vertical"
+        gap="0"
+        h={300}
+      >
         {steps.map((step, index) => (
           <Step key={index}>
             <StepIndicator>

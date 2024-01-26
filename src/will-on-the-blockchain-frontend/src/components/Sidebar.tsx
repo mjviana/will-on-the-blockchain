@@ -3,7 +3,7 @@ import {
   Button,
   HStack,
   Heading,
-  Icon,
+  IconButton,
   useColorModeValue,
 } from "@chakra-ui/react";
 import {
@@ -23,106 +23,122 @@ const Sidebar = () => {
         Actions
       </Heading>
       <HStack
+        as={ReactRouterLink}
+        to={"/public-wills"}
         py="5px"
         _hover={{
           transform: "scale(1.1)",
           transition: "transform 0.15s ease-in-out",
         }}
       >
-        <Icon as={FaListUl} />
+        <IconButton
+          variant="link"
+          aria-label="Public Wills"
+          icon={<FaListUl />}
+        />
         <Button
-          color={value}
+          colorScheme="gold"
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
           fontSize="lg"
           variant="link"
-          as={ReactRouterLink}
-          to={"/public-wills"}
         >
           Public Wills
         </Button>
       </HStack>
       <HStack
+        as={ReactRouterLink}
+        to={"/create-will"}
         py="5px"
         _hover={{
           transform: "scale(1.1)",
           transition: "transform 0.15s ease-in-out",
         }}
       >
-        <Icon as={FaUserPlus} />
+        <IconButton
+          variant="link"
+          aria-label="Create Will"
+          icon={<FaUserPlus />}
+        />
         <Button
-          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
           fontSize="lg"
           variant="link"
-          as={ReactRouterLink}
-          to={"/create-will"}
         >
           Create Will
         </Button>
       </HStack>
       <HStack
+        as={ReactRouterLink}
+        to={"/search-will"}
         py="5px"
         _hover={{
           transform: "scale(1.1)",
           transition: "transform 0.15s ease-in-out",
         }}
       >
-        <Icon as={FaSearch} />
+        <IconButton
+          variant="link"
+          aria-label="Search Will"
+          icon={<FaSearch />}
+        />
         <Button
-          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
           fontSize="lg"
           variant="link"
-          as={ReactRouterLink}
-          to={"/search-will"}
         >
           Search Will
         </Button>
       </HStack>
       <HStack
+        as={ReactRouterLink}
+        to={"/revoke-will"}
         py="5px"
         _hover={{
           transform: "scale(1.1)",
           transition: "transform 0.15s ease-in-out",
         }}
       >
-        <Icon as={FaUserMinus} />
+        <IconButton
+          variant="link"
+          aria-label="Revoke WIll"
+          icon={<FaUserMinus />}
+        />
         <Button
-          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
           fontSize="lg"
           variant="link"
-          as={ReactRouterLink}
-          to={"/revoke-will"}
         >
           Revoke Will
         </Button>
       </HStack>
       <HStack
+        as={ReactRouterLink}
+        to={"/how-to-create-will"}
         py="5px"
         _hover={{
           transform: "scale(1.1)",
           transition: "transform 0.15s ease-in-out",
         }}
       >
-        <Icon as={FaQuestion} />
+        <IconButton
+          variant="link"
+          aria-label="How to create a Will"
+          icon={<FaQuestion />}
+        />
         <Button
-          color={value}
           whiteSpace="normal"
           textAlign="left"
           fontWeight={"normal"}
           fontSize="lg"
           variant="link"
-          as={ReactRouterLink}
-          to={"/how-to-create-will"}
         >
           How to Create a Will
         </Button>

@@ -71,14 +71,20 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input placeholder="Name" onChange={onAuthorNameChange} />
+              <Input
+                focusBorderColor="gold.500"
+                placeholder="Name"
+                onChange={onAuthorNameChange}
+              />
               <Stack direction="row">
                 <Input
+                  focusBorderColor="gold.500"
                   type="number"
                   placeholder="Citizenship Id"
                   onChange={onAuthorCitizenshipIdChange}
                 />
                 <Input
+                  focusBorderColor="gold.500"
                   type="date"
                   placeholder="Birthdate"
                   onChange={onAuthorBirthdateChange}
@@ -98,14 +104,20 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input placeholder="Name" onChange={onFirstWitnessNameChange} />
+              <Input
+                focusBorderColor="gold.500"
+                placeholder="Name"
+                onChange={onFirstWitnessNameChange}
+              />
               <Stack direction="row">
                 <Input
+                  focusBorderColor="gold.500"
                   type="number"
                   placeholder="Citizenship Id"
                   onChange={onFirstWitnessCitizenshipIdChange}
                 />
                 <Input
+                  focusBorderColor="gold.500"
                   type="date"
                   placeholder="Birthdate"
                   onChange={onFirstWitnessBirthdateChange}
@@ -125,14 +137,20 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input placeholder="Name" onChange={onSecondWitnessNameChange} />
+              <Input
+                focusBorderColor="gold.500"
+                placeholder="Name"
+                onChange={onSecondWitnessNameChange}
+              />
               <Stack direction="row">
                 <Input
+                  focusBorderColor="gold.500"
                   type="number"
                   placeholder="Citizenship Id"
                   onChange={onSecondWitnessCitizenshipIdChange}
                 />
                 <Input
+                  focusBorderColor="gold.500"
                   type="date"
                   placeholder="Birthdate"
                   onChange={onSecondWitnessBirthdateChange}
@@ -152,6 +170,7 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <RadioGroup
+              colorScheme="gold"
               defaultValue="public"
               onChange={onWillTypeChange}
               mb={6}
@@ -163,6 +182,7 @@ export function WillForm({
               </Stack>
             </RadioGroup>
             <Textarea
+              focusBorderColor="gold.500"
               h="200px"
               size="lg"
               placeholder="Write your will here"
