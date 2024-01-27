@@ -42,12 +42,12 @@ const PublicWillsPage = () => {
       <Box p={10} maxW="1536px" mx="auto">
         {" "}
         {/* Set your desired max width and center the content */}
-        <SimpleGrid columns={{sm: 1, md: 2, lg: 3, xl: 4}} spacing={6}>
+        <SimpleGrid columns={{sm: 1, md: 2, xl: 3}} spacing={6}>
           {isLoading ||
             (isFetching &&
               skeletons.map((skeleton) => (
-                <Card borderRadius={10} key={skeleton}>
-                  <Skeleton height="150px" />
+                <Card w="350px" key={skeleton}>
+                  <Skeleton borderRadius="15px" h="90px" />
                   <CardBody>
                     <SkeletonText />
                   </CardBody>
