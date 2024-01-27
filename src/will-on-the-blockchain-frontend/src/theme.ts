@@ -3,6 +3,7 @@ import {buttonTheme} from "./styles/components/buttonStyles";
 import {inputTheme} from "./styles/components/inputStyles";
 import {textAreaTheme} from "./styles/components/textAreaStyles";
 import {radioTheme} from "./styles/components/radioStyles";
+import {cardTheme} from "./styles/components/cardStyles";
 
 const config: ThemeConfig = {
   initialColorMode: "system",
@@ -42,6 +43,7 @@ const theme = extendTheme({
     Input: inputTheme,
     Textarea: textAreaTheme,
     Radio: radioTheme,
+    Card: cardTheme,
   },
 });
 

@@ -29,12 +29,7 @@ const WillCard = ({will}: WillCardProps) => {
   const {isOpen, onOpen, onClose} = useDisclosure();
 
   return (
-    <Card
-      onClick={onOpen}
-      border="1px"
-      borderRadius={15}
-      _hover={{cursor: "pointer"}}
-    >
+    <Card onClick={onOpen}>
       <CardBody>
         <Heading mb={3} size="md">
           Will Details
