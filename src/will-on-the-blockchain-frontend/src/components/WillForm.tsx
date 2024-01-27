@@ -152,7 +152,6 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <RadioGroup
-              colorScheme="gold"
               defaultValue="public"
               onChange={onWillTypeChange}
               mb={6}

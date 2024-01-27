@@ -2,6 +2,7 @@ import {extendTheme, type ThemeConfig} from "@chakra-ui/react";
 import {buttonTheme} from "./styles/components/buttonStyles";
 import {inputTheme} from "./styles/components/inputStyles";
 import {textAreaTheme} from "./styles/components/textAreaStyles";
+import {radioTheme} from "./styles/components/radioStyles";
 
 const config: ThemeConfig = {
   initialColorMode: "system",
@@ -40,6 +41,7 @@ const theme = extendTheme({
     Button: buttonTheme,
     Input: inputTheme,
     Textarea: textAreaTheme,
+    Radio: radioTheme,
   },
 });
 
