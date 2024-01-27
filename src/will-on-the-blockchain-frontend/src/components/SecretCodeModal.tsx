@@ -109,7 +109,6 @@ const SecretCodeModal = ({
           <ModalFooter>
             <Button
               marginRight="15px"
-              colorScheme="blue"
               isLoading={
                 isWriteRevokeWillLoading || isTransactionRevokeWillLoading
               }
@@ -127,7 +126,12 @@ const SecretCodeModal = ({
             >
               Confirm
             </Button>
-            <Button as={ReactRouterLink} to={"/search-will"} onClick={onCancel}>
+            <Button
+              variant="outline"
+              as={ReactRouterLink}
+              to={"/search-will"}
+              onClick={onCancel}
+            >
               Cancel
             </Button>
           </ModalFooter>

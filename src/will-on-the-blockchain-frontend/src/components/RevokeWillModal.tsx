@@ -72,14 +72,13 @@ const RevokeWillModal = ({
             </FormControl>
           </ModalBody>
           <ModalFooter>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
             <Button
-              marginRight="15px"
-              colorScheme="blue"
-              onClick={handleConfirmClick}
+              variant="outline"
+              as={ReactRouterLink}
+              to={"/revoke-will"}
+              onClick={onCancel}
             >
-              Confirm
-            </Button>
-            <Button as={ReactRouterLink} to={"/revoke-will"} onClick={onCancel}>
               Cancel
             </Button>
           </ModalFooter>
