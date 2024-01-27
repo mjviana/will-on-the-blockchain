@@ -1,4 +1,4 @@
-import {Box, Button, HStack, Heading, IconButton} from "@chakra-ui/react";
+import {Box, Button, HStack, IconButton} from "@chakra-ui/react";
 import {
   FaListUl,
   FaQuestion,

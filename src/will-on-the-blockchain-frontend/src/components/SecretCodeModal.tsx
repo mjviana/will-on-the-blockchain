@@ -129,7 +129,11 @@ const SecretCodeModal = ({
             <Button
               variant="outline"
               as={ReactRouterLink}
-              to={"/search-will"}
+              to={
+                modalType === SecretModalType.privateWillDetails
+                  ? "/search-will"
+                  : "/revoke-will"
+              }
               onClick={onCancel}
             >
               Cancel
