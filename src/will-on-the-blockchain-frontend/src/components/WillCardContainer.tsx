@@ -14,6 +14,7 @@ const WillCardContainer = ({children}: WillCardContainerProps) => {
       }}
       borderRadius={10}
       overflow="hidden"
+      w="350px"
     >
       {children}
     </Box>
