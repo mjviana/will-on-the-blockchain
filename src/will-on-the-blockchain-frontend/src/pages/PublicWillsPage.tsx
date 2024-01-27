@@ -47,7 +47,7 @@ const PublicWillsPage = () => {
             (isFetching &&
               skeletons.map((skeleton) => (
                 <Card borderRadius={10} key={skeleton}>
-                  <Skeleton height="200px" />
+                  <Skeleton height="150px" />
                   <CardBody>
                     <SkeletonText />
                   </CardBody>

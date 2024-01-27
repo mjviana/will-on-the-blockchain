@@ -20,7 +20,7 @@ function Layout() {
         }}
       >
         <Show above="lg">
-          <GridItem p={5} bg="blackAlpha.900" area="aside" h="100vh">
+          <GridItem area="aside" h="100vh">
             <Sidebar />
           </GridItem>
         </Show>

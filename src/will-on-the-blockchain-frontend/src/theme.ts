@@ -1,13 +1,32 @@
-import {extendTheme, type ThemeConfig} from "@chakra-ui/react";
+import {
+  extendTheme,
+  type ThemeConfig,
+  ColorHues,
+  useColorMode,
+} from "@chakra-ui/react";
 import {buttonTheme} from "./styles/components/buttonStyles";
 import {inputTheme} from "./styles/components/inputStyles";
 import {textAreaTheme} from "./styles/components/textAreaStyles";
 import {radioTheme} from "./styles/components/radioStyles";
 import {cardTheme} from "./styles/components/cardStyles";
+import {textTheme} from "./styles/components/textStyle";
 
 const config: ThemeConfig = {
   initialColorMode: "system",
   useSystemColorMode: true,
+};
+
+const myColor: ColorHues = {
+  50: "#fcf6e0",
+  100: "#eee5bf",
+  200: "#e2d39a",
+  300: "#d5c275",
+  400: "#c9b14f",
+  500: "#b09736",
+  600: "#897528",
+  700: "#62541b",
+  800: "#3c320d",
+  900: "#171100",
 };
 
 const theme = extendTheme({
@@ -37,6 +56,10 @@ const theme = extendTheme({
       800: "#3c320d",
       900: "#171100",
     },
+    headerColor: {
+      lightMode: myColor[900],
+      darkMode: myColor[50],
+    },
   },
   components: {
     Button: buttonTheme,
@@ -44,6 +67,7 @@ const theme = extendTheme({
     Textarea: textAreaTheme,
     Radio: radioTheme,
     Card: cardTheme,
+    Text: textTheme,
   },
 });
 

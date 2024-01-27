@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Heading,
-  IconButton,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import {Box, Button, HStack, Heading, IconButton} from "@chakra-ui/react";
 import {
   FaListUl,
   FaQuestion,
@@ -16,12 +9,8 @@ import {
 import {Link as ReactRouterLink} from "react-router-dom";
 
 const Sidebar = () => {
-  const value = useColorModeValue("white", "white");
   return (
-    <Box color={value}>
-      <Heading fontSize="2xl" mb={3}>
-        Actions
-      </Heading>
+    <Box py="55px" pl={15}>
       <HStack
         as={ReactRouterLink}
         to={"/public-wills"}

@@ -7,7 +7,7 @@ const {definePartsStyle, defineMultiStyleConfig} =
 const baseStyle = definePartsStyle({
   // define the part you're going to style
   container: {
-    bg: "gold.400",
+    bg: "gold.500",
     borderRadius: "15px",
     _dark: {
       bg: "gold.700",

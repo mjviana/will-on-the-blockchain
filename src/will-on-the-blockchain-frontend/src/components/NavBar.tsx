@@ -1,4 +1,4 @@
-import {Flex, HStack, Spacer, Show, IconButton} from "@chakra-ui/react";
+import {Flex, HStack, Spacer, Show, IconButton, Text} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
@@ -8,13 +8,7 @@ import WillsMenu from "./WillsMenu";
 const Navbar = () => {
   return (
     <>
-      <Flex
-        bg="blackAlpha.900"
-        paddingLeft={5}
-        paddingRight={5}
-        display="flex"
-        alignItems="center"
-      >
+      <Flex px={15} display="flex" alignItems="center">
         <IconButton
           variant="link"
           aria-label="Home page"
@@ -23,6 +17,11 @@ const Navbar = () => {
         >
           <BiBookHeart fontSize="60px" />
         </IconButton>
+        <Show above="lg">
+          <Text as={ReactRouterLink} to={"/"} px={5} variant="header">
+            Will on the Blockchain
+          </Text>
+        </Show>
 
         <Spacer />
         <HStack justifyContent={"flex-end"}>
