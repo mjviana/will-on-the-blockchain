@@ -37,6 +37,7 @@ const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
+  persister: null,
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

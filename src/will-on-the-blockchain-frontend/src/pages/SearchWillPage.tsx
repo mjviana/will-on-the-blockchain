@@ -1,12 +1,13 @@
-import {abi, contractAddresses} from "../constants";
+import {contractAddresses} from "../constants";
 import {Box, Stack} from "@chakra-ui/react";
 import SearchWill from "../components/SearchWill";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import SearchWillButton from "../components/SearchWillButton";
 import {Address, useContractRead} from "wagmi";
 import {BlockchainWill} from "../types";
 import {WillDetails} from "../components/WillDetails";
 import SearchWillSkeleton from "../components/SearchWillSkeleton";
+import {blockchainWillAbi} from "../constants/blockchainWillAbi";
 interface contractAddressesInterface {
   [key: string]: string[];
 }
@@ -14,6 +15,7 @@ interface contractAddressesInterface {
 const SearchWillPage = () => {
   const [will, setWill] = useState<BlockchainWill.WillStructOutput | null>();
   const [citizenshipCardId, setCitizenshipCardId] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const addresses: contractAddressesInterface = contractAddresses;
   const contractAddress = addresses["11155111"][
@@ -24,13 +26,20 @@ const SearchWillPage = () => {
     return citizenshipCardId.length > 5;
   }
 
-  const {isError, refetch, isRefetching} = useContractRead({
+  const {isError, refetch, isRefetching, isFetching} = useContractRead({
     address: contractAddress,
-    abi: abi,
+    abi: blockchainWillAbi,
     functionName: "getWill",
     onSuccess(data: BlockchainWill.WillStructOutput) {
       console.log("will", data);
       setWill(data);
+    },
+    onError(error) {
+      console.log("error", error);
+      console.log("Current isError flag:", isError);
+      setError(error.message);
+
+      setWill(null);
     },
     args: [citizenshipCardId],
     enabled: false,
@@ -47,11 +56,18 @@ const SearchWillPage = () => {
     refetch();
   }
 
-  if (isRefetching)
+  useEffect(() => {
+    setCitizenshipCardId("");
+  }, [will]);
+
+  if (isRefetching || isFetching)
     return (
       <Box maxW="1536px" mx="auto">
         <Stack p={10} direction={"row"}>
-          <SearchWill onCitizenshipIdChange={handleOnCitizenshipIdChange} />
+          <SearchWill
+            value={citizenshipCardId}
+            onCitizenshipIdChange={handleOnCitizenshipIdChange}
+          />
           <SearchWillButton onSearchWillClick={handleSearchWillClick} />
         </Stack>
         <SearchWillSkeleton />
@@ -62,10 +78,13 @@ const SearchWillPage = () => {
     <>
       <Box maxW="1536px" mx="auto">
         <Stack p={10} direction={"row"}>
-          <SearchWill onCitizenshipIdChange={handleOnCitizenshipIdChange} />
+          <SearchWill
+            value={citizenshipCardId}
+            onCitizenshipIdChange={handleOnCitizenshipIdChange}
+          />
           <SearchWillButton onSearchWillClick={handleSearchWillClick} />
         </Stack>
-        {will != null && (
+        {will && (
           <>
             <WillDetails
               will={will}
@@ -76,7 +95,7 @@ const SearchWillPage = () => {
             />
           </>
         )}
-        {isError && <p>Something went wrong</p>}
+        {error && <p>Something went wrong: {error}</p>}
       </Box>
     </>
   );
