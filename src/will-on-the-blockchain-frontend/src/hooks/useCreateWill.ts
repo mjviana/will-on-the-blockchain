@@ -70,46 +70,12 @@ export const useCreateWill = (
   // useWaitForTransaction hook is used to wait for a transaction to be mined, provides the ability to show feedback on the status of the transaction to the user.
   const {
     isLoading: isTransactionCreateWillLoading,
-    isSuccess: isTransanctionCreateWillSuccess,
+    isSuccess: isTransactionCreateWillSuccess,
     isError: isTransactionCreateWillError,
     error: transactionCreateWillError,
   } = useWaitForTransaction({
     hash: writeCreateWillData?.hash,
   });
-
-  // useEffect(() => {
-  //   console.log("useCreateWill writeCreate wseEffect");
-  //   console.log("isWriteCreateWillSuccess", isWriteCreateWillSuccess);
-  //   console.log("isWriteCreateWillError", isWriteCreateWillError);
-  //   refetchPrepareCreateWill();
-  // }, [
-  //   isWriteCreateWillSuccess,
-  //   isWriteCreateWillError,
-  //   refetchPrepareCreateWill,
-  // ]);
-
-  // useEffect(() => {
-  //   console.log("useCreateWill transactionCreate useEffect");
-  //   console.log(
-  //     "isTransanctionCreateWillSuccess",
-  //     isTransanctionCreateWillSuccess
-  //   );
-  //   console.log("isTransactionCreateWillError", isTransactionCreateWillError);
-
-  //   resetWriteCreateWill();
-  // }, [
-  //   isTransanctionCreateWillSuccess,
-  //   isTransactionCreateWillError,
-  //   resetWriteCreateWill,
-  // ]);
-
-  // console.log(writeCreateWill);
-  // console.log(useContractWrite);
-  // console.log(
-  //   "%c prepare contract as error",
-  //   "color: red",
-  //   isPrepareCreateWillError
-  // );
 
   return {
     prepareCreateWillError,
@@ -121,7 +87,7 @@ export const useCreateWill = (
     writeCreateWill,
     resetWriteCreateWill,
     isTransactionCreateWillLoading,
-    isTransanctionCreateWillSuccess,
+    isTransactionCreateWillSuccess,
     isTransactionCreateWillError,
     transactionCreateWillError,
   };

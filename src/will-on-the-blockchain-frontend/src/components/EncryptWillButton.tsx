@@ -17,7 +17,7 @@ const EncryptWillButton = ({
       isDisabled={!isSecretKeySettled || !isWillCompleted}
       onClick={onEncryptWillClick}
     >
-      Encrypt Will
+      Confirm
     </Button>
   );
 };

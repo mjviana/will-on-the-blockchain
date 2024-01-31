@@ -2,7 +2,6 @@ import {Stack, useSteps, Link} from "@chakra-ui/react";
 import {ChangeEvent, useState} from "react";
 import {contractAddresses} from "../constants";
 import {Address, useAccount} from "wagmi";
-import {useDebounce} from "usehooks-ts";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
@@ -79,7 +78,6 @@ const defaultCreateWillPageProps: CreateWillPageProps = {
 const CreateWillPage = () => {
   const [createWillPageProps, setCreateWillPageProps] =
     useState<CreateWillPageProps>(defaultCreateWillPageProps);
-  const debouncedWill = useDebounce(createWillPageProps.createWillParams, 500);
 
   const [secretKey, setSecretkey] = useState("");
   const {activeStep, setActiveStep} = useSteps({
@@ -101,7 +99,7 @@ const CreateWillPage = () => {
     writeCreateWillError,
     writeCreateWill,
     isTransactionCreateWillLoading,
-    isTransanctionCreateWillSuccess,
+    isTransactionCreateWillSuccess,
     isTransactionCreateWillError,
     transactionCreateWillError,
     refetchPrepareCreateWill,
@@ -552,9 +550,7 @@ const CreateWillPage = () => {
     if (!prepareCreateWillError) {
       console.log("Creating will...");
       console.log("State will", createWillPageProps.createWillParams);
-      console.log("Debounce Will", debouncedWill);
 
-      console.log("Write create will fuction state", writeCreateWill);
       refetchPrepareCreateWill?.();
       writeCreateWill?.();
       setCreateWillPageProps({
@@ -634,7 +630,7 @@ const CreateWillPage = () => {
           </Stack>
         </Stack>
       </Stack>
-      {isTransanctionCreateWillSuccess && (
+      {isTransactionCreateWillSuccess && (
         <>
           <Link
             href={`https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`}
@@ -645,7 +641,7 @@ const CreateWillPage = () => {
         </>
       )}
 
-      {isTransanctionCreateWillSuccess && (
+      {isTransactionCreateWillSuccess && (
         <FeedbackToast
           toastState={{
             status: "success",
