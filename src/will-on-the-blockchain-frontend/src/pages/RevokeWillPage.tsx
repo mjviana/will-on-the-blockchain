@@ -64,6 +64,7 @@ const RevokeWillPage = () => {
 
   function handleOnCancel(): void {
     onClose();
+    setCitizenshipCardId("");
     setWill(null);
   }
 
@@ -89,7 +90,10 @@ const RevokeWillPage = () => {
     <>
       <Box maxW="1536px" mx="auto">
         <Stack p={10} direction={"row"}>
-          <SearchWill onCitizenshipIdChange={handleOnCitizenshipIdChange} />
+          <SearchWill
+            value={citizenshipCardId}
+            onCitizenshipIdChange={handleOnCitizenshipIdChange}
+          />
           <SearchWillButton onSearchWillClick={handleSearchWillClick} />
         </Stack>
         {isRefetching && <Spinner size="xl" />}
