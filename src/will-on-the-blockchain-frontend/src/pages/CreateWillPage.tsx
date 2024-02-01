@@ -1,5 +1,5 @@
 import {Stack, useSteps, Link} from "@chakra-ui/react";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {contractAddresses} from "../constants";
 import {Address, useAccount} from "wagmi";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
@@ -9,7 +9,6 @@ import WillStepper from "../components/WillStepper";
 import {CreateWillButton} from "../components/CreateWillButton";
 import {WillForm} from "../components/WillForm";
 import {encrypt} from "../utils/CryptoHelper";
-import EncryptWillButton from "../components/EncryptWillButton";
 import FeedbackToast from "../components/FeedbackToast";
 import {BlockchainWill} from "../types";
 
@@ -68,11 +67,15 @@ const defaultCreateWillParamsTest: BlockchainWill.WillCreationStruct = {
 interface CreateWillPageProps {
   createWillParams: BlockchainWill.WillCreationStruct;
   isWillEncrypted: boolean;
+  rawWill: string;
+  rawSecretCode: string;
 }
 
 const defaultCreateWillPageProps: CreateWillPageProps = {
   createWillParams: defaultCreateWillParamsTest,
   isWillEncrypted: false,
+  rawWill: "",
+  rawSecretCode: "",
 };
 
 const CreateWillPage = () => {
@@ -98,6 +101,7 @@ const CreateWillPage = () => {
     isWriteCreateWillLoading,
     writeCreateWillError,
     writeCreateWill,
+    resetWriteCreateWill,
     isTransactionCreateWillLoading,
     isTransactionCreateWillSuccess,
     isTransactionCreateWillError,
@@ -436,6 +440,7 @@ const CreateWillPage = () => {
         ...createWillPageProps.createWillParams,
         will: event.target.value,
       },
+      rawWill: event.target.value,
     });
 
     if (isWillCompleted()) {
@@ -487,6 +492,7 @@ const CreateWillPage = () => {
         ...createWillPageProps.createWillParams,
         secretCode: e.target.value,
       },
+      rawSecretCode: e.target.value,
     });
   }
 
@@ -497,62 +503,104 @@ const CreateWillPage = () => {
     return willBody.length > 0 && secretKey.length > 0;
   }
 
-  function handleEncrypWillClick(): void {
-    if (
-      encryptWillConditionsMet(
-        createWillPageProps.createWillParams.will,
-        secretKey
-      )
-    ) {
-      console.log("Conditions to encrypt met. Encrypting will...");
-
-      const encryptedSecret = encrypt(
-        createWillPageProps.createWillParams.secretCode,
-        secretKey
-      );
-
-      console.log("Encrypted secret: ", encryptedSecret);
-
-      if (!createWillPageProps.createWillParams.isPublic) {
-        console.log("Will is private. Encrypting will body...");
-
-        const encryptedWill = encrypt(
-          createWillPageProps.createWillParams.will,
-          secretKey
-        );
-
-        console.log("Encrypted will: ", encryptedWill);
-        setCreateWillPageProps({
-          ...createWillPageProps,
-          createWillParams: {
-            ...createWillPageProps.createWillParams,
-            will: encryptedWill,
-            secretCode: encryptedSecret,
-          },
-          isWillEncrypted: true,
-        });
-      } else {
-        setCreateWillPageProps({
-          ...createWillPageProps,
-          createWillParams: {
-            ...createWillPageProps.createWillParams,
-            secretCode: encryptedSecret,
-          },
-          isWillEncrypted: true,
-        });
-      }
-    } else {
-      console.log("The conditions to encrypt are not met.");
-    }
-  }
-
   function handleCreateWillClick(): void {
     if (!prepareCreateWillError) {
       console.log("Creating will...");
       console.log("State will", createWillPageProps.createWillParams);
 
-      refetchPrepareCreateWill?.();
+      // test for encryption
+      const encryptedSecret = encryptWIll();
+
+      console.log("Encrypted secret: ", encryptedSecret);
+      console.log("State will", createWillPageProps.createWillParams);
+      // refetchPrepareCreateWill?.();
+      // writeCreateWill?.();
+      // setCreateWillPageProps({
+      //   createWillParams: {
+      //     will: "",
+      //     isPublic: true,
+      //     secretCode: "",
+      //     testator: {
+      //       name: "",
+      //       citizenshipCardId: "",
+      //       birthdate: 0n,
+      //     } as BlockchainWill.PersonStruct,
+      //     firstWitness: {
+      //       name: "",
+      //       citizenshipCardId: "",
+      //       birthdate: 0n,
+      //     } as BlockchainWill.PersonStruct,
+      //     secondWitness: {
+      //       name: "",
+      //       citizenshipCardId: "",
+      //       birthdate: 0n,
+      //     } as BlockchainWill.PersonStruct,
+      //   },
+      //   isWillEncrypted: false,
+      // });
+
+      //TODO add a clean up function to reset the state of the page
+    } else if (
+      isPrepareCreateWillError &&
+      prepareCreateWillError?.message.includes("HasCreatedWill")
+    ) {
+      //TODO: add a modal to warn the user that he has already created a will
+      console.log("The user has already created a will");
+    } else {
+      console.log(
+        "Error prepare Create will: ",
+        prepareCreateWillError.message
+      );
+    }
+  }
+
+  function encryptWIll() {
+    const encryptedSecret = encrypt(
+      createWillPageProps.createWillParams.secretCode,
+      secretKey
+    );
+
+    if (!createWillPageProps.createWillParams.isPublic) {
+      const encryptedWill = encrypt(
+        createWillPageProps.createWillParams.will,
+        secretKey
+      );
+
+      console.log("Encrypted will: ", encryptedWill);
+
+      setCreateWillPageProps({
+        ...createWillPageProps,
+        createWillParams: {
+          ...createWillPageProps.createWillParams,
+          will: encryptedWill,
+          secretCode: encryptedSecret,
+        },
+        isWillEncrypted: true,
+      });
+    } else {
+      setCreateWillPageProps({
+        ...createWillPageProps,
+        createWillParams: {
+          ...createWillPageProps.createWillParams,
+          secretCode: encryptedSecret,
+        },
+        isWillEncrypted: true,
+      });
+    }
+    return encryptedSecret;
+  }
+
+  useEffect(() => {
+    if (createWillPageProps.isWillEncrypted) {
       writeCreateWill?.();
+    }
+    return () => {};
+  }, [writeCreateWill, createWillPageProps.isWillEncrypted]);
+
+  useEffect(() => {
+    if (isTransactionCreateWillSuccess || isTransactionCreateWillError) {
+      // Reset the state of the page
+      resetWriteCreateWill?.();
       setCreateWillPageProps({
         createWillParams: {
           will: "",
@@ -575,22 +623,15 @@ const CreateWillPage = () => {
           } as BlockchainWill.PersonStruct,
         },
         isWillEncrypted: false,
+        rawWill: "",
+        rawSecretCode: "",
       });
-
-      //TODO add a clean up function to reset the state of the page
-    } else if (
-      isPrepareCreateWillError &&
-      prepareCreateWillError?.message.includes("HasCreatedWill")
-    ) {
-      //TODO: add a modal to warn the user that he has already created a will
-      console.log("The user has already created a will");
-    } else {
-      console.log(
-        "Error prepare Create will: ",
-        prepareCreateWillError.message
-      );
     }
-  }
+  }, [
+    isTransactionCreateWillError,
+    isTransactionCreateWillSuccess,
+    resetWriteCreateWill,
+  ]);
 
   return (
     <>
@@ -598,6 +639,12 @@ const CreateWillPage = () => {
         <WillStepper activeStep={activeStep} steps={willSteps} />
         <Stack p={10} w="100%" direction="column">
           <WillForm
+            value={createWillPageProps.createWillParams}
+            rawWill={createWillPageProps.rawWill}
+            rawSecretCode={createWillPageProps.createWillParams.secretCode}
+            isDisabled={
+              isTransactionCreateWillLoading || isWriteCreateWillLoading
+            }
             onAuthorBirthdateChange={setAuthorBirthdate}
             onAuthorCitizenshipIdChange={setAuthorCitizenshipId}
             onAuthorNameChange={setAuthorName}
@@ -615,13 +662,7 @@ const CreateWillPage = () => {
             onSecretKeyChange={handleSecretKeyChange}
           />
           <Stack direction="row" spacing={4}>
-            <EncryptWillButton
-              onEncryptWillClick={handleEncrypWillClick}
-              isSecretKeySettled={isSecretKeySettled()}
-              isWillCompleted={isWillCompleted()}
-            />
             <CreateWillButton
-              isWillEncrypted={createWillPageProps.isWillEncrypted}
               isWriteCreateWillLoading={isWriteCreateWillLoading}
               isTransactionCreateWillLoading={isTransactionCreateWillLoading}
               isWillCompleted={isWillCompleted()}

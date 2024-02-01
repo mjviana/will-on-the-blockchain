@@ -13,6 +13,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import SecretCode from "./SecretCode";
+import {BlockchainWill} from "../types";
 
 interface WillFormProps {
   onAuthorAccordionButtonClick: () => void;
@@ -38,6 +39,10 @@ interface WillFormProps {
   onWillTypeChange: (e: string) => void;
   onWillBodyChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onSecretKeyChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isDisabled: boolean;
+  value: BlockchainWill.WillCreationStruct;
+  rawWill: string;
+  rawSecretCode: string;
 }
 
 export function WillForm({
@@ -56,6 +61,10 @@ export function WillForm({
   onWillTypeChange,
   onWillBodyChange,
   onSecretKeyChange,
+  isDisabled,
+  value,
+  rawWill,
+  rawSecretCode,
 }: WillFormProps) {
   return (
     <>
@@ -71,14 +80,29 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input placeholder="Name" onChange={onAuthorNameChange} />
+              <Input
+                value={value.testator.name}
+                isDisabled={isDisabled}
+                placeholder="Name"
+                onChange={onAuthorNameChange}
+              />
               <Stack direction="row">
                 <Input
+                  value={value.testator.citizenshipCardId}
+                  isDisabled={isDisabled}
                   type="number"
                   placeholder="Citizenship Id"
                   onChange={onAuthorCitizenshipIdChange}
                 />
                 <Input
+                  value={
+                    value.testator.birthdate
+                      ? new Date((value.testator.birthdate as number) * 1000)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  isDisabled={isDisabled}
                   type="date"
                   placeholder="Birthdate"
                   onChange={onAuthorBirthdateChange}
@@ -98,14 +122,31 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input placeholder="Name" onChange={onFirstWitnessNameChange} />
+              <Input
+                value={value.firstWitness.name}
+                isDisabled={isDisabled}
+                placeholder="Name"
+                onChange={onFirstWitnessNameChange}
+              />
               <Stack direction="row">
                 <Input
+                  value={value.firstWitness.citizenshipCardId}
+                  isDisabled={isDisabled}
                   type="number"
                   placeholder="Citizenship Id"
                   onChange={onFirstWitnessCitizenshipIdChange}
                 />
                 <Input
+                  value={
+                    value.firstWitness.birthdate
+                      ? new Date(
+                          (value.firstWitness.birthdate as number) * 1000
+                        )
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  isDisabled={isDisabled}
                   type="date"
                   placeholder="Birthdate"
                   onChange={onFirstWitnessBirthdateChange}
@@ -125,14 +166,31 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input placeholder="Name" onChange={onSecondWitnessNameChange} />
+              <Input
+                value={value.secondWitness.name}
+                isDisabled={isDisabled}
+                placeholder="Name"
+                onChange={onSecondWitnessNameChange}
+              />
               <Stack direction="row">
                 <Input
+                  value={value.secondWitness.citizenshipCardId}
+                  isDisabled={isDisabled}
                   type="number"
                   placeholder="Citizenship Id"
                   onChange={onSecondWitnessCitizenshipIdChange}
                 />
                 <Input
+                  value={
+                    value.secondWitness.birthdate
+                      ? new Date(
+                          (value.secondWitness.birthdate as number) * 1000
+                        )
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  isDisabled={isDisabled}
                   type="date"
                   placeholder="Birthdate"
                   onChange={onSecondWitnessBirthdateChange}
@@ -152,6 +210,8 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <RadioGroup
+              value={value.isPublic ? "public" : "private"}
+              isDisabled={isDisabled}
               defaultValue="public"
               onChange={onWillTypeChange}
               mb={6}
@@ -159,10 +219,16 @@ export function WillForm({
               <Stack direction="row" spacing={5}>
                 <Radio value="public">Public</Radio>
                 <Radio value="private">Private</Radio>
-                <SecretCode onSecretCodeChange={onSecretKeyChange} />
+                <SecretCode
+                  value={rawSecretCode}
+                  isDisabled={isDisabled}
+                  onSecretCodeChange={onSecretKeyChange}
+                />
               </Stack>
             </RadioGroup>
             <Textarea
+              value={rawWill}
+              isDisabled={isDisabled}
               h="200px"
               size="lg"
               placeholder="Write your will here"

@@ -21,8 +21,8 @@ export const useCreateWill = (
   } = usePrepareContractWrite({
     address: address,
     abi: blockchainWillAbi,
+    // enabled: isWillCompleted, // Enable the hook only when the debouncedWill is not null and all the fields are filled.
     functionName: "createWill",
-    enabled: isWillCompleted, // Enable the hook only when the debouncedWill is not null and all the fields are filled.
     args: [
       {
         will: debouncedWill.will,
@@ -45,7 +45,7 @@ export const useCreateWill = (
         secretCode: debouncedWill.secretCode,
       },
     ],
-    gas: 3100000n,
+    // gas: 3100000n,
     onError(error) {
       console.log(
         "%c useCreateWill usePrepareContractWrite onError",

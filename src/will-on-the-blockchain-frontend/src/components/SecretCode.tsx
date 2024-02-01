@@ -3,15 +3,23 @@ import {useState} from "react";
 
 interface SecretCodeProps {
   onSecretCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+  isDisabled: boolean;
 }
 
-const SecretCode = ({onSecretCodeChange}: SecretCodeProps) => {
+const SecretCode = ({
+  onSecretCodeChange,
+  value,
+  isDisabled,
+}: SecretCodeProps) => {
   const [show, setShow] = useState(false);
 
   return (
     <>
       <InputGroup size="md">
         <Input
+          value={value}
+          isDisabled={isDisabled}
           id="secret-code"
           type={show ? "text" : "password"}
           pr="4.5rem"
