@@ -11,37 +11,7 @@ import {WillForm} from "../components/WillForm";
 import {encrypt} from "../utils/CryptoHelper";
 import FeedbackToast from "../components/FeedbackToast";
 import {BlockchainWill} from "../types";
-
-const steps = [
-  {
-    title: "First",
-    description: "Author Information",
-    size: "150",
-    active: true,
-    completed: false,
-  },
-  {
-    title: "Second",
-    description: "First Witness Information",
-    size: "150",
-    active: false,
-    completed: false,
-  },
-  {
-    title: "Third",
-    description: "Second Witness Information",
-    size: "150",
-    active: false,
-    completed: false,
-  },
-  {
-    title: "Fourth",
-    description: "Will Information",
-    size: "50",
-    active: false,
-    completed: false,
-  },
-];
+import {steps} from "../constants/willSteps";
 
 const defaultCreateWillParamsTest: BlockchainWill.WillCreationStruct = {
   will: "",
@@ -106,7 +76,6 @@ const CreateWillPage = () => {
     isTransactionCreateWillSuccess,
     isTransactionCreateWillError,
     transactionCreateWillError,
-    refetchPrepareCreateWill,
   } = useCreateWill(
     contractAddress,
     createWillPageProps.createWillParams,
@@ -118,7 +87,7 @@ const CreateWillPage = () => {
       isAuthorDataCompleted() &&
       isFirstWitnessDataCompleted() &&
       isSecondWitnessDataCompleted() &&
-      createWillPageProps.createWillParams.will.length > 0
+      encryptWillConditionsMet()
     );
   }
 
@@ -149,8 +118,11 @@ const CreateWillPage = () => {
     );
   }
 
-  function isSecretKeySettled(): boolean {
-    return secretKey.length > 0;
+  function encryptWillConditionsMet(): boolean {
+    return (
+      createWillPageProps.createWillParams.will.length > 0 &&
+      createWillPageProps.createWillParams.secretCode.length > 0
+    );
   }
 
   function setAuthorName(event: ChangeEvent<HTMLInputElement>): void {
@@ -496,50 +468,15 @@ const CreateWillPage = () => {
     });
   }
 
-  function encryptWillConditionsMet(
-    willBody: string,
-    secretKey: string
-  ): boolean {
-    return willBody.length > 0 && secretKey.length > 0;
-  }
-
   function handleCreateWillClick(): void {
     if (!prepareCreateWillError) {
       console.log("Creating will...");
       console.log("State will", createWillPageProps.createWillParams);
 
-      // test for encryption
       const encryptedSecret = encryptWIll();
 
       console.log("Encrypted secret: ", encryptedSecret);
       console.log("State will", createWillPageProps.createWillParams);
-      // refetchPrepareCreateWill?.();
-      // writeCreateWill?.();
-      // setCreateWillPageProps({
-      //   createWillParams: {
-      //     will: "",
-      //     isPublic: true,
-      //     secretCode: "",
-      //     testator: {
-      //       name: "",
-      //       citizenshipCardId: "",
-      //       birthdate: 0n,
-      //     } as BlockchainWill.PersonStruct,
-      //     firstWitness: {
-      //       name: "",
-      //       citizenshipCardId: "",
-      //       birthdate: 0n,
-      //     } as BlockchainWill.PersonStruct,
-      //     secondWitness: {
-      //       name: "",
-      //       citizenshipCardId: "",
-      //       birthdate: 0n,
-      //     } as BlockchainWill.PersonStruct,
-      //   },
-      //   isWillEncrypted: false,
-      // });
-
-      //TODO add a clean up function to reset the state of the page
     } else if (
       isPrepareCreateWillError &&
       prepareCreateWillError?.message.includes("HasCreatedWill")
@@ -627,6 +564,34 @@ const CreateWillPage = () => {
         rawSecretCode: "",
       });
     }
+    return () => {
+      resetWriteCreateWill?.();
+      setCreateWillPageProps({
+        createWillParams: {
+          will: "",
+          isPublic: true,
+          secretCode: "",
+          testator: {
+            name: "",
+            citizenshipCardId: "",
+            birthdate: 0n,
+          } as BlockchainWill.PersonStruct,
+          firstWitness: {
+            name: "",
+            citizenshipCardId: "",
+            birthdate: 0n,
+          } as BlockchainWill.PersonStruct,
+          secondWitness: {
+            name: "",
+            citizenshipCardId: "",
+            birthdate: 0n,
+          } as BlockchainWill.PersonStruct,
+        },
+        isWillEncrypted: false,
+        rawWill: "",
+        rawSecretCode: "",
+      });
+    };
   }, [
     isTransactionCreateWillError,
     isTransactionCreateWillSuccess,
