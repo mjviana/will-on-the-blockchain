@@ -86,6 +86,8 @@ export const useCreateWill = (
     refetchPrepareCreateWill,
     writeCreateWill,
     resetWriteCreateWill,
+    isWriteCreateWillSuccess,
+    isWriteCreateWillError,
     isTransactionCreateWillLoading,
     isTransactionCreateWillSuccess,
     isTransactionCreateWillError,

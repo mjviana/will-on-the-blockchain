@@ -1,17 +1,29 @@
-import {Stack, useSteps, Link} from "@chakra-ui/react";
+import {
+  Stack,
+  useSteps,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  CloseButton,
+  useDisclosure,
+  Text,
+  SlideFade,
+  Link,
+} from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useState} from "react";
 import {contractAddresses} from "../constants";
 import {Address, useAccount} from "wagmi";
-import {ExternalLinkIcon} from "@chakra-ui/icons";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
 import WillStepper from "../components/WillStepper";
 import {CreateWillButton} from "../components/CreateWillButton";
 import {WillForm} from "../components/WillForm";
 import {encrypt} from "../utils/CryptoHelper";
-import FeedbackToast from "../components/FeedbackToast";
 import {BlockchainWill} from "../types";
 import {steps} from "../constants/willSteps";
+import {ExternalLinkIcon} from "@chakra-ui/icons";
 
 const defaultCreateWillParamsTest: BlockchainWill.WillCreationStruct = {
   will: "",
@@ -72,6 +84,8 @@ const CreateWillPage = () => {
     writeCreateWillError,
     writeCreateWill,
     resetWriteCreateWill,
+    isWriteCreateWillSuccess,
+    isWriteCreateWillError,
     isTransactionCreateWillLoading,
     isTransactionCreateWillSuccess,
     isTransactionCreateWillError,
@@ -81,6 +95,12 @@ const CreateWillPage = () => {
     createWillPageProps.createWillParams,
     isWillCompleted()
   );
+
+  const {
+    isOpen: isVisible,
+    onClose,
+    onOpen,
+  } = useDisclosure({defaultIsOpen: false});
 
   function isWillCompleted(): boolean {
     return (
@@ -536,8 +556,8 @@ const CreateWillPage = () => {
 
   useEffect(() => {
     if (isTransactionCreateWillSuccess || isTransactionCreateWillError) {
-      // Reset the state of the page
-      resetWriteCreateWill?.();
+      // Show the alert message for 3 seconds then close it
+      onOpen();
       setCreateWillPageProps({
         createWillParams: {
           will: "",
@@ -565,7 +585,7 @@ const CreateWillPage = () => {
       });
     }
     return () => {
-      resetWriteCreateWill?.();
+      console.log("Cleanup");
       setCreateWillPageProps({
         createWillParams: {
           will: "",
@@ -596,7 +616,18 @@ const CreateWillPage = () => {
     isTransactionCreateWillError,
     isTransactionCreateWillSuccess,
     resetWriteCreateWill,
+    onOpen,
   ]);
+
+  useEffect(() => {
+    // Close the alert message after 5 seconds
+    if (isVisible) {
+      setTimeout(() => {
+        onClose();
+        resetWriteCreateWill?.();
+      }, 5000);
+    }
+  }, [isVisible, onClose, resetWriteCreateWill]);
 
   return (
     <>
@@ -636,51 +667,56 @@ const CreateWillPage = () => {
           </Stack>
         </Stack>
       </Stack>
-      {isTransactionCreateWillSuccess && (
-        <>
-          <Link
-            href={`https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`}
-            isExternal
-          >
-            Your Will transaction Data <ExternalLinkIcon mx="2px" />
-          </Link>
-        </>
-      )}
 
-      {isTransactionCreateWillSuccess && (
-        <FeedbackToast
-          toastState={{
-            status: "success",
-            title: "Will Creation",
-            description: "Your will has been created successfully.",
-            link: `https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`,
-          }}
-        ></FeedbackToast>
-      )}
-      {isTransactionCreateWillError && (
-        <FeedbackToast
-          toastState={{
-            status: "error",
-            title: "Will Creation",
-            description:
-              "Your will has not been created. Here are some details: " +
-              transactionCreateWillError?.message,
-            position: "top",
-          }}
-        ></FeedbackToast>
-      )}
-
-      <p>Prepare Errors:</p>
-      {prepareCreateWillError && (
-        <p>Error prepare Create will: {prepareCreateWillError.message}</p>
-      )}
-
-      <p>----------------------------------</p>
-      <p>Write Errors:</p>
-      {writeCreateWillError && (
-        <p>Error write Create will: {writeCreateWillError.message}</p>
-      )}
-      {isConnected ? <p>Connected to {walletAddress}</p> : <p>Not Connected</p>}
+      <SlideFade
+        offsetY="20px"
+        unmountOnExit={true}
+        in={isVisible}
+        style={{zIndex: 10}}
+      >
+        <Alert
+          mx={"auto"}
+          w="fit-content"
+          status={isWriteCreateWillSuccess ? "success" : "error"}
+        >
+          <AlertIcon />
+          <Box>
+            <AlertTitle>
+              {isWriteCreateWillSuccess ? "Success" : "Error"}
+            </AlertTitle>
+            <AlertDescription>
+              {isWriteCreateWillSuccess && (
+                <>
+                  <Text>Your will has been created successfully.</Text>
+                  <Link
+                    href={`https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`}
+                    isExternal
+                  >
+                    <Text as="b">
+                      Transaction Data <ExternalLinkIcon mx="2px" />
+                    </Text>
+                  </Link>
+                </>
+              )}
+              {isTransactionCreateWillError && (
+                <>
+                  <Text>
+                    Your will has not been created. Here are some details:{" "}
+                    {transactionCreateWillError?.message}
+                  </Text>
+                </>
+              )}
+            </AlertDescription>
+          </Box>
+          <CloseButton
+            alignSelf="flex-start"
+            position="relative"
+            right={-1}
+            top={-1}
+            onClick={onClose}
+          />
+        </Alert>
+      </SlideFade>
     </>
   );
 };
