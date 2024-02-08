@@ -1,15 +1,16 @@
 import {ChakraProvider} from "@chakra-ui/react";
-import theme from "./theme.ts";
+import theme from "./themes/theme.ts";
 import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
-
 import {getDefaultWallets, RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import {configureChains, createConfig, WagmiConfig} from "wagmi";
 import {sepolia} from "wagmi/chains";
 import {alchemyProvider} from "wagmi/providers/alchemy";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-// import router from "./routes.tsx";
-import {walletDarkTheme, walletLightTheme} from "./ConnectButtonTheme.ts";
+import {
+  walletDarkTheme,
+  walletLightTheme,
+} from "./themes/connectButtonTheme.ts";
 import Layout from "./pages/Layout.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import CreateWillPage from "./pages/CreateWillPage.tsx";
@@ -42,9 +43,7 @@ const wagmiConfig = createConfig({
   persister: null,
 });
 
-console.log("theme", theme);
-
-const Wrapper = () => {
+const Root = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(true);
 
   const router = useMemo(() => {
@@ -88,4 +87,4 @@ const Wrapper = () => {
   );
 };
 
-export default Wrapper;
+export default Root;

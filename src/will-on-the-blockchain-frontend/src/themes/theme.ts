@@ -1,10 +1,10 @@
-import {extendTheme, type ThemeConfig, ColorHues} from "@chakra-ui/react";
-import {buttonTheme} from "./styles/components/buttonStyles";
-import {inputTheme} from "./styles/components/inputStyles";
-import {textAreaTheme} from "./styles/components/textAreaStyles";
-import {radioTheme} from "./styles/components/radioStyles";
-import {cardTheme} from "./styles/components/cardStyles";
-import {textTheme} from "./styles/components/textStyle";
+import {extendTheme, type ThemeConfig} from "@chakra-ui/react";
+import {buttonTheme} from "../styles/components/buttonStyles";
+import {inputTheme} from "../styles/components/inputStyles";
+import {textAreaTheme} from "../styles/components/textAreaStyles";
+import {radioTheme} from "../styles/components/radioStyles";
+import {cardTheme} from "../styles/components/cardStyles";
+import {textTheme} from "../styles/components/textStyle";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
