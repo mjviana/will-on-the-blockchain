@@ -1,5 +1,3 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
 import {ChakraProvider} from "@chakra-ui/react";
 import theme from "./theme.ts";
 import "./index.css";
@@ -11,7 +9,7 @@ import {sepolia} from "wagmi/chains";
 import {alchemyProvider} from "wagmi/providers/alchemy";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 // import router from "./routes.tsx";
-import walletTheme from "./ConnectButtonTheme.ts";
+import {walletDarkTheme, walletLightTheme} from "./ConnectButtonTheme.ts";
 import Layout from "./pages/Layout.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import CreateWillPage from "./pages/CreateWillPage.tsx";
@@ -19,7 +17,7 @@ import HowToCreateWillPage from "./pages/HowToCreateWillPage.tsx";
 import PublicWillsPage from "./pages/PublicWillsPage.tsx";
 import RevokeWillPage from "./pages/RevokeWillPage.tsx";
 import SearchWillPage from "./pages/SearchWillPage.tsx";
-import Wrapper from "./wrapper.tsx";
+import React, { useMemo, useState } from "react";
 
 const WALLET_CONNECT_PROJECT_ID =
   import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || "";
@@ -46,43 +44,40 @@ const wagmiConfig = createConfig({
 
 console.log("theme", theme);
 
+const Wrapper = () => {
+   const [isDarkTheme, setIsDarkTheme] = useState(true);
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout onColorModeSwitchClicked={handleSwitch} />,
-    children: [
-      {index: true, element: <HomePage />},
-      {
-        path: "/create-will",
-        element: <CreateWillPage />,
-      },
-      {path: "/public-wills", element: <PublicWillsPage />},
-      {path: "/how-to-create-will", element: <HowToCreateWillPage />},
-      {path: "/search-will", element: <SearchWillPage />},
-      {path: "/revoke-will", element: <RevokeWillPage />},
-    ],
-  },
-]);
+    const router = useMemo(()=>{
+       return createBrowserRouter([
+            {
+              path: "/",
+              element: <Layout onColorModeSwitchClicked={()=>setIsDarkTheme(!isDarkTheme)} />,
+              children: [
+                {index: true, element: <HomePage />},
+                {
+                  path: "/create-will",
+                  element: <CreateWillPage />,
+                },
+                {path: "/public-wills", element: <PublicWillsPage />},
+                {path: "/how-to-create-will", element: <HowToCreateWillPage />},
+                {path: "/search-will", element: <SearchWillPage />},
+                {path: "/revoke-will", element: <RevokeWillPage />},
+              ],
+            },
+          ])
+    }, [isDarkTheme]);
 
-function handleSwitch(): void {
-  console.log("Switch was clicked!");
-  
+  return (
+    <React.StrictMode>
+    <WagmiConfig config={wagmiConfig}>
+      <ChakraProvider theme={theme}>
+        <RainbowKitProvider coolMode chains={chains} theme={ isDarkTheme ? walletDarkTheme: walletLightTheme }>
+          <RouterProvider router={router} />
+        </RainbowKitProvider>
+      </ChakraProvider>
+    </WagmiConfig>
+  </React.StrictMode>
+  )
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <Wrapper/>
-);
-
-// ReactDOM.createRoot(document.getElementById("root")!).render(
-//   <React.StrictMode>
-//     <WagmiConfig config={wagmiConfig}>
-//       <ChakraProvider theme={theme}>
-//         <RainbowKitProvider coolMode chains={chains} theme={walletTheme}>
-//           <RouterProvider router={router} />
-//         </RainbowKitProvider>
-//       </ChakraProvider>
-//     </WagmiConfig>
-//   </React.StrictMode>
-// );
-
+export default Wrapper

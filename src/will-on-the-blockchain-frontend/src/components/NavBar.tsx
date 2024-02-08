@@ -5,7 +5,11 @@ import {ConnectButton} from "@rainbow-me/rainbowkit";
 import {Link as ReactRouterLink} from "react-router-dom";
 import WillsMenu from "./WillsMenu";
 
-const Navbar = () => {
+interface NavbarProps {
+  onColorModeSwtchClicked(): void;
+}
+
+const Navbar = ({onColorModeSwtchClicked}: NavbarProps) => {
   return (
     <>
       <Flex px={15} display="flex" alignItems="center">
@@ -28,7 +32,7 @@ const Navbar = () => {
           <Show below="lg">
             <WillsMenu />
           </Show>
-          <ColorModeSwitch />
+          <ColorModeSwitch onClick={onColorModeSwtchClicked} />
           {/* <div className="custom-connect-button-wrapper">
             <ConnectButton moralisAuth={false} />
           </div> */}

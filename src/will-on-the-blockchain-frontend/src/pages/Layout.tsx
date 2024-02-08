@@ -3,10 +3,15 @@ import Navbar from "../components/Navbar";
 import {Box, Grid, GridItem, Show} from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar";
 
-function Layout() {
+interface LayoutProps
+{
+  onColorModeSwitchClicked(): void
+}
+
+function Layout({onColorModeSwitchClicked}:LayoutProps) {
   return (
     <>
-      <Navbar />
+      <Navbar onColorModeSwtchClicked={onColorModeSwitchClicked} />
       <Grid
         templateAreas={{
           base: `"main"
