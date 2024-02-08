@@ -7,8 +7,7 @@ import {cardTheme} from "./styles/components/cardStyles";
 import {textTheme} from "./styles/components/textStyle";
 
 const config: ThemeConfig = {
-  initialColorMode: "system",
-  useSystemColorMode: true,
+  initialColorMode: "dark",
 };
 
 const theme = extendTheme({

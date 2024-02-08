@@ -24,27 +24,26 @@ export const walletLightTheme = merge(lightTheme(), {
     actionButtonBorderMobile: "#b09736",
     actionButtonSecondaryBackground: "#b09736",
     closeButton: "#b09736",
+    connectButtonText: "#b09736",
   },
   radii: {
     actionButton: "5px",
     connectButton: "5px",
   },
 } as Theme);
-
 
 export const walletDarkTheme = merge(darkTheme(), {
   colors: {
     accentColorForeground: "black",
-    accentColor: "#b09736",
+    accentColor: "#e2d39a",
     actionButtonBorder: "#b09736",
     actionButtonBorderMobile: "#b09736",
     actionButtonSecondaryBackground: "#b09736",
     closeButton: "#b09736",
+    connectButtonText: "#e2d39a",
   },
   radii: {
     actionButton: "5px",
     connectButton: "5px",
   },
 } as Theme);
-
-
