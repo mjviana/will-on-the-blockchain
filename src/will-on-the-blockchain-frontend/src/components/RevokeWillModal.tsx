@@ -59,8 +59,7 @@ const RevokeWillModal = ({
           <ModalBody>
             <FormControl>
               <SecretCode
-                onSecretCodeChange={handleSecretCodeChange}
-              ></SecretCode>
+                onSecretCodeChange={handleSecretCodeChange} value={""} isDisabled={false}              ></SecretCode>
               <FormHelperText>
                 Please insert the secret code to revoke will.
               </FormHelperText>

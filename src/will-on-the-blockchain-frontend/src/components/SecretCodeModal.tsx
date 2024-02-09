@@ -91,7 +91,8 @@ const SecretCodeModal = ({
             <FormControl>
               <SecretCode
                 onSecretCodeChange={handleSecretCodeChange}
-              ></SecretCode>
+                value={""}
+                isDisabled={false}></SecretCode>
               <FormHelperText>
                 {modalType === SecretModalType.privateWillDetails ? (
                   <>Insert the secret code to see the will.</>

@@ -32,8 +32,8 @@ export const useRevokeWill = (
     write: writeRevokeWill,
     reset: resetWriteRevokeWill,
     error: writeRevokeWillError,
-    isSuccess: isWriteRevokeWillSuccess,
-    isError: isWriteRevokeWillError,
+    // isSuccess: isWriteRevokeWillSuccess,
+    // isError: isWriteRevokeWillError,
   } = useContractWrite({
     ...prepareRevokePublicWillConfig,
     onSettled: onSettledCallback,

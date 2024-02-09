@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useState} from "react";
 import {contractAddresses} from "../constants";
-import {Address, useAccount} from "wagmi";
+import {Address} from "wagmi";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
 import WillStepper from "../components/WillStepper";
@@ -75,17 +75,17 @@ const CreateWillPage = () => {
   const contractAddress = addresses["11155111"][
     addresses["11155111"].length - 1
   ] as Address; // sepolia chainId is 11155111. We use the last address of the array to make sure that the last deployed contract is used.
-  const {address: walletAddress, isConnected} = useAccount();
+  // const {address: walletAddress, isConnected} = useAccount();
   const {
     prepareCreateWillError,
     isPrepareCreateWillError,
     writeCreateWillData,
     isWriteCreateWillLoading,
-    writeCreateWillError,
+    // writeCreateWillError,
     writeCreateWill,
     resetWriteCreateWill,
     isWriteCreateWillSuccess,
-    isWriteCreateWillError,
+    // isWriteCreateWillError,
     isTransactionCreateWillLoading,
     isTransactionCreateWillSuccess,
     isTransactionCreateWillError,
@@ -93,7 +93,7 @@ const CreateWillPage = () => {
   } = useCreateWill(
     contractAddress,
     createWillPageProps.createWillParams,
-    isWillCompleted()
+    // isWillCompleted()
   );
 
   const {

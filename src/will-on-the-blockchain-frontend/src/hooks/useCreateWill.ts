@@ -10,7 +10,6 @@ import {blockchainWillAbi} from "../constants/blockchainWillAbi";
 export const useCreateWill = (
   address: Address,
   debouncedWill: BlockchainWill.WillCreationStruct,
-  isWillCompleted: boolean
 ) => {
   // usePrepareContractWrite hook is used to prepare a contract write transaction, it fetches the required parameters for the transaction.
   const {
