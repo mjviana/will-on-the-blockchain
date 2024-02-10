@@ -3,21 +3,18 @@ import Navbar from "../components/NavBar";
 import {Box, Grid, GridItem, Show} from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar";
 
-interface LayoutProps
-{
-  onColorModeSwitchClicked(): void
+interface LayoutProps {
+  onColorModeSwitchClicked(): void;
 }
 
-function Layout({onColorModeSwitchClicked}:LayoutProps) {
+function Layout({onColorModeSwitchClicked}: LayoutProps) {
   return (
     <>
       <Navbar onColorModeSwtchClicked={onColorModeSwitchClicked} />
       <Grid
         templateAreas={{
-          base: `"main"
-                "footer"`,
-          lg: `"aside main main"
-              "aside footer footer"`,
+          base: `"main"`,
+          lg: `"aside main main"`,
         }}
         templateColumns={{
           base: "1fr",
@@ -33,9 +30,6 @@ function Layout({onColorModeSwitchClicked}:LayoutProps) {
           <Box p={5}>
             <Outlet />
           </Box>
-        </GridItem>
-        <GridItem pl="2" area={"footer"}>
-          Footer
         </GridItem>
       </Grid>
     </>
