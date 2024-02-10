@@ -3,7 +3,7 @@ import {useState} from "react";
 
 interface SecretCodeProps {
   onSecretCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: string;
+  value?: string;
   isDisabled: boolean;
 }
 
