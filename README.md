@@ -4,6 +4,10 @@
 
 This project is designed to enable the secure storage of wills on a blockchain using Solidity and the Hardhat development environment for the smart-contract and React for the frontend.
 
+## DEMO
+You can see the current status of project here: https://will-on-the-blockchain-frontend.vercel.app/
+
+
 ## Table of Contents
 
 - [Overview](#overview)
