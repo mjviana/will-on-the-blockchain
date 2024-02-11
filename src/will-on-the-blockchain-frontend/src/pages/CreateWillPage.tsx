@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useState} from "react";
 import {contractAddresses} from "../constants";
-import {Address} from "wagmi";
+import {Address, useAccount} from "wagmi";
 import ContractAddressesInterface from "../types/ContractAddressesInterface";
 import {useCreateWill} from "../hooks/useCreateWill";
 import WillStepper from "../components/WillStepper";
@@ -61,6 +61,8 @@ const defaultCreateWillPageProps: CreateWillPageProps = {
 };
 
 const CreateWillPage = () => {
+  const {isConnected} = useAccount();
+
   const [createWillPageProps, setCreateWillPageProps] =
     useState<CreateWillPageProps>(defaultCreateWillPageProps);
 
@@ -92,7 +94,7 @@ const CreateWillPage = () => {
     transactionCreateWillError,
   } = useCreateWill(
     contractAddress,
-    createWillPageProps.createWillParams,
+    createWillPageProps.createWillParams
     // isWillCompleted()
   );
 
@@ -629,96 +631,99 @@ const CreateWillPage = () => {
     }
   }, [isVisible, onClose, resetWriteCreateWill]);
 
-  return (
-    <>
-      <Stack mx={"auto"} maxW={{base: "100%", md: "1536px"}} direction="row">
-        <WillStepper activeStep={activeStep} steps={willSteps} />
-        <Stack p={10} w="100%" direction="column">
-          <WillForm
-            value={createWillPageProps.createWillParams}
-            rawWill={createWillPageProps.rawWill}
-            rawSecretCode={createWillPageProps.createWillParams.secretCode}
-            isDisabled={
-              isTransactionCreateWillLoading || isWriteCreateWillLoading
-            }
-            onAuthorBirthdateChange={setAuthorBirthdate}
-            onAuthorCitizenshipIdChange={setAuthorCitizenshipId}
-            onAuthorNameChange={setAuthorName}
-            onFirstWitnessBirthdateChange={setFirstWitnessBirthdate}
-            onFirstWitnessCitizenshipIdChange={setFirstWitnessCitizenshipId}
-            onFirstWitnessNameChange={setFirstWitnessName}
-            onSecondWitnessBirthdateChange={setSecondWitnessBirthdate}
-            onSecondWitnessCitizenshipIdChange={setSecondWitnessCitizenshipId}
-            onSecondWitnessNameChange={setSecondWitnessName}
-            onWillBodyChange={setWillBody}
-            onWillTypeChange={setWillType}
-            onAuthorAccordionButtonClick={toggleAuthorAccordionButton}
-            onFirstWitnessAccordionButtonClick={toggleFirstWitnessButton}
-            onSecondWitnessAccordionButtonClick={toggleSecondWitnessButton}
-            onSecretKeyChange={handleSecretKeyChange}
-          />
-          <Stack direction="row" spacing={4}>
-            <CreateWillButton
-              isWriteCreateWillLoading={isWriteCreateWillLoading}
-              isTransactionCreateWillLoading={isTransactionCreateWillLoading}
-              isWillCompleted={isWillCompleted()}
-              onCreateWill={handleCreateWillClick}
+  if (!isConnected) {
+    return <Text>Connect your wallet to continue</Text>;
+  } else
+    return (
+      <>
+        <Stack mx={"auto"} maxW={{base: "100%", md: "1536px"}} direction="row">
+          <WillStepper activeStep={activeStep} steps={willSteps} />
+          <Stack p={10} w="100%" direction="column">
+            <WillForm
+              value={createWillPageProps.createWillParams}
+              rawWill={createWillPageProps.rawWill}
+              rawSecretCode={createWillPageProps.createWillParams.secretCode}
+              isDisabled={
+                isTransactionCreateWillLoading || isWriteCreateWillLoading
+              }
+              onAuthorBirthdateChange={setAuthorBirthdate}
+              onAuthorCitizenshipIdChange={setAuthorCitizenshipId}
+              onAuthorNameChange={setAuthorName}
+              onFirstWitnessBirthdateChange={setFirstWitnessBirthdate}
+              onFirstWitnessCitizenshipIdChange={setFirstWitnessCitizenshipId}
+              onFirstWitnessNameChange={setFirstWitnessName}
+              onSecondWitnessBirthdateChange={setSecondWitnessBirthdate}
+              onSecondWitnessCitizenshipIdChange={setSecondWitnessCitizenshipId}
+              onSecondWitnessNameChange={setSecondWitnessName}
+              onWillBodyChange={setWillBody}
+              onWillTypeChange={setWillType}
+              onAuthorAccordionButtonClick={toggleAuthorAccordionButton}
+              onFirstWitnessAccordionButtonClick={toggleFirstWitnessButton}
+              onSecondWitnessAccordionButtonClick={toggleSecondWitnessButton}
+              onSecretKeyChange={handleSecretKeyChange}
             />
+            <Stack direction="row" spacing={4}>
+              <CreateWillButton
+                isWriteCreateWillLoading={isWriteCreateWillLoading}
+                isTransactionCreateWillLoading={isTransactionCreateWillLoading}
+                isWillCompleted={isWillCompleted()}
+                onCreateWill={handleCreateWillClick}
+              />
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
 
-      <SlideFade
-        offsetY="20px"
-        unmountOnExit={true}
-        in={isVisible}
-        style={{zIndex: 10}}
-      >
-        <Alert
-          mx={"auto"}
-          w="fit-content"
-          status={isWriteCreateWillSuccess ? "success" : "error"}
+        <SlideFade
+          offsetY="20px"
+          unmountOnExit={true}
+          in={isVisible}
+          style={{zIndex: 10}}
         >
-          <AlertIcon />
-          <Box>
-            <AlertTitle>
-              {isWriteCreateWillSuccess ? "Success" : "Error"}
-            </AlertTitle>
-            <AlertDescription>
-              {isWriteCreateWillSuccess && (
-                <>
-                  <Text>Your will has been created successfully.</Text>
-                  <Link
-                    href={`https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`}
-                    isExternal
-                  >
-                    <Text as="b">
-                      Transaction Data <ExternalLinkIcon mx="2px" />
+          <Alert
+            mx={"auto"}
+            w="fit-content"
+            status={isWriteCreateWillSuccess ? "success" : "error"}
+          >
+            <AlertIcon />
+            <Box>
+              <AlertTitle>
+                {isWriteCreateWillSuccess ? "Success" : "Error"}
+              </AlertTitle>
+              <AlertDescription>
+                {isWriteCreateWillSuccess && (
+                  <>
+                    <Text>Your will has been created successfully.</Text>
+                    <Link
+                      href={`https://sepolia.etherscan.io/tx/${writeCreateWillData?.hash}`}
+                      isExternal
+                    >
+                      <Text as="b">
+                        Transaction Data <ExternalLinkIcon mx="2px" />
+                      </Text>
+                    </Link>
+                  </>
+                )}
+                {isTransactionCreateWillError && (
+                  <>
+                    <Text>
+                      Your will has not been created. Here are some details:{" "}
+                      {transactionCreateWillError?.message}
                     </Text>
-                  </Link>
-                </>
-              )}
-              {isTransactionCreateWillError && (
-                <>
-                  <Text>
-                    Your will has not been created. Here are some details:{" "}
-                    {transactionCreateWillError?.message}
-                  </Text>
-                </>
-              )}
-            </AlertDescription>
-          </Box>
-          <CloseButton
-            alignSelf="flex-start"
-            position="relative"
-            right={-1}
-            top={-1}
-            onClick={onClose}
-          />
-        </Alert>
-      </SlideFade>
-    </>
-  );
+                  </>
+                )}
+              </AlertDescription>
+            </Box>
+            <CloseButton
+              alignSelf="flex-start"
+              position="relative"
+              right={-1}
+              top={-1}
+              onClick={onClose}
+            />
+          </Alert>
+        </SlideFade>
+      </>
+    );
 };
 
 export default CreateWillPage;

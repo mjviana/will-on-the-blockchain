@@ -1,7 +1,7 @@
-import {Box, Spinner, Stack, useDisclosure} from "@chakra-ui/react";
+import {Box, Spinner, Stack, useDisclosure, Text} from "@chakra-ui/react";
 import {ChangeEvent, useEffect, useState} from "react";
 import {Address} from "viem";
-import {useContractRead} from "wagmi";
+import {useAccount, useContractRead} from "wagmi";
 import SearchWill from "../components/SearchWill";
 import SearchWillButton from "../components/SearchWillButton";
 import {contractAddresses, abi} from "../constants";
@@ -15,6 +15,8 @@ interface contractAddressesInterface {
 }
 
 const RevokeWillPage = () => {
+  const {isConnected} = useAccount();
+
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [will, setWill] = useState<BlockchainWill.WillStruct | null>();
   const [citizenshipCardId, setCitizenshipCardId] = useState<string>("");
@@ -86,60 +88,63 @@ const RevokeWillPage = () => {
     return () => {};
   }, [onClose, isTransactionRevokeSuccess, isTransactionRevokeWillError]);
 
-  return (
-    <>
-      <Box maxW="1536px" mx="auto">
-        <Stack p={10} direction={"row"}>
-          <SearchWill
-            value={citizenshipCardId}
-            onCitizenshipIdChange={handleOnCitizenshipIdChange}
-          />
-          <SearchWillButton onSearchWillClick={handleSearchWillClick} />
-        </Stack>
-        {isRefetching && <Spinner size="xl" />}
-        {will && (
-          <SecretCodeModal
-            modalType={SecretModalType.revokeWill}
-            will={will}
-            onCancel={handleOnCancel}
-            onClose={handleOnCancel}
-            onSecretCodeDecrypted={(secretCode) => {
-              handleOnValidSecretCode(secretCode);
-            }}
-            isOpen={isOpen}
-            isWriteRevokeWillLoading={isWriteRevokeWillLoading}
-            isTransactionRevokeWillLoading={isTransactionRevokeWillLoading}
-          ></SecretCodeModal>
-        )}
+  if (!isConnected) {
+    return <Text>Connect your wallet to continue</Text>;
+  } else
+    return (
+      <>
+        <Box maxW="1536px" mx="auto">
+          <Stack p={10} direction={"row"}>
+            <SearchWill
+              value={citizenshipCardId}
+              onCitizenshipIdChange={handleOnCitizenshipIdChange}
+            />
+            <SearchWillButton onSearchWillClick={handleSearchWillClick} />
+          </Stack>
+          {isRefetching && <Spinner size="xl" />}
+          {will && (
+            <SecretCodeModal
+              modalType={SecretModalType.revokeWill}
+              will={will}
+              onCancel={handleOnCancel}
+              onClose={handleOnCancel}
+              onSecretCodeDecrypted={(secretCode) => {
+                handleOnValidSecretCode(secretCode);
+              }}
+              isOpen={isOpen}
+              isWriteRevokeWillLoading={isWriteRevokeWillLoading}
+              isTransactionRevokeWillLoading={isTransactionRevokeWillLoading}
+            ></SecretCodeModal>
+          )}
 
-        {isTransactionRevokeSuccess && (
-          <FeedbackToast
-            toastState={{
-              title: "Revoke will",
-              description: "Will successfully revoked",
-              status: "success",
-              link: `https://sepolia.etherscan.io/tx/${writeRevokeWillData?.hash}`,
-            }}
-          ></FeedbackToast>
-        )}
+          {isTransactionRevokeSuccess && (
+            <FeedbackToast
+              toastState={{
+                title: "Revoke will",
+                description: "Will successfully revoked",
+                status: "success",
+                link: `https://sepolia.etherscan.io/tx/${writeRevokeWillData?.hash}`,
+              }}
+            ></FeedbackToast>
+          )}
 
-        {isTransactionRevokeWillError && (
-          <FeedbackToast
-            toastState={{
-              title: "Revoke will",
-              description:
-                "Will was not revoked. Here are some details: " +
-                transactionRevokeWillError?.message,
-              position: "top",
-              status: "error",
-            }}
-          ></FeedbackToast>
-        )}
+          {isTransactionRevokeWillError && (
+            <FeedbackToast
+              toastState={{
+                title: "Revoke will",
+                description:
+                  "Will was not revoked. Here are some details: " +
+                  transactionRevokeWillError?.message,
+                position: "top",
+                status: "error",
+              }}
+            ></FeedbackToast>
+          )}
 
-        {isError && <p>Something went wrong</p>}
-      </Box>
-    </>
-  );
+          {isError && <p>Something went wrong</p>}
+        </Box>
+      </>
+    );
 };
 
 export default RevokeWillPage;
