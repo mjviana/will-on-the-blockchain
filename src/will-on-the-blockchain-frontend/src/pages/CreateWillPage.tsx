@@ -24,8 +24,10 @@ import {encrypt} from "../utils/CryptoHelper";
 import {BlockchainWill} from "../types";
 import {steps} from "../constants/willSteps";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
+import generateRandomGuid from "../utils/RandomGuidGenerator";
+import useSendEmail from "../hooks/useSendEmail";
 
-const defaultCreateWillParamsTest: BlockchainWill.WillCreationStruct = {
+const defaultCreateWillParamsStruct: BlockchainWill.WillCreationStruct = {
   will: "",
   isPublic: true,
   secretCode: "",
@@ -51,14 +53,34 @@ interface CreateWillPageProps {
   isWillEncrypted: boolean;
   rawWill: string;
   rawSecretCode: string;
+  authorEmail: string;
+  firstWitnessEmail: string;
+  firstWitnessCodeEnabled: boolean;
+  firstWitnessCode: string;
+  secondWitnessEmail: string;
+  secondWitnessCodeEnabled: boolean;
+  secondWitnessCode: string;
 }
 
 const defaultCreateWillPageProps: CreateWillPageProps = {
-  createWillParams: defaultCreateWillParamsTest,
+  createWillParams: defaultCreateWillParamsStruct,
   isWillEncrypted: false,
   rawWill: "",
   rawSecretCode: "",
+  authorEmail: "",
+  firstWitnessEmail: "",
+  firstWitnessCodeEnabled: false,
+  firstWitnessCode: "",
+  secondWitnessEmail: "",
+  secondWitnessCodeEnabled: false,
+  secondWitnessCode: "",
 };
+
+const addresses: ContractAddressesInterface = contractAddresses;
+
+const contractAddress = addresses["11155111"][
+  addresses["11155111"].length - 1
+] as Address; // sepolia chainId is 11155111. We use the last address of the array to make sure that the last deployed contract is used.
 
 const CreateWillPage = () => {
   const {isConnected} = useAccount();
@@ -67,16 +89,29 @@ const CreateWillPage = () => {
     useState<CreateWillPageProps>(defaultCreateWillPageProps);
 
   const [secretKey, setSecretkey] = useState("");
+
+  const [firstWitnessGeneratedCode, setFirstWitnessGeneratedCode] =
+    useState<string>("");
+  const [secondWitnessGeneratedCode, setSecondWitnessGeneratedCode] =
+    useState<string>("");
+
   const {activeStep, setActiveStep} = useSteps({
     index: 0,
     count: steps.length,
   });
+
   const [willSteps, setWillSteps] = useState(steps);
 
-  const addresses: ContractAddressesInterface = contractAddresses;
-  const contractAddress = addresses["11155111"][
-    addresses["11155111"].length - 1
-  ] as Address; // sepolia chainId is 11155111. We use the last address of the array to make sure that the last deployed contract is used.
+  const {sendEmail: sendAuthorEmail} = useSendEmail();
+  const {
+    isLoading: sendingFirstWitnessEmail,
+    sendEmail: sendFirstWitnessEmail,
+  } = useSendEmail();
+  const {
+    isLoading: sendingSecondWitnessEmail,
+    sendEmail: sendSecondWitnessEmail,
+  } = useSendEmail();
+
   // const {address: walletAddress, isConnected} = useAccount();
   const {
     prepareCreateWillError,
@@ -104,7 +139,15 @@ const CreateWillPage = () => {
     onOpen,
   } = useDisclosure({defaultIsOpen: false});
 
+  const {
+    isOpen: isAlreadyCreatedWillVisible,
+    onClose: onAlreadyCreatedWillClose,
+    onOpen: onAlreadyCreatedWillOpen,
+  } = useDisclosure({defaultIsOpen: false});
+
   function isWillCompleted(): boolean {
+    console.log("Checking if will is completed");
+
     return (
       isAuthorDataCompleted() &&
       isFirstWitnessDataCompleted() &&
@@ -118,7 +161,8 @@ const CreateWillPage = () => {
       createWillPageProps.createWillParams.testator.name.length > 0 &&
       createWillPageProps.createWillParams.testator.citizenshipCardId.length >
         0 &&
-      createWillPageProps.createWillParams.testator.birthdate != 0
+      createWillPageProps.createWillParams.testator.birthdate != 0 &&
+      createWillPageProps.authorEmail.length > 0
     );
   }
 
@@ -127,7 +171,12 @@ const CreateWillPage = () => {
       createWillPageProps.createWillParams.firstWitness.name.length > 0 &&
       createWillPageProps.createWillParams.firstWitness.citizenshipCardId
         .length > 0 &&
-      createWillPageProps.createWillParams.firstWitness.birthdate != 0
+      createWillPageProps.firstWitnessEmail.length > 0 &&
+      createWillPageProps.createWillParams.firstWitness.birthdate != 0 &&
+      isWitnessCodeValid(
+        createWillPageProps.firstWitnessCode,
+        firstWitnessGeneratedCode
+      )
     );
   }
 
@@ -136,7 +185,12 @@ const CreateWillPage = () => {
       createWillPageProps.createWillParams.secondWitness.name.length > 0 &&
       createWillPageProps.createWillParams.secondWitness.citizenshipCardId
         .length > 0 &&
-      createWillPageProps.createWillParams.secondWitness.birthdate != 0
+      createWillPageProps.secondWitnessEmail.length > 0 &&
+      createWillPageProps.createWillParams.secondWitness.birthdate != 0 &&
+      isWitnessCodeValid(
+        createWillPageProps.secondWitnessCode,
+        secondWitnessGeneratedCode
+      )
     );
   }
 
@@ -145,6 +199,13 @@ const CreateWillPage = () => {
       createWillPageProps.createWillParams.will.length > 0 &&
       createWillPageProps.createWillParams.secretCode.length > 0
     );
+  }
+
+  function isWitnessCodeValid(code: string, generatedCode: string): boolean {
+    console.log("Generated code: ", generatedCode);
+    console.log("Code: ", code);
+
+    return code === generatedCode;
   }
 
   function setAuthorName(event: ChangeEvent<HTMLInputElement>): void {
@@ -157,6 +218,28 @@ const CreateWillPage = () => {
           name: event.target.value,
         },
       },
+    });
+
+    if (isAuthorDataCompleted()) {
+      setActiveStep(1);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "First" ? {...step, completed: false} : step
+        )
+      );
+    }
+  }
+
+  function setAuthorEmail(event: ChangeEvent<HTMLInputElement>): void {
+    setCreateWillPageProps({
+      ...createWillPageProps,
+      authorEmail: event.target.value,
     });
 
     if (isAuthorDataCompleted()) {
@@ -291,6 +374,52 @@ const CreateWillPage = () => {
     }
   }
 
+  function setFirstWitnessEmail(event: ChangeEvent<HTMLInputElement>): void {
+    setCreateWillPageProps({
+      ...createWillPageProps,
+      firstWitnessEmail: event.target.value,
+    });
+
+    if (isFirstWitnessDataCompleted()) {
+      setActiveStep(2);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: false} : step
+        )
+      );
+    }
+  }
+
+  function setFirstWitnessConfirmationCode(
+    event: ChangeEvent<HTMLInputElement>
+  ): void {
+    setCreateWillPageProps({
+      ...createWillPageProps,
+      firstWitnessCode: event.target.value,
+    });
+
+    if (isFirstWitnessDataCompleted()) {
+      setActiveStep(2);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Second" ? {...step, completed: false} : step
+        )
+      );
+    }
+  }
+
   function setFirstWitnessBirthdate(
     event: ChangeEvent<HTMLInputElement>
   ): void {
@@ -364,6 +493,52 @@ const CreateWillPage = () => {
           citizenshipCardId: event.target.value,
         },
       },
+    });
+
+    if (isSecondWitnessDataCompleted()) {
+      setActiveStep(3);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: false} : step
+        )
+      );
+    }
+  }
+
+  function setSecondWitnessEmail(event: ChangeEvent<HTMLInputElement>): void {
+    setCreateWillPageProps({
+      ...createWillPageProps,
+      secondWitnessEmail: event.target.value,
+    });
+
+    if (isSecondWitnessDataCompleted()) {
+      setActiveStep(3);
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: true} : step
+        )
+      );
+    } else {
+      setWillSteps(
+        willSteps.map((step) =>
+          step.title === "Third" ? {...step, completed: false} : step
+        )
+      );
+    }
+  }
+
+  function setSecondWitnessConfirmationCode(
+    event: ChangeEvent<HTMLInputElement>
+  ): void {
+    setCreateWillPageProps({
+      ...createWillPageProps,
+      secondWitnessCode: event.target.value,
     });
 
     if (isSecondWitnessDataCompleted()) {
@@ -505,6 +680,8 @@ const CreateWillPage = () => {
     ) {
       //TODO: add a modal to warn the user that he has already created a will
       console.log("The user has already created a will");
+      console.log("%c The user has already created a will", "color: red");
+      onAlreadyCreatedWillOpen();
     } else {
       console.log(
         "Error prepare Create will: ",
@@ -550,15 +727,40 @@ const CreateWillPage = () => {
   }
 
   useEffect(() => {
+    if (
+      isPrepareCreateWillError &&
+      prepareCreateWillError?.message.includes("HasCreatedWill")
+    ) {
+      console.log(
+        "Error prepare Create will: ",
+        prepareCreateWillError?.message
+      );
+      onAlreadyCreatedWillOpen();
+    }
+
+    return () => {
+      onAlreadyCreatedWillClose();
+    };
+  }, [prepareCreateWillError]);
+
+  useEffect(() => {
     if (createWillPageProps.isWillEncrypted) {
       writeCreateWill?.();
     }
     return () => {};
   }, [writeCreateWill, createWillPageProps.isWillEncrypted]);
 
+  // Send email to the testator and clear the form
   useEffect(() => {
     if (isTransactionCreateWillSuccess || isTransactionCreateWillError) {
-      // Show the alert message for 3 seconds then close it
+      if (isTransactionCreateWillSuccess) {
+        sendAuthorEmail({
+          code: createWillPageProps.rawSecretCode,
+          type: "testator",
+          recipientEmail: createWillPageProps.authorEmail,
+          senderName: createWillPageProps.createWillParams.testator.name,
+        });
+      }
       onOpen();
       setCreateWillPageProps({
         createWillParams: {
@@ -568,12 +770,10 @@ const CreateWillPage = () => {
           testator: {
             name: "",
             citizenshipCardId: "",
-            birthdate: 0n,
           } as BlockchainWill.PersonStruct,
           firstWitness: {
             name: "",
             citizenshipCardId: "",
-            birthdate: 0n,
           } as BlockchainWill.PersonStruct,
           secondWitness: {
             name: "",
@@ -584,45 +784,26 @@ const CreateWillPage = () => {
         isWillEncrypted: false,
         rawWill: "",
         rawSecretCode: "",
+        authorEmail: "",
+        firstWitnessEmail: "",
+        firstWitnessCodeEnabled: false,
+        firstWitnessCode: "",
+        secondWitnessEmail: "",
+        secondWitnessCodeEnabled: false,
+        secondWitnessCode: "",
       });
     }
-    return () => {
-      console.log("Cleanup");
-      setCreateWillPageProps({
-        createWillParams: {
-          will: "",
-          isPublic: true,
-          secretCode: "",
-          testator: {
-            name: "",
-            citizenshipCardId: "",
-            birthdate: 0n,
-          } as BlockchainWill.PersonStruct,
-          firstWitness: {
-            name: "",
-            citizenshipCardId: "",
-            birthdate: 0n,
-          } as BlockchainWill.PersonStruct,
-          secondWitness: {
-            name: "",
-            citizenshipCardId: "",
-            birthdate: 0n,
-          } as BlockchainWill.PersonStruct,
-        },
-        isWillEncrypted: false,
-        rawWill: "",
-        rawSecretCode: "",
-      });
-    };
   }, [
     isTransactionCreateWillError,
     isTransactionCreateWillSuccess,
+    createWillPageProps.authorEmail,
+    createWillPageProps.rawSecretCode,
     resetWriteCreateWill,
     onOpen,
   ]);
 
+  // Close the alert message after 5 seconds
   useEffect(() => {
-    // Close the alert message after 5 seconds
     if (isVisible) {
       setTimeout(() => {
         onClose();
@@ -630,6 +811,34 @@ const CreateWillPage = () => {
       }, 5000);
     }
   }, [isVisible, onClose, resetWriteCreateWill]);
+
+  // Send email to the first witness
+  useEffect(() => {
+    if (firstWitnessGeneratedCode.length > 0) {
+      sendFirstWitnessEmail({
+        code: firstWitnessGeneratedCode,
+        recipientEmail: createWillPageProps.firstWitnessEmail,
+        type: "witness",
+        recipientName: createWillPageProps.createWillParams.firstWitness.name,
+        senderName: createWillPageProps.createWillParams.testator.name,
+      });
+    }
+    return () => {};
+  }, [firstWitnessGeneratedCode]);
+
+  // Send email to the second witness
+  useEffect(() => {
+    if (secondWitnessGeneratedCode.length > 0) {
+      sendSecondWitnessEmail({
+        code: secondWitnessGeneratedCode,
+        recipientEmail: createWillPageProps.secondWitnessEmail,
+        type: "witness",
+        recipientName: createWillPageProps.createWillParams.secondWitness.name,
+        senderName: createWillPageProps.createWillParams.testator.name,
+      });
+    }
+    return () => {};
+  }, [secondWitnessGeneratedCode]);
 
   if (!isConnected) {
     return <Text>Connect your wallet to continue</Text>;
@@ -642,25 +851,63 @@ const CreateWillPage = () => {
             <WillForm
               value={createWillPageProps.createWillParams}
               rawWill={createWillPageProps.rawWill}
-              rawSecretCode={createWillPageProps.createWillParams.secretCode}
+              rawSecretCode={createWillPageProps.rawSecretCode}
               isDisabled={
                 isTransactionCreateWillLoading || isWriteCreateWillLoading
               }
-              onAuthorBirthdateChange={setAuthorBirthdate}
+              onAuthorEmailChange={setAuthorEmail}
               onAuthorCitizenshipIdChange={setAuthorCitizenshipId}
               onAuthorNameChange={setAuthorName}
-              onFirstWitnessBirthdateChange={setFirstWitnessBirthdate}
-              onFirstWitnessCitizenshipIdChange={setFirstWitnessCitizenshipId}
+              onAuthorBirthdateChange={setAuthorBirthdate}
               onFirstWitnessNameChange={setFirstWitnessName}
-              onSecondWitnessBirthdateChange={setSecondWitnessBirthdate}
-              onSecondWitnessCitizenshipIdChange={setSecondWitnessCitizenshipId}
+              onFirstWitnessCitizenshipIdChange={setFirstWitnessCitizenshipId}
+              onFirstWitnessEmailChange={setFirstWitnessEmail}
+              onFirstWitnessRequestCodeClick={() => {
+                setFirstWitnessGeneratedCode(generateRandomGuid());
+                console.log(
+                  "First witness generated code: ",
+                  firstWitnessGeneratedCode
+                );
+              }}
+              onFirstWitnessConfirmationCodeChange={
+                setFirstWitnessConfirmationCode
+              }
+              onFirstWitnessBirthdateChange={setFirstWitnessBirthdate}
               onSecondWitnessNameChange={setSecondWitnessName}
+              onSecondWitnessCitizenshipIdChange={setSecondWitnessCitizenshipId}
+              onSecondWitnessEmailChange={setSecondWitnessEmail}
+              onSecondWitnessRequestCodeClick={() => {
+                setSecondWitnessGeneratedCode(generateRandomGuid());
+                console.log(
+                  "Second witness generated code: ",
+                  secondWitnessGeneratedCode
+                );
+              }}
+              onSecondWitnessConfirmationCodeChange={
+                setSecondWitnessConfirmationCode
+              }
+              onSecondWitnessBirthdateChange={setSecondWitnessBirthdate}
               onWillBodyChange={setWillBody}
               onWillTypeChange={setWillType}
               onAuthorAccordionButtonClick={toggleAuthorAccordionButton}
               onFirstWitnessAccordionButtonClick={toggleFirstWitnessButton}
               onSecondWitnessAccordionButtonClick={toggleSecondWitnessButton}
               onSecretKeyChange={handleSecretKeyChange}
+              authorEmail={createWillPageProps.authorEmail}
+              firstWitnessEmail={createWillPageProps.firstWitnessEmail}
+              firstWitnessCodeEnabled={
+                createWillPageProps.firstWitnessEmail.length > 10 &&
+                firstWitnessGeneratedCode.length > 0
+              }
+              firstWitnessCode={createWillPageProps.firstWitnessCode}
+              secondWitnessEmail={createWillPageProps.secondWitnessEmail}
+              secondWitnessCodeEnabled={
+                createWillPageProps.secondWitnessEmail.length > 10 &&
+                secondWitnessGeneratedCode.length > 0
+              }
+              secondWitnessCode={createWillPageProps.secondWitnessCode}
+              isFirstWitnessEmailSending={sendingFirstWitnessEmail}
+              isSecondWitnessEmailSending={sendingSecondWitnessEmail}
             />
             <Stack direction="row" spacing={4}>
               <CreateWillButton
@@ -719,6 +966,33 @@ const CreateWillPage = () => {
               right={-1}
               top={-1}
               onClick={onClose}
+            />
+          </Alert>
+        </SlideFade>
+
+        <SlideFade
+          offsetY="20px"
+          unmountOnExit={true}
+          in={isAlreadyCreatedWillVisible}
+          style={{zIndex: 10}}
+        >
+          <Alert mx={"auto"} w="fit-content" status={"error"}>
+            <AlertIcon />
+            <Box>
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                <Text>
+                  There is a will registered with the given citizenship id, to
+                  create a new one it's necessary to revoke the previous one.
+                </Text>
+              </AlertDescription>
+            </Box>
+            <CloseButton
+              alignSelf="flex-start"
+              position="relative"
+              right={-1}
+              top={-1}
+              onClick={onAlreadyCreatedWillClose}
             />
           </Alert>
         </SlideFade>

@@ -9,7 +9,7 @@ import {blockchainWillAbi} from "../constants/blockchainWillAbi";
 
 export const useCreateWill = (
   address: Address,
-  debouncedWill: BlockchainWill.WillCreationStruct,
+  debouncedWill: BlockchainWill.WillCreationStruct
 ) => {
   // usePrepareContractWrite hook is used to prepare a contract write transaction, it fetches the required parameters for the transaction.
   const {
@@ -28,30 +28,28 @@ export const useCreateWill = (
         isPublic: debouncedWill.isPublic,
         firstWitness: {
           name: debouncedWill.firstWitness.name,
-          birthdate: debouncedWill.firstWitness.birthdate as bigint,
           citizenshipCardId: debouncedWill.firstWitness.citizenshipCardId,
+          birthdate: debouncedWill.firstWitness.birthdate as bigint,
         },
         secondWitness: {
           name: debouncedWill.secondWitness.name,
-          birthdate: debouncedWill.secondWitness.birthdate as bigint,
           citizenshipCardId: debouncedWill.secondWitness.citizenshipCardId,
+          birthdate: debouncedWill.secondWitness.birthdate as bigint,
         },
         testator: {
           name: debouncedWill.testator.name,
-          birthdate: debouncedWill.testator.birthdate as bigint,
           citizenshipCardId: debouncedWill.testator.citizenshipCardId,
+          birthdate: debouncedWill.testator.birthdate as bigint,
         },
         secretCode: debouncedWill.secretCode,
       },
     ],
     // gas: 3100000n,
     onError(error) {
-      console.log(
-        "%c useCreateWill usePrepareContractWrite onError",
-        "color: red"
-      );
       console.log("%c error:", "color: red", error);
-      console.log(`%c current params ${debouncedWill}`, "color:red");
+    },
+    onSettled(data, error) {
+      console.log("Settled", {data, error});
     },
   });
 

@@ -60,18 +60,6 @@ contract BlockchainWill {
             revert HasCreatedWill(_will.testator.citizenshipCardId);
         }
 
-        if (!isAdult(_will.testator.birthdate)) {
-            revert UnderAge(_will.testator.name);
-        }
-
-        if (!isAdult(_will.firstWitness.birthdate)) {
-            revert UnderAge(_will.firstWitness.name);
-        }
-
-        if (!isAdult(_will.secondWitness.birthdate)) {
-            revert UnderAge(_will.secondWitness.name);
-        }
-
         Will memory newWill = Will({
             will: _will.will,
             isPublic: _will.isPublic,
@@ -117,8 +105,8 @@ contract BlockchainWill {
         return
             Person({
                 name: _name,
-                birthdate: _birthdate,
-                citizenshipCardId: _citizenshipId
+                citizenshipCardId: _citizenshipId,
+                birthdate: _birthdate
             });
     }
 
@@ -233,21 +221,5 @@ contract BlockchainWill {
 
         // Set the testator as not having a will
         personHasCreatedWill[_testatorCitizenshipCardId] = false;
-    }
-
-    // ====== Private Functions ======
-
-    /**
-     * @dev Checks if the person is an adult.
-     * @param birthdate Birthdate of the person in seconds since the Unix epoch.
-     * @return True if the person is an adult, false otherwise.
-     */
-    function isAdult(uint256 birthdate) private view returns (bool) {
-        uint256 currentTime = block.timestamp; // Current timestamp in seconds since the Unix epoch
-        uint256 secondsInYear = 31536000; // 60 * 60 * 24 * 365
-
-        uint256 age = (currentTime - birthdate) / secondsInYear;
-
-        return age >= 18;
     }
 }

@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Heading,
   Input,
   Radio,
@@ -18,11 +19,17 @@ import {BlockchainWill} from "../types";
 interface WillFormProps {
   onAuthorAccordionButtonClick: () => void;
   onAuthorNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAuthorEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAuthorCitizenshipIdChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAuthorBirthdateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFirstWitnessAccordionButtonClick: () => void;
   onFirstWitnessNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFirstWitnessCitizenshipIdChange: (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => void;
+  onFirstWitnessEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFirstWitnessRequestCodeClick: () => void;
+  onFirstWitnessConfirmationCodeChange: (
     e: React.ChangeEvent<HTMLInputElement>
   ) => void;
   onFirstWitnessBirthdateChange: (
@@ -31,6 +38,11 @@ interface WillFormProps {
   onSecondWitnessAccordionButtonClick: () => void;
   onSecondWitnessNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSecondWitnessCitizenshipIdChange: (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => void;
+  onSecondWitnessEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSecondWitnessRequestCodeClick: () => void;
+  onSecondWitnessConfirmationCodeChange: (
     e: React.ChangeEvent<HTMLInputElement>
   ) => void;
   onSecondWitnessBirthdateChange: (
@@ -43,20 +55,36 @@ interface WillFormProps {
   value: BlockchainWill.WillCreationStruct;
   rawWill: string;
   rawSecretCode: string;
+  authorEmail: string;
+  firstWitnessEmail: string;
+  secondWitnessEmail: string;
+  firstWitnessCode: string;
+  secondWitnessCode: string;
+  firstWitnessCodeEnabled: boolean;
+  secondWitnessCodeEnabled: boolean;
+  isFirstWitnessEmailSending: boolean;
+  isSecondWitnessEmailSending: boolean;
 }
 
 export function WillForm({
   onAuthorAccordionButtonClick,
   onAuthorNameChange,
   onAuthorCitizenshipIdChange,
+  onAuthorEmailChange,
   onAuthorBirthdateChange,
   onFirstWitnessAccordionButtonClick,
   onFirstWitnessNameChange,
   onFirstWitnessCitizenshipIdChange,
+  onFirstWitnessEmailChange,
+  onFirstWitnessRequestCodeClick,
+  onFirstWitnessConfirmationCodeChange,
   onFirstWitnessBirthdateChange,
   onSecondWitnessAccordionButtonClick,
   onSecondWitnessNameChange,
   onSecondWitnessCitizenshipIdChange,
+  onSecondWitnessEmailChange,
+  onSecondWitnessRequestCodeClick,
+  onSecondWitnessConfirmationCodeChange,
   onSecondWitnessBirthdateChange,
   onWillTypeChange,
   onWillBodyChange,
@@ -65,6 +93,15 @@ export function WillForm({
   value,
   rawWill,
   rawSecretCode,
+  authorEmail,
+  firstWitnessEmail,
+  secondWitnessEmail,
+  firstWitnessCode: firstWitnessCode,
+  secondWitnessCode: secondWitnessCode,
+  firstWitnessCodeEnabled,
+  secondWitnessCodeEnabled,
+  isFirstWitnessEmailSending,
+  isSecondWitnessEmailSending,
 }: WillFormProps) {
   return (
     <>
@@ -80,14 +117,16 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input
-                value={value.testator.name}
-                isDisabled={isDisabled}
-                placeholder="Name"
-                onChange={onAuthorNameChange}
-              />
               <Stack direction="row">
                 <Input
+                  width={"70%"}
+                  value={value.testator.name}
+                  isDisabled={isDisabled}
+                  placeholder="Name"
+                  onChange={onAuthorNameChange}
+                />
+                <Input
+                  width={"30%"}
                   value={value.testator.citizenshipCardId}
                   isDisabled={isDisabled}
                   type="number"
@@ -95,6 +134,7 @@ export function WillForm({
                   onChange={onAuthorCitizenshipIdChange}
                 />
                 <Input
+                  width={"30%"}
                   value={
                     value.testator.birthdate
                       ? new Date((value.testator.birthdate as number) * 1000)
@@ -108,6 +148,13 @@ export function WillForm({
                   onChange={onAuthorBirthdateChange}
                 />
               </Stack>
+              <Input
+                value={authorEmail}
+                isDisabled={isDisabled}
+                type="email"
+                placeholder="Email"
+                onChange={onAuthorEmailChange}
+              />
             </Stack>
           </AccordionPanel>
         </AccordionItem>
@@ -122,14 +169,16 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input
-                value={value.firstWitness.name}
-                isDisabled={isDisabled}
-                placeholder="Name"
-                onChange={onFirstWitnessNameChange}
-              />
               <Stack direction="row">
                 <Input
+                  width={"70%"}
+                  value={value.firstWitness.name}
+                  isDisabled={isDisabled}
+                  placeholder="Name"
+                  onChange={onFirstWitnessNameChange}
+                />
+                <Input
+                  width={"30%"}
                   value={value.firstWitness.citizenshipCardId}
                   isDisabled={isDisabled}
                   type="number"
@@ -137,6 +186,7 @@ export function WillForm({
                   onChange={onFirstWitnessCitizenshipIdChange}
                 />
                 <Input
+                  width={"30%"}
                   value={
                     value.firstWitness.birthdate
                       ? new Date(
@@ -150,6 +200,33 @@ export function WillForm({
                   type="date"
                   placeholder="Birthdate"
                   onChange={onFirstWitnessBirthdateChange}
+                />
+              </Stack>
+              <Stack direction="row">
+                <Input
+                  width={"70%"}
+                  value={firstWitnessEmail}
+                  isDisabled={isDisabled}
+                  type="email"
+                  placeholder="Email"
+                  onChange={onFirstWitnessEmailChange}
+                />
+                <Button
+                  onClick={onFirstWitnessRequestCodeClick}
+                  isLoading={isFirstWitnessEmailSending}
+                  loadingText="Sending email..."
+                  isDisabled={!(firstWitnessEmail.length > 10) || isDisabled}
+                  width={"fit-content"}
+                >
+                  Request Code
+                </Button>
+                <Input
+                  value={firstWitnessCode}
+                  onChange={onFirstWitnessConfirmationCodeChange}
+                  width={"30%"}
+                  isDisabled={!firstWitnessCodeEnabled}
+                  type="text"
+                  placeholder="Confirmation Code"
                 />
               </Stack>
             </Stack>
@@ -166,14 +243,16 @@ export function WillForm({
           </AccordionButton>
           <AccordionPanel pb={4}>
             <Stack>
-              <Input
-                value={value.secondWitness.name}
-                isDisabled={isDisabled}
-                placeholder="Name"
-                onChange={onSecondWitnessNameChange}
-              />
               <Stack direction="row">
                 <Input
+                  width={"70%"}
+                  value={value.secondWitness.name}
+                  isDisabled={isDisabled}
+                  placeholder="Name"
+                  onChange={onSecondWitnessNameChange}
+                />
+                <Input
+                  width={"30%"}
                   value={value.secondWitness.citizenshipCardId}
                   isDisabled={isDisabled}
                   type="number"
@@ -181,6 +260,7 @@ export function WillForm({
                   onChange={onSecondWitnessCitizenshipIdChange}
                 />
                 <Input
+                  width={"30%"}
                   value={
                     value.secondWitness.birthdate
                       ? new Date(
@@ -194,6 +274,33 @@ export function WillForm({
                   type="date"
                   placeholder="Birthdate"
                   onChange={onSecondWitnessBirthdateChange}
+                />
+              </Stack>
+              <Stack direction="row">
+                <Input
+                  width={"70%"}
+                  value={secondWitnessEmail}
+                  isDisabled={isDisabled}
+                  type="email"
+                  placeholder="Email"
+                  onChange={onSecondWitnessEmailChange}
+                />
+                <Button
+                  onClick={onSecondWitnessRequestCodeClick}
+                  isLoading={isSecondWitnessEmailSending}
+                  loadingText="Sending email..."
+                  isDisabled={!(secondWitnessEmail.length > 10) || isDisabled}
+                  width={"fit-content"}
+                >
+                  Request Code
+                </Button>
+                <Input
+                  value={secondWitnessCode}
+                  onChange={onSecondWitnessConfirmationCodeChange}
+                  width={"30%"}
+                  isDisabled={!secondWitnessCodeEnabled}
+                  type="text"
+                  placeholder="Confirmation Code"
                 />
               </Stack>
             </Stack>

@@ -21,21 +21,24 @@ import SearchWillPage from "./pages/SearchWillPage.tsx";
 import React, {useMemo, useState} from "react";
 
 const WALLET_CONNECT_PROJECT_ID =
-  import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || "";
+  process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "";
 const ALCHEMY_PROVIDER_API_KEY =
-  import.meta.env.VITE_ALCHEMY_PROVIDER_API_KEY || "";
+  process.env.NEXT_PUBLIC_ALCHEMY_PROVIDER_API_KEY || "";
 
+// Alchemy API key is required for the app to work
 const {chains, publicClient} = configureChains(
   [sepolia],
   [alchemyProvider({apiKey: ALCHEMY_PROVIDER_API_KEY})]
 );
 
+// Wallet Connect is required for the app to work
 const {connectors} = getDefaultWallets({
   appName: "Will on the Blockchain",
   projectId: WALLET_CONNECT_PROJECT_ID,
   chains,
 });
 
+// Wagmi configuration
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,

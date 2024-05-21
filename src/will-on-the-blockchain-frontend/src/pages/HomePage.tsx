@@ -1,3 +1,5 @@
+"use client";
+
 import PublicWillsPage from "./PublicWillsPage";
 
 const HomePage = () => {
