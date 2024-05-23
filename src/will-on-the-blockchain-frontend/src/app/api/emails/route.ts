@@ -14,7 +14,7 @@ interface SendEmailParams {
   recipientName?: string;
   senderName?: string;
 }
-
+export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   console.log("request", request);
 
