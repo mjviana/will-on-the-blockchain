@@ -16,6 +16,8 @@ interface SendEmailParams {
 }
 
 export async function POST(request: NextRequest) {
+  console.log("request", request);
+
   const {recipientEmail, code, type, recipientName, senderName} =
     await request.json();
 
