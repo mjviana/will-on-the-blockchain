@@ -1,10 +1,10 @@
 import {
-  Address,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
 import {blockchainWillAbi} from "../constants/blockchainWillAbi";
+import {Address} from "viem";
 
 export const useRevokeWill = (
   contractAddress: Address,
@@ -13,11 +13,11 @@ export const useRevokeWill = (
 ) => {
   /// usePrepareContractWrite hook is used to prepare a contract write transaction, it fetches the required parameters for the transaction.
   const {
-    config: prepareRevokePublicWillConfig,
+    data: prepareRevokePublicWillData,
     refetch: refetchPrepareRevokeWill,
     error: prepareRevokeWillError,
     isError: isPrepareRevokeWillError,
-  } = usePrepareContractWrite({
+  } = useSimulateContract({
     address: contractAddress,
     abi: blockchainWillAbi,
     functionName: isPublicWill ? "revokePublicWill" : "revokePrivateWill",
@@ -28,16 +28,13 @@ export const useRevokeWill = (
   // useContractWrite hook performs the actual contract write transaction.
   const {
     data: writeRevokeWillData,
-    isLoading: isWriteRevokeWillLoading,
-    write: writeRevokeWill,
+    isPending: isWriteRevokeWillLoading,
+    writeContract: writeRevokeWill,
     reset: resetWriteRevokeWill,
     error: writeRevokeWillError,
     // isSuccess: isWriteRevokeWillSuccess,
     // isError: isWriteRevokeWillError,
-  } = useContractWrite({
-    ...prepareRevokePublicWillConfig,
-    onSettled: onSettledCallback,
-  });
+  } = useWriteContract();
 
   // useWaitForTransaction hook is used to wait for a transaction to be mined, provides the ability to show feedback on the status of the transaction to the user.
   const {
@@ -46,20 +43,12 @@ export const useRevokeWill = (
     isError: isTransactionRevokeWillError,
     data: transactionRevokeWillData,
     error: transactionRevokeWillError,
-  } = useWaitForTransaction({
-    hash: writeRevokeWillData?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: writeRevokeWillData,
   });
 
-  function onSettledCallback(
-    data: import("@wagmi/core").WriteContractResult | undefined,
-    error: Error | null
-  ) {
-    console.log("useRevokeWill onSettled");
-    console.log("useRevokeWill onSettled data", data);
-    console.log("useRevokeWill onSettled error", error);
-  }
-
   return {
+    prepareRevokePublicWillData,
     prepareRevokeWillError,
     isPrepareRevokeWillError,
     isWriteRevokeWillLoading,

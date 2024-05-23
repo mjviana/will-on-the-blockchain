@@ -1,15 +1,24 @@
-import type {Metadata} from "next";
+import ClientRootLayout from "./ClientRootLayout";
+import {rainbowConfig} from "../lib/config";
+import {headers} from "next/headers";
+import {cookieToInitialState} from "wagmi";
 
-export const metadata: Metadata = {
-  title: "My App",
-  description: "My App is a...",
-};
+export const dynamic = "force-static";
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
+  const initialState = cookieToInitialState(
+    rainbowConfig,
+    headers().get("cookie")
+  );
+
   return (
     <html lang="en">
       <body>
-        <div id="root">{children}</div>
+        <div id="root">
+          <ClientRootLayout initialState={initialState}>
+            {children}
+          </ClientRootLayout>
+        </div>
       </body>
     </html>
   );

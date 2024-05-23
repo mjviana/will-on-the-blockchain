@@ -1,11 +1,11 @@
 import {
-  Address,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
 import {BlockchainWill} from "../types";
 import {blockchainWillAbi} from "../constants/blockchainWillAbi";
+import {Address} from "viem";
 
 export const useCreateWill = (
   address: Address,
@@ -13,11 +13,11 @@ export const useCreateWill = (
 ) => {
   // usePrepareContractWrite hook is used to prepare a contract write transaction, it fetches the required parameters for the transaction.
   const {
-    config: prepareCreateWillConfig,
+    data: useSimulateContractData,
     error: prepareCreateWillError,
     isError: isPrepareCreateWillError,
     refetch: refetchPrepareCreateWill,
-  } = usePrepareContractWrite({
+  } = useSimulateContract({
     address: address,
     abi: blockchainWillAbi,
     // enabled: isWillCompleted, // Enable the hook only when the debouncedWill is not null and all the fields are filled.
@@ -45,24 +45,18 @@ export const useCreateWill = (
       },
     ],
     // gas: 3100000n,
-    onError(error) {
-      console.log("%c error:", "color: red", error);
-    },
-    onSettled(data, error) {
-      console.log("Settled", {data, error});
-    },
   });
 
   // useContractWrite hook is used to send a contract write transaction.
   const {
     data: writeCreateWillData,
-    isLoading: isWriteCreateWillLoading,
+    isPending: isWriteCreateWillLoading,
     isSuccess: isWriteCreateWillSuccess,
     isError: isWriteCreateWillError,
-    write: writeCreateWill,
+    writeContract: writeCreateWill,
     reset: resetWriteCreateWill,
     error: writeCreateWillError,
-  } = useContractWrite(prepareCreateWillConfig);
+  } = useWriteContract();
 
   // useWaitForTransaction hook is used to wait for a transaction to be mined, provides the ability to show feedback on the status of the transaction to the user.
   const {
@@ -70,11 +64,12 @@ export const useCreateWill = (
     isSuccess: isTransactionCreateWillSuccess,
     isError: isTransactionCreateWillError,
     error: transactionCreateWillError,
-  } = useWaitForTransaction({
-    hash: writeCreateWillData?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: writeCreateWillData,
   });
 
   return {
+    useSimulateContractData,
     prepareCreateWillError,
     isPrepareCreateWillError,
     isWriteCreateWillLoading,
