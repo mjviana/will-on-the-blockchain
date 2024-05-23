@@ -16,6 +16,8 @@ const useSendEmail = () => {
   const [isError, setError] = useState(false);
 
   const sendEmail = async (emailParams: SendEmailParams) => {
+    console.log("emailParams", emailParams);
+
     setIsLoading(true);
     try {
       const response = await fetch("api/emails", {
