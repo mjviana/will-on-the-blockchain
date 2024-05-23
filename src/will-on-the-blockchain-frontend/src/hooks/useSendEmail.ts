@@ -21,7 +21,7 @@ const useSendEmail = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch("api/emails", {
+      const response = await fetch("api/emails/", {
         headers: {
           "content-type": "application/json",
         },
