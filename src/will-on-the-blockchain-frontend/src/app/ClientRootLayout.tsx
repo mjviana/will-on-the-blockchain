@@ -5,6 +5,7 @@ import Providers from "./Providers";
 import Navbar from "./components/NavBar";
 import Sidebar from "./components/Sidebar";
 import {type State} from "wagmi";
+import {useState} from "react";
 
 type ClientRootLayoutProps = {
   children: React.ReactNode;
@@ -16,12 +17,14 @@ export default function ClientRootLayout({
   initialState,
 }: ClientRootLayoutProps) {
   function onColorModeSwitchClicked(): void {
-    console.log("Color mode switch clicked");
+    setIsDarkTheme((prev) => !prev);
   }
+
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
 
   return (
     <div id="root">
-      <Providers initialState={initialState}>
+      <Providers isDarkTheme={isDarkTheme} initialState={initialState}>
         <Navbar onColorModeSwtchClicked={onColorModeSwitchClicked} />
         <Grid
           templateAreas={{

@@ -3,9 +3,10 @@
 import {Flex, HStack, Spacer, Show, IconButton, Text} from "@chakra-ui/react";
 import {BiBookHeart} from "react-icons/bi";
 import ColorModeSwitch from "./ColorModeSwitch";
-import {ConnectButton} from "@rainbow-me/rainbowkit";
 import WillsMenu from "./WillsMenu";
 import Link from "next/link";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
 
 interface NavbarProps {
   onColorModeSwtchClicked(): void;
