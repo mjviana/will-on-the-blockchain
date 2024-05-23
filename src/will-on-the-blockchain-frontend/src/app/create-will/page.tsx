@@ -14,7 +14,7 @@ import {
   SlideFade,
   Link,
 } from "@chakra-ui/react";
-import React, {ChangeEvent, use, useEffect, useState} from "react";
+import React, {ChangeEvent, useEffect, useState} from "react";
 import {contractAddresses} from "../../constants";
 import {useAccount} from "wagmi";
 import ContractAddressesInterface from "../../types/ContractAddressesInterface";
@@ -28,7 +28,7 @@ import {steps} from "../../constants/willSteps";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import generateRandomGuid from "../../utils/RandomGuidGenerator";
 import useSendEmail from "../../hooks/useSendEmail";
-import {Address, SimulateContractReturnType} from "viem";
+import {Address} from "viem";
 
 const defaultCreateWillParamsStruct: BlockchainWill.WillCreationStruct = {
   will: "",
