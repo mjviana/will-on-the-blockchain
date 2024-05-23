@@ -9,6 +9,22 @@ const nextConfig = {
     config.externals.push("pino-pretty", "encoding");
     return config;
   },
+  async headers() {
+    return [
+      {
+        // This configuration applies to all routes under the `/api` directory
+        source: "/api/:path*",
+        headers: [
+          {key: "Access-Control-Allow-Origin", value: "*"},
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,POST,PUT,DELETE,OPTIONS",
+          },
+          {key: "Access-Control-Allow-Headers", value: "Content-Type"},
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
