@@ -3,7 +3,7 @@ import {rainbowConfig} from "../lib/config";
 import {headers} from "next/headers";
 import {cookieToInitialState} from "wagmi";
 
-export const dynamic = "force-static";
+// export const dynamic = "force-static";
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   const initialState = cookieToInitialState(
