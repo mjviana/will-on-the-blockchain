@@ -17,6 +17,7 @@ const useSendEmail = () => {
 
   const sendEmail = async (emailParams: SendEmailParams) => {
     console.log("emailParams", emailParams);
+    console.log("json email data", JSON.stringify(emailParams));
 
     setIsLoading(true);
     try {
