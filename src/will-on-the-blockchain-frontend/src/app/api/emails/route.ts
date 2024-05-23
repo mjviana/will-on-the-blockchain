@@ -3,6 +3,8 @@ import {Resend} from "resend";
 import WitnessEmail from "../../../emails/WitnessEmail";
 import TestatorEmail from "../../../emails/TestatorEmail";
 
+export const revalidate = 1; //revalidate api every 1 second
+
 const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
 type EmailType = "testator" | "witness";
@@ -14,7 +16,7 @@ interface SendEmailParams {
   recipientName?: string;
   senderName?: string;
 }
-export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   console.log("request", request);
 
