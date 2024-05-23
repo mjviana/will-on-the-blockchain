@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
               senderName: params.senderName!,
             }),
     });
-    return await NextResponse.json(data);
+    return NextResponse.json(data);
   } catch (error) {
-    return await NextResponse.json({error});
+    return NextResponse.json({error});
   }
 }
