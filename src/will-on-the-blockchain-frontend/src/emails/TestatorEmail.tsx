@@ -9,7 +9,6 @@ import {
   Text,
 } from "@react-email/components";
 import React from "react";
-import {BiBookHeart} from "react-icons/bi";
 
 interface Props {
   code: string;
@@ -23,9 +22,7 @@ const TestatorEmail = ({code, senderName}: Props) => {
       <Preview>Save your secret code </Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={logoContainer}>
-            <BiBookHeart fontSize="60px" />
-          </Section>
+          <Section style={logoContainer}></Section>
           <Heading style={h1}>Save your secret code</Heading>
           <Text style={heroText}>
             Dear {senderName} your will was created successfully. Save this code

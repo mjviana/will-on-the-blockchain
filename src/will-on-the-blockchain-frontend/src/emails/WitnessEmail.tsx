@@ -9,7 +9,6 @@ import {
   Text,
 } from "@react-email/components";
 import React from "react";
-import {BiBookHeart} from "react-icons/bi";
 
 interface Props {
   code: string;
@@ -24,9 +23,7 @@ const WitnessEmail = ({code, recipientName, senderName}: Props) => {
       <Preview>Please confirm that you are a witness.</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={logoContainer}>
-            <BiBookHeart fontSize="60px" />
-          </Section>
+          <Section style={logoContainer}></Section>
           <Heading style={h1}>Confirm that you are a witness</Heading>
           <Text style={heroText}>
             Dear {recipientName}, {senderName} is requesting for your testimony
