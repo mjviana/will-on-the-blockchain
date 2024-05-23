@@ -54,6 +54,7 @@ export const useCreateWill = (
     isSuccess: isWriteCreateWillSuccess,
     isError: isWriteCreateWillError,
     writeContract: writeCreateWill,
+    writeContractAsync: writeCreateWillAsync,
     reset: resetWriteCreateWill,
     error: writeCreateWillError,
   } = useWriteContract();
@@ -77,6 +78,7 @@ export const useCreateWill = (
     writeCreateWillData,
     refetchPrepareCreateWill,
     writeCreateWill,
+    writeCreateWillAsync,
     resetWriteCreateWill,
     isWriteCreateWillSuccess,
     isWriteCreateWillError,

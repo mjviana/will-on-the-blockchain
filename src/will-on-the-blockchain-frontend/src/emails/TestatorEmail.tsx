@@ -20,7 +20,7 @@ const TestatorEmail = ({code, senderName}: Props) => {
   return (
     <Html>
       <Head />
-      <Preview>Save your secret code.</Preview>
+      <Preview>Save your secret code </Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>

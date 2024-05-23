@@ -43,6 +43,8 @@ const RevokeWillPage = () => {
 
   useEffect(() => {
     if (will) {
+      console.log("will details", will);
+
       onOpen();
     }
   }, [will, onOpen]);

@@ -14,7 +14,7 @@ import {
   SlideFade,
   Link,
 } from "@chakra-ui/react";
-import React, {ChangeEvent, useEffect, useState} from "react";
+import React, {ChangeEvent, use, useEffect, useState} from "react";
 import {contractAddresses} from "../../constants";
 import {useAccount} from "wagmi";
 import ContractAddressesInterface from "../../types/ContractAddressesInterface";
@@ -28,7 +28,7 @@ import {steps} from "../../constants/willSteps";
 import {ExternalLinkIcon} from "@chakra-ui/icons";
 import generateRandomGuid from "../../utils/RandomGuidGenerator";
 import useSendEmail from "../../hooks/useSendEmail";
-import {Address} from "viem";
+import {Address, SimulateContractReturnType} from "viem";
 
 const defaultCreateWillParamsStruct: BlockchainWill.WillCreationStruct = {
   will: "",
@@ -684,6 +684,16 @@ const CreateWillPage = () => {
       console.log("State will", createWillPageProps.createWillParams);
 
       console.log("current prepare create will data", useSimulateContractData);
+
+      const test = useSimulateContractData!.request;
+
+      test.args[0].secretCode = encryptedSecret;
+
+      console.log(
+        "simulated contract data: ",
+        useSimulateContractData!.request
+      );
+
       writeCreateWill?.(useSimulateContractData!.request);
     } else if (
       isPrepareCreateWillError &&
@@ -754,30 +764,47 @@ const CreateWillPage = () => {
     };
   }, [prepareCreateWillError]);
 
-  useEffect(() => {
-    if (createWillPageProps.isWillEncrypted) {
-      console.log(
-        "current prepare create will data (in useeffect)",
-        useSimulateContractData
-      );
-      console.log(writeCreateWill);
+  // useEffect(() => {
+  //   if (createWillPageProps.isWillEncrypted) {
+  //     console.log(
+  //       "current prepare create will data (in useeffect)",
+  //       useSimulateContractData
+  //     );
+  //     console.log(writeCreateWill);
 
-      // console.log(useSimulateContractData);
-      // writeCreateWill?.(useSimulateContractData!.request);
-    }
-    return () => {};
-  }, [writeCreateWill, createWillPageProps.isWillEncrypted]);
+  //     // console.log(useSimulateContractData);
+  //     // writeCreateWill?.(useSimulateContractData!.request);
+  //   }
+  //   return () => {};
+  // }, [writeCreateWill, createWillPageProps.isWillEncrypted]);
 
   // Send email to the testator and clear the form
   useEffect(() => {
     if (isTransactionCreateWillSuccess || isTransactionCreateWillError) {
+      console.log(
+        "Inside transaction create will - create will page props",
+        createWillPageProps
+      );
+
       if (isTransactionCreateWillSuccess) {
+        console.log(
+          "sending email to the author with code",
+          createWillPageProps.rawSecretCode
+        );
+
         sendAuthorEmail({
           code: createWillPageProps.rawSecretCode,
           type: "testator",
           recipientEmail: createWillPageProps.authorEmail,
           senderName: createWillPageProps.createWillParams.testator.name,
         });
+      }
+
+      if (isTransactionCreateWillError) {
+        console.log(
+          "Error creating will: ",
+          transactionCreateWillError?.message
+        );
       }
       onOpen();
       setCreateWillPageProps({

@@ -54,6 +54,9 @@ const SecretCodeModal = ({
   const [isValidSecretCode, setIsValidSecretCode] = useState<boolean>(true);
 
   function handleConfirmClick(): void {
+    console.log("handleConfirmClick - secretCode", secretCode);
+    console.log("handleConfirmClick - will code", will.secretCode);
+
     if (modalType === SecretModalType.privateWillDetails) {
       const decryptedWill = decrypt(will.will, secretCode);
       console.log("decryptedWill", decryptedWill);

@@ -17,6 +17,8 @@ const useSendEmail = () => {
 
   const sendEmail = async (emailParams: SendEmailParams) => {
     setIsLoading(true);
+    console.log("emailParams", emailParams);
+
     try {
       const response = await fetch("/api/emails", {
         method: "POST",
