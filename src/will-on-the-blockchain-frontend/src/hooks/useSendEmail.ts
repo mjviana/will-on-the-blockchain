@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import axios from "axios";
 
 type EmailType = "testator" | "witness";
 
@@ -23,15 +24,18 @@ const useSendEmail = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch("api/emails/", {
-        headers: {
-          "content-type": "application/json",
-          "content-length": "1000",
-        },
-        method: "POST",
-        body: JSON.stringify(emailParams), // Include the code parameter in the request body
-      });
-      const data = await response.json();
+      const response = await axios.post("api/emails", emailParams);
+
+      // const response =
+      // await fetch("api/emails/", {
+      //   headers: {
+      //     "content-type": "application/json",
+      //     "content-length": "1000",
+      //   },
+      //   method: "POST",
+      //   body: JSON.stringify(emailParams), // Include the code parameter in the request body
+      // });
+      const data = await response.data;
       setData(data);
     } catch (error) {
       console.log("error", error);
