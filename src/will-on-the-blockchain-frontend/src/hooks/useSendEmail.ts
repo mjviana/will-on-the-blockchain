@@ -24,7 +24,9 @@ const useSendEmail = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post("/api/emails/", emailParams);
+      const response = await axios.post("/api/emails/", emailParams, {
+        headers: {"Content-Type": "application/json"},
+      });
       const data = await response.data;
       setData(data);
     } catch (error) {
