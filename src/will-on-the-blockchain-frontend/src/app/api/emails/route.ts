@@ -5,8 +5,6 @@ import TestatorEmail from "../../../emails/TestatorEmail";
 
 export const revalidate = 1; //revalidate api every 1 second
 
-export const dynamic = "force-server";
-
 const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
 type EmailType = "testator" | "witness";
