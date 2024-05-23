@@ -24,6 +24,7 @@ const useSendEmail = () => {
       const response = await fetch("api/emails/", {
         headers: {
           "content-type": "application/json",
+          "content-length": "1000",
         },
         method: "POST",
         body: JSON.stringify(emailParams), // Include the code parameter in the request body
