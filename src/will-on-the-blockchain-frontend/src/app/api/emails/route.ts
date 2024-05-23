@@ -1,3 +1,4 @@
+import {NextRequest, NextResponse} from "next/server";
 import {Resend} from "resend";
 import WitnessEmail from "../../../emails/WitnessEmail";
 import TestatorEmail from "../../../emails/TestatorEmail";
@@ -14,7 +15,7 @@ interface SendEmailParams {
   senderName?: string;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const {recipientEmail, code, type, recipientName, senderName} =
     await request.json();
 
@@ -47,8 +48,8 @@ export async function POST(request: Request) {
               senderName: params.senderName!,
             }),
     });
-    return Response.json(data);
+    return NextResponse.json(data);
   } catch (error) {
-    return Response.json({error});
+    return NextResponse.json({error});
   }
 }
