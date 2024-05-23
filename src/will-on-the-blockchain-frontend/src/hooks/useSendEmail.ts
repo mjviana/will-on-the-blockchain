@@ -19,12 +19,17 @@ const useSendEmail = () => {
     setIsLoading(true);
     try {
       const response = await fetch("api/emails", {
+        headers: {
+          "content-type": "application/json",
+        },
         method: "POST",
         body: JSON.stringify(emailParams), // Include the code parameter in the request body
       });
       const data = await response.json();
       setData(data);
     } catch (error) {
+      console.log("error", error);
+
       setError(true);
     } finally {
       setIsLoading(false);
